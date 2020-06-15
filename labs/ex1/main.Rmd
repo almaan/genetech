@@ -1,0 +1,449 @@
+---
+title: "Lab 1 - Intro - BB2255"
+author: "Original : Joseph Bergenstråhle - Edit : Alma Andersson, Sailendra Pradhananga "
+date: "29 Nov 19"
+output:
+  tufte::tufte_html: default 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+# Lab 1
+
+The aim of this first lab is to get you familiar with working with R and to
+create R Markdown files, i.e. there will not be much exciting happening here in
+terms of data analysis, rather the focus is to get you comfortable with working
+in R. For all the labs, we will want you to create a R markdown report to hand
+in at the end of the lab course, i.e. it's good to be familiar with this type of
+document.
+
+_NOTE_: Instructions regarding how to hand in this report are found at the very end of this page.
+
+# Install R (skip if already done)
+
+Follow the [link](https://cran.r-project.org/) and then choose the operative system you use.
+
+- Choose the option ‘install R for the first time’ and download the setup file.
+- Open the downloaded file and Install R.
+- Run the installation file and you will be able to see the standard version of the console.
+
+# Install RStudio
+
+RStudio is an integrated development environment for R, in simple terms, a code editor specialized for R.
+
+- Follow the [link](https://www.rstudio.com/products/rstudio/#Desktop) and click the Download RStudio Desktop button.
+- Open the downloaded .exe file and Install RStudio.
+- After RStudio is installed, find and launch it.
+
+# Intro To R Markdown
+
+Open a new file by File -> New File -> R Markdown..
+
+When you open this file, you will get open an R Markdown template. Proceed with
+this lab by typing everything within this document. Lets begin by going through
+some basic R functions.
+
+Use [this cheat
+sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+and follow the step guide (1-6) to understand the structure of the R Markdown
+document, you can also use this sheet as a go-to when you look for R Markdown
+commands, e.g. how to create headers, bold text, Italic text, bullet point lists
+etc.
+
+Try to start with a clean sheet, write the code as instructed in this lab, and
+finally "Knit" the document to a .html file. This is the same output format we
+will use for the hand in of lab 2 and 3 (.html or .pdf).
+
+# Basic R operations
+
+## Look for help
+
+For all functions in R, the easiest way to find how to use them is simply by
+typing `?[the name of the function]`, e.g. `?sum()`. Which will give you the
+explanation for the function!
+
+## Basic arithmetic operations
+
+```{r, eval=FALSE}
+7 + 4 # => 11
+7 - 4 # => 3
+7 / 2 # => 3.5
+7 * 2 # => 14
+```
+
+## Basic arithmetic functions
+
+
+```{r, eval=FALSE}
+log2(4) # => 2
+abs(-4) # => 4
+sqrt(4) # => 2
+```
+
+## Objects
+
+To create new variables, you will need to use the assignment operator (<-) or (=)
+
+```{r}
+
+object <- 5
+object = 5
+
+print(object)
+
+```
+
+### Vectors
+
+Create a vector
+
+```{r}
+
+# Creating a vector
+vector <- c(1, 19, 7 + 1, 123)
+vector
+
+#With characters
+example <- c("GeneA", "GeneB")
+example
+
+```
+
+Calculations with vectors
+
+max(x), min(x), range(x), length(x), sum(x), mean(x)
+
+```{r}
+
+max(vector)
+
+range(vector)
+
+sum(vector)
+
+
+```
+
+
+### Data frames
+
+Data frames looks like a matrix but can have columns with different types. 
+
+Create a data frame
+
+```{r}
+
+# Create the data frame.
+count.data <- data.frame(
+   genes = c("A","B","C","D"),
+   counts = c(5, 10, 1, 30)
+)
+# Print the data frame.			
+print(count.data) 
+
+```
+
+Our data frame now has "column"-names "genes" and "counts".
+
+```{r}
+colnames(count.data)
+
+```
+
+Lets make a data frame of several samples in the columns, and instead of having a specific column for the gene names, lets put those as "rownames" instead.
+
+```{r}
+
+count.data <- data.frame(
+   sample1 = c(2, 3, 4, 50),
+   sample2 = c(5, 10, 1, 30)
+)
+rownames(count.data) <- c("A", "B", "C", "D")
+count.data
+
+```
+
+You can access the data frame in different ways. 
+To view sample1:
+
+```{r}
+
+#data.frame$"column-name"
+
+count.data$sample1
+
+```
+
+or, the same thing would be to view all rows in the first column:
+
+```{r}
+
+#Access [rows, columns]
+
+count.data[, 1]
+
+```
+
+Calculations with data frames
+
+Calculations with numeric data frames: rowSums(), colSums(), rowMeans(), colMeans()
+
+```{r}
+
+rowSums(count.data)
+
+colMeans(count.data)
+
+
+```
+
+Subset a data frame and perform calculations on that
+
+```{r}
+
+count.data[, 2] = count.data[, 2] + 2
+
+count.data
+
+```
+
+Add to a data frame
+
+You can add a row with `rbind()`
+
+```{r}
+
+new.row <- c(2, 4)
+count.data = rbind(count.data, E=new.row)
+
+count.data
+
+```
+
+Similar, you can use `cbind()` to add a column, or, add via the `$` operator
+
+```{r}
+
+count.data$sample3 <- c(1,2,3,4,5)
+
+count.data
+
+```
+
+Now, create a count table (named count.data) of 3 samples and 5 genes. Make all count values = 1
+
+```{r}
+#INSERT CODE HERE
+
+```
+
+Make sample 2 have double the amount of counts for _each_ gene
+
+```{r}
+#INSERT CODE HERE
+
+```
+
+Make sample 3 have the the following counts for each gene (32,16,8,4,2) 
+
+```{r}
+#INSERT CODE HERE
+
+```
+
+Cut the count values for gene 2 in half within sample 2 and 3, **and** add 3 counts to gene 4 for sample 1
+
+```{r}
+#INSERT CODE HERE
+
+```
+
+Calculate the mean value of each gene and store this as a vector named "vec"
+
+```{r}
+#INSERT CODE HERE
+```
+
+Test run the code below (if TRUE -> continue with lab)
+
+```{r}
+
+print(round(vec %*% c(1337,69,42,666,80085)) == 151677)
+
+```
+
+## Read in data from a file
+
+Usually, when we work with genomic data, the data comes in the form of a table (matrix).
+For example, we run a sequencing machine that outputs a fastq file with all the
+reads. After mapping/alignment to a genome, the sequencing reads can be
+"counted" (i.e. we have this many copies of gene A, and this many copies of gene
+B). This count data is in a matrix format, just like the data frame we tested
+above, with genes as rows and samples as columns. Lets say we've executed all the steps
+required to obtain the count file. Now, we want to read this into R so we
+can analyze it (RIP EXCEL). First, download the count data from canvas via this [link](https://kth.instructure.com/files/2360952/download?download_frd=1).
+
+Put the file in your current working directory (cwd) and load it into R. If you
+are unsure what your cwd is just type ```getwd()``` and look at the path that's
+being printed.
+
+To Load the data do :
+
+```{r}
+
+counts <- read.table("reads.txt", sep = "\t")
+
+```
+
+*Q1:* How many genes and samples are there in this data set? (HINT: e.g. use `dim()` or `nrows()`)
+
+*Q2:* Which 5 genes are expressed the most across all samples?
+
+
+## Plotting
+
+a basic scatterplot is done via the `plot()` function.
+
+```{r}
+
+# Define the vector with 5 values
+c <- c(1, 3, 6, 4, 9)
+
+# Graph the  vector with all defaults
+plot(c)
+
+# Define 2 vectors with equal amount of elements
+c1 <- c(1, 3, 6, 4, 9)
+c2 <- c(2, 5, 4, 5, 12)
+
+# Plot c1 using a y axis that ranges from -1 to 13
+plot(c1, type="o", col="blue", ylim=c(-1,13))
+
+# Graph c2 with red dashed line and square points
+lines(c2, type="o", pch=22, lty=2, col="red")
+
+# Create a title with a red, bold/italic font
+title(main="Two Lines", col.main="black")
+
+# We can also make a histogram of our data
+
+hist(c1)
+
+```
+
+Lets plot our count data.
+
+```{r}
+
+#Distribution of gene counts
+hist(log(rowSums(counts)))
+
+```
+
+*Q3:* What are we seeing here? Explain the plot in two sentences!
+
+## R/Bioconductor (Skip if already done)
+
+Bioconductor is a repository of R-packages specifically for biological analyses.
+It has relatively strict requirements for submission, including installation on
+every platform and proper documentation with a required tutorial (called a vignette)
+explaining how the package should be used.
+
+It is a "collection of bioinformatic tools" in short. 
+
+To install Bioconductor, run this in R:
+
+```{r, eval=FALSE}
+
+if (!requireNamespace("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install()
+
+```
+
+Then, there are **a lot** of "packages" within bioconductor that you can install
+and use. To install such a package you use type `BiocManager::install()` and
+within install you type the name of the package, e.g.
+`BiocManager::install("SummarizedExperiment")`
+
+# Working with SummarizedExperiment
+
+The SummarizedExperiment class is used to store matrices containing experimental
+results, which are commonly produced by sequencing experiments. Each object
+stores observations of one or more samples, along with additional meta-data
+describing both the observations (features) and samples (phenotypes).
+
+A key aspect of the SummarizedExperiment class is the coordination of the
+meta-data and assays when sub-setting. For example, if you want to exclude a
+given sample you may do so for both the meta-data and assay in one operation, which
+ensures the meta-data and observed data will remain synchronized. Improperly
+accounting for meta and observational data has resulted in a number of incorrect
+results and retractions so this is a very desirable property.
+
+Lets try it out!
+
+We begin by loading the necessary packages, the `SummarizedExperiment` class is
+contained in the package with the name `SummarizedExperiment` (doh). Go ahead
+and load it
+
+```{r, message=FALSE, warning=FALSE}
+
+library(SummarizedExperiment)
+
+```
+
+```{r, message=FALSE}
+
+# Check if data set is installed
+if(!("airway" %in% installed.packages()[,'Package'])) {
+  print("[INFO] : Will install 'airway' package")
+  BiocManager::install('airway')
+}
+# Load library
+library(airway)
+# Load data
+data(airway)
+# Bing object to new identifier 
+se <- airway
+se
+
+```
+
+*Q4:* How many genes does your SE have? How many samples?
+
+Within the summarizedExperiment, you can store all kinds of data. type
+`colData(se)` to view all sample data included. Type `rowData(se)` to view all
+gene data.
+
+*Q5:* What kind of sample data can you find, describe it briefly?
+
+To access a particular sample data, just type e.g. `se$cell` to find the cell data. 
+
+You can also store meta data for the entire data set, type `metadata(se)` to view it. 
+
+# Hand In Guidelines
+
+**How :** Briefly answer the questions marked with a ''Q'', there are 5 of them,
+in a text document (.docx, .md, .txt, etc..), this is your ''report'' for Lab1.
+
+**Deadline**: Your report is due 23:59 December 6th 2019; if working in pairs -
+each of you should hand in (identical) reports where the names of both authors
+are clearly stated. For further information see the guidelines on the course
+web-page.
+
+
+# Appendix (If there is time and interest)
+
+The "ggplot" package offers is like the basic plot tools but on steroids, it has
+a lot of really nice features and allow you to make high quality figures with
+almost no effort. Getting good at plotting will allow you to make some quite
+cool plots as well as animations (check:
+https://www.tylermw.com/3d-ggplots-with-rayshader/). We
+will use plotting for plotting in the later labs, but to get familiar with the
+concept, try out this tutorial and play around with it (try e.g. to use it
+on the airway data, or our own count data):
+
+https://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html
+
