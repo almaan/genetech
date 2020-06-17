@@ -37,6 +37,7 @@ for (p in n.pkgs) {
   if (!(p %in% i.pkgs)){
     # try-catch install
     stat <- try(install.packages(p,
+                                 dependencies = TRUE,
                                  repos = "https://ftp.acc.umu.se/mirror/CRAN/"))
 
     # add status
