@@ -1,7 +1,7 @@
 ---
-title: "Lab 1 - Intro - BB2255"
-author: "Original : Joseph Bergenstråhle - Edit : Alma Andersson, Sailendra Pradhananga "
-date: "29 Nov 19"
+title: "Lab 1 - Intro"
+author: "Alma Andersson"
+date: "TBA"
 output:
   tufte::tufte_html: default 
 ---
@@ -10,365 +10,1052 @@ output:
 knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
+```{r,echo = FALSE, eval =TRUE}
+GRADE_MODE <- F
+```
+
 # Lab 1
 
-The aim of this first lab is to get you familiar with working with R and to
-create R Markdown files, i.e. there will not be much exciting happening here in
-terms of data analysis, rather the focus is to get you comfortable with working
-in R. For all the labs, we will want you to create a R markdown report to hand
-in at the end of the lab course, i.e. it's good to be familiar with this type of
-document.
+Welcome to the first lab! Here the objective is to get _you_ familiar with the
+programming language `R`, and some of the commands that we will be using
+throughout the remaining labs. For things to run smoothly in the more advanced
+labs, please work through these examples and make sure you understand what is
+going on - i.e, do not just click through the exercises. 
+
+With that being said, let's get started!
 
 _NOTE_: Instructions regarding how to hand in this report are found at the very end of this page.
 
-# Install R (skip if already done)
-
-Follow the [link](https://cran.r-project.org/) and then choose the operative system you use.
-
-- Choose the option ‘install R for the first time’ and download the setup file.
-- Open the downloaded file and Install R.
-- Run the installation file and you will be able to see the standard version of the console.
-
-# Install RStudio
-
-RStudio is an integrated development environment for R, in simple terms, a code editor specialized for R.
-
-- Follow the [link](https://www.rstudio.com/products/rstudio/#Desktop) and click the Download RStudio Desktop button.
-- Open the downloaded .exe file and Install RStudio.
-- After RStudio is installed, find and launch it.
-
-# Intro To R Markdown
-
-Open a new file by File -> New File -> R Markdown..
-
-When you open this file, you will get open an R Markdown template. Proceed with
-this lab by typing everything within this document. Lets begin by going through
-some basic R functions.
-
-Use [this cheat
-sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
-and follow the step guide (1-6) to understand the structure of the R Markdown
-document, you can also use this sheet as a go-to when you look for R Markdown
-commands, e.g. how to create headers, bold text, Italic text, bullet point lists
-etc.
-
-Try to start with a clean sheet, write the code as instructed in this lab, and
-finally "Knit" the document to a .html file. This is the same output format we
-will use for the hand in of lab 2 and 3 (.html or .pdf).
-
 # Basic R operations
 
-## Look for help
+We will first work through some  - but far from all - of the most basic elements
+of `R`, including:
 
-For all functions in R, the easiest way to find how to use them is simply by
-typing `?[the name of the function]`, e.g. `?sum()`. Which will give you the
-explanation for the function!
+* Help command
+* Arithmetics
+* Logical operators
+* Objects
+* Data Types
+* Arrays (Lists and vectors)
+* Array operators
+* DataFrames
+* DataFrame operators
+* Functions (Defining them)
+* For loops
+* Conditionals
+* Plotting
+* SummarizedExperiment
 
-## Basic arithmetic operations
+## Looking for help
+
+Stackoverflow and google are your friends, but they will not always be there for
+you (sad but true). However, for most R functions, you will be able to get a
+good overview of how to use them and how to apply them by typing:
+`?function_name` or `help(function_name)`, e.g. `?sum()` in your R console.
+
+## Objects and variables
+
+Variables is one of the most standard features of any programming language; in
+short you can think of them as placeholders. $pi$ is a great exampel of a
+real-life variable, we use it whenever we want to indicate the value
+$3.14159265...$. In the same spirit, we can assign values or objects a specific
+name (e.g, fancy_variable), one huge benefit with this is that if we decide to
+change the value of `fancy_variable` from say `3` to `4`, only the one instance
+where we set the value of `fancy_variable`, the rest of the code remains intact.
+
+In R, you have 2 options when you want to bind an object or value to a name
+`var_name <- value` and `var_name = value`. The best practice is to always use
+`<-`, unless the right hand side is a mathematical expression (where an equal
+sign is more appropriate).
+
+```{r,eval = TRUE, echo=TRUE}
+# bind the values 1337 to the variable fancy_name_1
+fancy_name_1 <- 1337
+# print fancy_name_1
+print(sprintf("fancy_name_1 is : %d",fancy_name_1))
+```
+
+```{r,echo=TRUE, eval=TRUE}
+# bind the sum of fancy_name_1 and 6671 to the variable fancy_name_2
+fancy_name_2 = fancy_name_1 + 6671
+# print fancy_name_2
+print(sprintf("fancy_name_2 is : %d",fancy_name_2))
+```
+## Arithmetics
+
+### Arithmetic operations
+
+Computations and manipulations of numbers are integral parts of any programming
+language, hence it's essential to know how to call for these kind of actions.
+Below you will see some examples of the perhaps most common mathetmatical
+operations that you will use.
 
 ```{r, eval=FALSE}
-7 + 4 # => 11
-7 - 4 # => 3
-7 / 2 # => 3.5
-7 * 2 # => 14
+7 + 4  # => 11 (addition)
+7 - 4  # => 3 (subtraction)
+7 / 2  # => 3.5 (division)
+7 * 2  # => 14 (mulitplication)
+2 ^ 3  # => 8 (exponents)
+7 %% 3 # => 1 (modulo)
 ```
 
-## Basic arithmetic functions
+As in standard mathematics parenthesises are used to indicate the order by which
+these operations should be executed. For example:
+
+```{r,eval=TRUE,echo=TRUE}
+ex_1 = 7 * 4 / 3 ^ 2
+ex_2 = 7 * ( 4 / 3 ) ^ 2
+ex_3 = ((7 * 4) / 3) ^ 2 
+
+print(sprintf("ex_1 : %f",ex_1))
+print(sprintf("ex_2 : %f",ex_2))
+print(sprintf("ex_3 : %f",ex_3))
+
+```
+
+### Mathematical operators
+
+There is a plethora of different mathematical functions in R, usually their
+names resemble those of the mathematical operations that they represent, for
+example:
 
 
 ```{r, eval=FALSE}
-log2(4) # => 2
-abs(-4) # => 4
-sqrt(4) # => 2
+log2(8) # => 2
+abs(-9.12) # => 4
+sqrt(3) # => 2
 ```
 
-## Objects
+## Logical operators
+Once calculations have been performed using the different arithmetic operations,
+we usually want to assess and _compare_ our results, this is when logical
+operators come in handy; when used, they return a value that is either `TRUE` or
+`FALSE` depending on the expression you wrote down. Some of the most useful logical
+operators are:
 
-To create new variables, you will need to use the assignment operator (<-) or (=)
+* `==` : equal to - `TRUE` if LHS is equal to RHS
+* `>` : greater than - `TRUE` if LHS is greater than RHS
+* `>=` : greater than or equal to - `TRUE` if LHS is greater or equal to RHS
+* `<` : less than - `TRUE` if LHS is less than RHS
+* `<=` : less than or equal to - `TRUE` if LHS is less than or equal to RHS
+* `!=` : not equal to - `TRUE` if LHS is not equal to RHS
 
-```{r}
+_COMMENT_: LHS = Left hand side, RHS = Right hand side
 
-object <- 5
-object = 5
+For some examples:
 
-print(object)
+```{r,echo = TRUE, eval = FALSE}
+3 == 3 # TRUE
+2 > 1 # TRUE
+9 < 7 # FALSE
+4 != 5 #TRUE
+5 < 5 #FALSE
+5 <= 5 #TRUE
+```
+
+Of course we can also compare variables that we have assigned values to:
+
+```{r, eval = TRUE, echo = TRUE}
+
+# Assign values to two variables
+foo <- 3.141
+bar <- (foo / 2)^3 - 2
+# compare their values
+foo_greater_than_bar <- foo > bar
+# print the value of foo_greater_than_bar
+print(foo_greater_than_bar)
+# fancy print
+print(sprintf("Is foo greater than bar? Answer: %s!",
+              ifelse(foo_greater_than_bar,"Yes","No")))
+```
+
+There are also ways of linking logical expressions, creating a compund
+expresson. For example, you could check whether two expressions are true at the
+_same_ time. The two variants that you will mainly encouter in these labs are:
+
+* `&` - AND : both expressions must be `TRUE`
+* `|` - OR : one of the two expressions must be `TRUE`
+
+What do we mean by expressions then? This is best illustrated by some examples:
+
+```{r, echo = TRUE, eval = TRUE}
+# set variable values
+expr_1 <- 4 < 3
+expr_2 <- 9 < 13
+# print values of expression 1 and 2
+print(paste("The value of expr_1 is :",expr_1))
+print(paste("The value of expr_2 is :",expr_2))
+
+# make compund expressions
+expr_3 <- expr_1 & expr_2 # is both expr_1 and expr_2 true? (AND operator)
+expr_4 <- expr_1 | expr_2 # is either of expr_1 and expr_2 true? (OR operator)
+
+# print values of expression 3 and 4
+print(paste("The value of expr_3 is :",expr_3))
+print(paste("The value of expr_4 is :",expr_4))
 
 ```
 
-### Vectors
-
-Create a vector
-
-```{r}
-
-# Creating a vector
-vector <- c(1, 19, 7 + 1, 123)
-vector
-
-#With characters
-example <- c("GeneA", "GeneB")
-example
-
-```
-
-Calculations with vectors
-
-max(x), min(x), range(x), length(x), sum(x), mean(x)
-
-```{r}
-
-max(vector)
-
-range(vector)
-
-sum(vector)
-
-
+**NOTE**: if you want to link expressions rather than variables, it's good practice to use parentheses
+```{r, echo = TRUE, eval = TRUE}
+expr_1 <- 4 < 2 | 2 < 1  # bad
+expr_1 <- (4 < 2) | (2 < 1 ) # good
 ```
 
 
-### Data frames
+### Data Classes
+Every (programming) language has it's own classes of objects, you have actually
+already worked with several different ones just in this lab! Just to get you
+familiar with the terminology, some of the _atomic classes_ (that build up every
+other class) are:
 
-Data frames looks like a matrix but can have columns with different types. 
+* numerics : real numbers - e.g, `3.0`, `3.14` and `-1000`. More precisely $x \in \mathbb{R}$
+* complex : complex numbers - e.g, `1 + 0i`, `-4 + 3i` and `0 + -1i` 
+* character : characters and strings - e.g., `"a"`, `"hello"` and `"catfish"`
+* logicals : boolean values - either `TRUE` or `FALSE`
 
-Create a data frame
+A lot of errors that arise when coding can be traced back to combining the wrong
+classes. For example, if we were to try and add a character to a numeric:
 
-```{r}
+```{r, echo =TRUE, eval = FALSE}
+test_1 <- 3 + "a"
+```
 
-# Create the data frame.
-count.data <- data.frame(
-   genes = c("A","B","C","D"),
-   counts = c(5, 10, 1, 30)
+R, being a _high level_ programming language, implements automatic type coercion
+- meaning you don't really have to pay too much attention to making sure you are
+using the correct types all the time. For example, if you add a numeric and
+complex value, the numeric is converted to a complex type and all is good:
+
+```{r, echo = TRUE, eval = TRUE}
+a_numeric <- 3
+a_complex <- 4 - 2i
+
+print(paste("a_numeric + a_complex = ",a_numeric + a_complex))
+```
+*WARNING* : while the programming becomes easier (e.g., compared to C/C++ or
+Java) with this coercion, you should also be cautiuos - sometimes unexpected
+results and later on errors may be introduced. Take a look at what happens when
+you compare a character with a numeric:
+
+```{r, eval = TRUE, echo = FALSE}
+result_1 <- "a" > 3
+print(paste("a > 3 is : ",result_1))
+```
+
+What? This makes no sense at all, how can we even compare a character with a
+number? Shouldn't this, if something, raise an error?
+
+The answer is that the numeric `3` gets coerced into a character `"3"` which is
+very much comparable to another character (if you, like in R, has a assigned an
+order to the characters)
+
+## Arrays
+
+The next element to introduce is _arrays_, these are fundamental structures that
+you will use *a lot*. In a nutshell, arrays let us associate multiple values to
+a single object. We'll be focusing on 1 and 2 dimensional arrays, let us start
+with 1d arrays first.
+
+### 1d arrays - lists and vectors
+
+1d arrays come in two flavors, either as lists or as vectors. Which you create
+accordingly:
+
+```{r,eval=TRUE, echo=TRUE}
+a_list <- list(20200504,
+               "X AE A-Xii",
+               0,
+               "cat")
+
+a_vector <- c("wind",
+              "A1",
+              "earth",
+              "B2",
+              "flat",
+              "water",
+              "5G",
+              "round")
+```
+
+To access the i:th element of a:
+
+* list -  do : `a_list[[i]]` (note the double parenthesis), 
+* vector - do : `a_vector[i]` 
+
+To exemplify, let us access the 4th element from our vector and list respectively:
+
+```{r, echo = TRUE, eval =TRUE}
+
+a_list_2nd_element <- a_list[[4]]
+a_vector_2nd_element <- a_vector[4]
+
+print(paste("The fourth element of our list is : ",a_list_2nd_element))
+print(paste("The fourth element of our vector is : ",a_vector_2nd_element))
+ 
+```
+
+
+We could also assign "names" to our array elements:
+
+```{r,eval=TRUE, echo=TRUE}
+a_list <- list(birth_date = 20200504,
+               name = "X AE A-Xii",
+               problems = 0,
+               favorite_animal = "cat")
+
+a_vector <- c(element_1 = "wind",
+              slot_1 = "A1",
+              element_2 = "earth",
+              slot_2 = "B2",
+              shape_1 = "flat",
+              element_3 = "water",
+              slot_3 = "5G",
+              shape_2 ="round")
+```
+
+We can still access our elements by specifying their position, but now also by
+their names; sometimes, this allows you to write more readable code and keep
+better track of what elements you access. 
+
+To access an element by name, for _lists_ use the `$` symbol or `[['name']]`;
+for vectors only the second option is valid. To illustrate:
+
+```{r, echo = TRUE, eval = TRUE}
+
+# accessing the elements from our list
+print(paste("His name is",
+            a_list$name, 
+            "and his birth date is",
+            a_list[["birth_date"]]
+            )
+      )
+# accessing the elements from our vector
+print(paste("We all know that the",
+            a_vector[["element_2"]],
+            "is",
+            a_vector[["shape_1"]],
+            "and that",
+            a_vector[["slot_3"]],
+            "caused COVID"
+            )
+      )
+```
+
+There's a nifty command called `names` that we can use
+to check the names of our list and vector elements respectively:
+
+```{r, echo = TRUE, eval = TRUE}
+
+print("The names of our list elements are:")
+print(names(a_list))
+print("The names of our vector elements are:")
+print(names(a_vector))
+```
+
+If we want to subset our lists and vectors we could either do:
+
+* `a_list[1:3]` - creates a new list including the first to third element
+* `a_list[c(name_1,name_2)]` - creates a new list with elements "name_1" and "name_2"
+* `a_vector[1:3]` - creates a new vector including the first to third element
+* `a_vector[c(name_1,name_2)]` - creates a new vector with elements "name_1" and "name_2"
+
+As an example:
+
+```{r, echo =TRUE, eval=TRUE}
+a_list_subset <- a_list[1:3]
+a_vector_subset <- a_vector[c("slot_1","slot_2","slot_3")]
+
+print('The subsetted list "a_list_subset" is:')
+print(a_list_subset)
+print('The subsetted vector "a_vector_subset" is:')
+print(a_vector_subset)
+```
+
+Lists and vectors seem pretty similar, but there is one - very important - feature that differs between them:
+
+Vectors are *homogenous* while lists can be *heterogenous*.
+
+This means that all the elements in a _vector_ must be of the same type, and if
+they aren't they will be coerced to it, i.e., you can not have a vector of both
+numerics and characters. See what happens when we try to declare such a vector:
+
+```{r, echo = TRUE, eval = TRUE}
+
+mixed_vector <- c(1, #numeric
+                  "foo", #character
+                  -2, #numeric
+                  "bar" #character
+                  )
+
+# print the type of the first element in "mixed_vector"
+print(paste("The type of the first element of mixed_vector is :",
+            class(mixed_vector[1])))
+
+```
+
+had we we used a list insted, the output would have been different:
+
+```{r, echo = TRUE, eval = TRUE}
+
+mixed_list <- list(1, #numeric
+                  "foo", #character
+                  -2, #numeric
+                  "bar" #character
+                  )
+
+# print the type of the first element in "mixed_list"
+print(paste("The type of the first element of mixed_list is :",
+            class(mixed_list[[1]])))
+
+```
+
+### Lists of Lists and so forth
+
+The elements of our lists are not restricted to singular values, but could also be another list or vector. For example:
+
+```{r, echo = TRUE, eval = TRUE}
+
+a_list_of_mixed <- list(list_1 = list("hello",13,TRUE),
+                        list_2 = list(45,"covfefe"),
+                        vector_1 = c("sheep","cow","dog")
+                        )
+```
+
+*NOTE* : This functionality does not exist for vectors
+
+If we want to access the second element in the vector that makes up the third element of `a_list_of_mixed` we would do:
+
+```{r, echo = TRUE, eval = TRUE}
+
+# alternative 1
+second_of_third_1 <- a_list_of_mixed[[3]][2]
+# alternative 2
+second_of_third_2 <- a_list_of_mixed$vector_1[2]
+
+print(paste("(Alt 1) The second element of the third element is :",second_of_third_1))
+print(paste("(Alt 2) The second element of the third element is :",second_of_third_2))
+
+```
+
+
+The object `a_list_of_mixed` to some extent represent a 2d array, we can
+traverse both `a_list_of_mixed` itself (first dimension) and then the objects
+that constitute its elements (second dimenson). When the lists or vectors that
+we want to store are of different length, using a list is the best
+option, *BUT* if they are of equal length (structured) there are better options
+to choose from, being the `matrix` and `dataframe` types.
+
+### Vector functions
+
+There are many functions that can help us extract useful information from our
+vectors, just to expose you to a few:
+
+```{r,echo = TRUE, eval = FALSE}
+
+# define a new vector
+a_new_vector <- c(4.1,-2,9.19,18.19,5.21)
+
+#some functions and vector operations
+
+max(a_new_vector) # => max value : 18.19
+min(a_new_vector) # => min value : -2
+range(a_new_vector) # => min and max value :c(-2, 18.19)
+
+
+a_new_vector + a_new_vector # => elementwise addition : c(8.20,-4.00,18.38,36.38,10.42)
+a_new_vector * a_new_vector # => elementwise multiplication :  c(16.8100,4.0000,84.4561,330.8761,27.1441)
+a_new_vector %*% a_new_vector # => dot product : 463.2863
+
+4.1 %in% a_new_vector # => check if 4.1 is in vector : TRUE
+111 %in% a_new_vector # => check if 111 is in vector : FALSE
+```
+## Structured 2d Arrays
+
+As eluded to above, when we have structured or _tabular_ data there are two data structures that are particularly useful:
+
+* Matrices - for homogenous data
+* Dataframes - for heterogenous data
+
+As a reference:
+
+
+```{r, echo = TRUE, eval = TRUE}
+
+a_matrix <- matrix(data = c(4,1,2,9,-11,-8,1,3,4,21,0,1),
+                   ncol = 4,
+                   nrow = 3
 )
-# Print the data frame.			
-print(count.data) 
 
-```
-
-Our data frame now has "column"-names "genes" and "counts".
-
-```{r}
-colnames(count.data)
-
-```
-
-Lets make a data frame of several samples in the columns, and instead of having a specific column for the gene names, lets put those as "rownames" instead.
-
-```{r}
-
-count.data <- data.frame(
-   sample1 = c(2, 3, 4, 50),
-   sample2 = c(5, 10, 1, 30)
+a_df <- data.frame(birth_date = c(20200504,19691294),
+                   first_name = c("X AE A-Xii","Jay"),
+                   problems = c(0,99),
+                   favorite_animal = c("cat","tiger"),
+                   row.names = c("ind1","ind2")
 )
-rownames(count.data) <- c("A", "B", "C", "D")
-count.data
+
+print("this is a matrix")
+print(a_matrix)
+print("this is a data frame")
+print(a_df)
+```
+
+Just as we could check the names of the elements in our lists and vectors, we
+can do the same for the columns and rows in our 2D arrays, but now we use the
+functions `colnames` and `rownames` instead.
+
+```{r, echo = TRUE, eval = TRUE}
+
+# print rownames and colnames of a_matrix
+print("The row/colnames of a_matrix are:")
+print(rownames(a_matrix))
+print(colnames(a_matrix))
+# print rownames and colnames of a_df
+print("The row/colnames of a_df are:")
+print(rownames(a_df))
+print(colnames(a_df))
+```
+
+As you can see, our matrix does not yet have any row/colnames, to change this we can do:
+
+```{r, echo = TRUE, eval = TRUE}
+
+rownames(a_matrix) <- c("A","B","C")
+colnames(a_matrix) <- c("a","b","c","d")
+
+# print rownames and colnames of a_matrix
+print("The row/colnames of a_matrix are:")
+print(rownames(a_matrix))
+print(colnames(a_matrix))
+```
+
+To access elements in a matrix we do `a_matrix[row_id,col_id]`, if we want to
+access all elements in a specific column then we do `a_matrix[,col_id]` and
+similarly for a row `a_matrix[row_id,]`. As an example:
+
+```{r, echo = TRUE, eval = TRUE}
+# access the element in the second row and third column in a_matrix
+a_matrix[2,3]
+# access all elements in the first column
+a_matrix[,1]
+# access the first and fourth in the second row
+a_matrix[2,c(1,4)]
+```
+
+The same conventions can be used to access elements in a data frame, but you can
+also use the `$` operator to access columns in data frames. However, if you do
+`a_df[,"col_name"]` or `a_df$col_name` this will return a vector and not a data
+frame. To extract a column and preseve its row/colnames do  `a_df["col_name"]`.
+
+To exemplify:
+
+```{r, echo = TRUE, eval = TRUE}
+
+# Alt1. extract first columns by [,col_name] 
+first_col_1 <- a_df[,"birth_date"]
+# Alt2. extract first column by $col_name
+first_col_2 <- a_df$birth_date
+# Alt3. extract first column by [col_name]
+first_col_3 <- a_df["birth_date"]
+print("(Alt1) : By [,col_name]")
+print(first_col_1)
+print("(Alt2) By $col_name :")
+print(first_col_2)
+print("(Alt3) By [col_name] :")
+print(first_col_3)
 
 ```
 
-You can access the data frame in different ways. 
-To view sample1:
+### Functions for 2D arrays
 
-```{r}
+We saw how we could apply certain functions to our vectors in order to obtain
+for example min and max values, we could do the same for our data frames and matrices.
 
-#data.frame$"column-name"
+```{r,echo = TRUE, eval = TRUE}
 
-count.data$sample1
+a_matrix_max <- max(a_matrix)
+a_matrix_min <- min(a_matrix) 
 
-```
-
-or, the same thing would be to view all rows in the first column:
-
-```{r}
-
-#Access [rows, columns]
-
-count.data[, 1]
+print(paste("the max value of a_matrix is :", a_matrix_max))
+print(paste("the min value of a_matrix is :", a_matrix_min))
 
 ```
 
-Calculations with data frames
+so that is interesting, but what if we wanted the max value in each column and
+minimum value in respective row, how do we do this?  One possibility would be to
+: isolate each row/column, compute the max/min value manually and finally store
+these values in a vector. That's a pretty messy and ugly solution, luckily we
+have the `apply` function to work with instead!
 
-Calculations with numeric data frames: rowSums(), colSums(), rowMeans(), colMeans()
+Let us see how this function works:
 
-```{r}
+```{r,echo = TRUE, eval = TRUE}
+?apply
+```
 
-rowSums(count.data)
+The help section may a bit hard to interpret, but in short it says that if we
+have an array `X` and a function `FUN` we can apply this function along any
+dimension (`MARGIN`) by using apply, it will then treat the rows/columns as
+individual vectors to which `FUN` is applied.
 
-colMeans(count.data)
+**NOTE** : rows are considered the first dimension, columns the second 
 
+Let's say that we want to compute the max value of each column in `a_matrix`, then we have:
+
+* `X` : `a_matrix`
+* `MARGIN` : 2
+* `FUN` : `max` (note we do not _call_ `max` here, only provide the name)
+
+and in action this becomes:
+
+```{r, echo = TRUE, eval = TRUE}
+a_matrix_col_max <- apply(a_matrix,2,max) 
+```
+
+*COMMENT*: For lists and vectors, similar functions to `apply` exist (check out `lapply` and `sapply`).
+
+Since programmers are inherently lazy, some operations like getting the column
+have been included as standard functions in R, meaning you
+don't have to use `apply` but can call them directly. Some examples are:
+
+* `{row,col}Sums`: compute and return the total sum for each row or column
+* `{row,col}Means`: compute and return the mean for each row or column
+
+As you can see the results are similar to if we used `apply`:
+
+```{r, echo = TRUE, eval = TRUE}
+a_matrix_row_mean_1 <- apply(a_matrix,1,mean) 
+a_matrix_row_mean_2 <- rowMeans(a_matrix)
+
+print(paste("Alt1. rowmeans with apply"),a_matrix_row_mean_1)
+print(a_matrix_row_mean_1)
+print(paste("Alt2. rowmeans with rowMeans"),a_matrix_row_mean_2)
+print(a_matrix_row_mean_2)
+```
+
+## Functions
+
+Varibles allow you to specify a certain value only _once_ instead of every time
+you use it, functions allow you to do the same but for _actions_. In short, you
+associate a certain action to a function, and whenever you want to execute that
+action, you simply call the function. We call the input to our functions
+"parameters" or "arguments".
+
+You have already used several "pre-defined" functions, like `apply` and `max` -
+but sometimes (quite often) we want to expand the repertoire of actions that we
+can call for, as well as customizing them for our own needs, that's when we define our
+own functions.
+
+The basic structure for a function is as follows:
+
+```{r, eval = TRUE, echo = FALSE}
+# DO NOT RUN CHUNK
+
+function_name <- function(parameter_1,parameter_2,...) {
+  # function body
+  # this is where the action happens
+  
+  return(result)
+  
+}
+```
+
+Say for example that we want a function called `sphere_volume` that computes the
+volume of sphere given the radius, the mathematical formula for this is:
+
+\begin{equation}
+V(r) = \frac{4\pi r^3}{3}
+\end{equation}
+
+Let us use $3.14$ as an approximation of $\pi$, then our function would look like:
+
+```{r, echo = TRUE, eval = TRUE}
+
+sphere_volume <- function(r) {
+  pi_approx <- 3.14
+  volume <- 4.0 / 3.0 * r ^3 * pi
+  return(volume)
+}
 
 ```
 
-Subset a data frame and perform calculations on that
+Let us now test our function 
+```{r, echo = TRUE, eval = TRUE}
 
-```{r}
+# set radii values
+radius_1 <- 9
+radius_2 <- 2
 
-count.data[, 2] = count.data[, 2] + 2
+# compute volumes
+volume_1 <- sphere_volume(radius_1)
+volume_2 <- sphere_volume(radius_2)
 
-count.data
-
-```
-
-Add to a data frame
-
-You can add a row with `rbind()`
-
-```{r}
-
-new.row <- c(2, 4)
-count.data = rbind(count.data, E=new.row)
-
-count.data
+# print results
+msg <- "The volume of a sphere with radius %0.f is %f"
+print(sprintf(msg,radius_1,volume_1))
+print(sprintf(msg,radius_2,volume_2))
 
 ```
 
-Similar, you can use `cbind()` to add a column, or, add via the `$` operator
+## For loops
 
-```{r}
+Just as variables and functions, loops are key features of almost any
+programming language. In R we have `while`, `repeat` and  `for` loops, but here
+we'll focus to the `for` loops.
 
-count.data$sample3 <- c(1,2,3,4,5)
+Briefly summarized, a for loop iterates over some values in a 1d array and, at
+each iteration, executes a certain code block. The "skeletton" of a for loop is
+as follows:
 
-count.data
+```{r, echo = TRUE, eval = FALSE}
+# DO NOT RUN CHUNK
+
+for (i in vec) {
+  # loop body
+}
+```
+
+here `vec` would be the array we iterated over. To give a less abstract example, we can define a vector that contains all numbers from 1 to 5, done by `vec <- c(1:5)` and then in each iteration print the value we are at:
+
+```{r, echo = TRUE, eval = TRUE}
+
+vec <- c(1:5)
+
+for (i in vec) {
+  print(i)
+}
 
 ```
 
-Now, create a count table (named count.data) of 3 samples and 5 genes. Make all count values = 1
+the elements in our arrays do not have to be numbers or in any specific order:
 
-```{r}
+```{r, echo = TRUE, eval = TRUE}
+
+vec <- c("gato","cat","katt","paka")
+for (x in vec) {
+  print(x)
+}
+
+```
+
+Of course, for loops are not only used to print stuff, we could for example use
+them to generate a Fibonacci series, defined as:
+
+\begin{equation}\
+F_n =\Bigg{\{}
+\begin{array}{cl}
+0 & \textrm{if }  n = 1 \\
+1 & \textrm{if }  n = 2 \\
+F_{n-1} + F_{n-2} & \textrm{else} & \\
+\end{array}
+\end{equation}
+
+_NOTE_: the above equation looks better in the knitted document
+
+Implementing this in could could for example look like:
+
+```{r, echo = TRUE, eval = TRUE}
+
+# set desired number of elements in the Fibonacci series
+n_elements <- 10
+
+# create a vector F_ to store our elements
+# we let F_[1] = 0 since F_1 = 0
+# and
+# F_[2] = 1 since F_2 = 1
+# in the series
+
+F_ <- c(0,1)
+
+# iterate over n=3 to n=10
+for (n in c(3:n_elements)) {
+  
+ # compute the next element in the sequence
+ x <- F_[n-1] + F_[n-2]
+ # add element to the F_ vector
+ F_ <- c(F_,x)
+}
+# print result
+print(sprintf("The first %d numbers of the Fibonacci series are: [%s]",
+              n_elements,
+              paste(F_,collapse = ", ")
+              )
+      )
+
+```
+
+## Conditionals 
+
+Sometimes we want our actions to depend on the output of a function or the value
+of a certain variable; as an example from real life, the clothes you put on is
+(hopefully) fairly dependent on the temperature outside.
+
+To implement these dependencies we use conditionals, which are : `if`, `else if`
+and `else`. The way we structure our conditional statements is as follows:
+
+```{r, echo = TRUE, eval = FALSE}
+# DO NOT RUN CHUNK
+
+if (condition_1) {
+  # code to execute if condition_1 is true
+} else if (condition_2) {
+  # code to execute if condition_1 is FALSE
+  # and condition_2 is TRUE
+} else {
+  # code to exectue if none of the
+  # conditions above are TRUE
+}
+  
+```
+
+**NOTE**: You do not have to include an `else if` or `else` statement, an `if` statement can be used standalone, the reverse is not true. 
+**NOTE**: You can add as many `else if` statements as you want, but only one `if` and `else`
+**NOTE**: You should always follow the order of the statements above: first `if`, then `else if` (if you have any) and last `else`
+
+To give you a somewhat less abstract example, run the chunk below _a couple of
+times_ to see how the conditionals work:
+
+```{r, echo = TRUE, eval = TRUE}
+
+# get a random number between -10 to 25
+temperature <- runif(1,-10,25)
+# standard text to print
+txt <- sprintf("The temperature is %0.f, so",temperature)
+
+# if temperature is below 5 degrees
+if (temperature < 5) {
+  print(paste(txt,"put on a jacket!"))
+# if temperature less than 12 degreees (but more than 5)
+} else if ( temperature < 12) {
+  print(paste(txt,"bring a shirt!"))
+# if temperature is more than 12 degrees
+} else {
+  print(paste(txt,"it's summertime bby!"))
+}
+```
+
+## Exercises
+
+Now when we've walked through some of the basics of R, you are more than ready
+for some exercises. To pass the lab, all exercises must be correctly completed.
+
+### Exercise 1
+
+Create a data frame (named `count.data`) with 3 samples and 5 genes. Make all count values = 1
+
+```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 
 ```
 
 Make sample 2 have double the amount of counts for _each_ gene
 
-```{r}
+```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 
 ```
 
 Make sample 3 have the the following counts for each gene (32,16,8,4,2) 
 
-```{r}
+```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 
 ```
 
 Cut the count values for gene 2 in half within sample 2 and 3, **and** add 3 counts to gene 4 for sample 1
 
-```{r}
+```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 
 ```
 
 Calculate the mean value of each gene and store this as a vector named "vec"
 
-```{r}
+```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 ```
 
 Test run the code below (if TRUE -> continue with lab)
 
-```{r}
-
+```{r,echo = TRUE,eval = GRADE_MODE}
 print(round(vec %*% c(1337,69,42,666,80085)) == 151677)
+```
+
+### Exercise 2
+
+In the code chunk below, a vector represesenting a genomic sequence is
+generated, each element in the vector is one base in the sequence. You can
+do not have to pay attention to this particular code.
+
+```{r, echo = TRUE, eval =TRUE}
+sequence <- sample(c("A","C","T","G"),
+                          size = 200,
+                          replace = TRUE
+                   )
+sequence <- as.vector(sequence)
+
+print(sprintf("the sequence is : %s",paste0(sequence,collapse = "")))
+```
+
+your task is to **write a function** called `base_count` that counts the number
+of occurances of each base, i.e., how many A,C,T and G's does `sequence`
+contain, to be more specific:
+
+`base_count(sequence)` should return a vector where the elements are named
+"A,C,T,G" and their associated value represents the number of each base in
+`sequence`. This vector could, for example, look like `c(A = 11, C = 132, T = 761, G = 41)`.
+
+
+```{r, echo = TRUE, eval = GRADE_MODE}
+
+base_count <- function(...){
+  # code for base_count
+}
 
 ```
 
-## Read in data from a file
+To test your solution, run the following code chunk:
 
-Usually, when we work with genomic data, the data comes in the form of a table (matrix).
-For example, we run a sequencing machine that outputs a fastq file with all the
-reads. After mapping/alignment to a genome, the sequencing reads can be
-"counted" (i.e. we have this many copies of gene A, and this many copies of gene
-B). This count data is in a matrix format, just like the data frame we tested
-above, with genes as rows and samples as columns. Lets say we've executed all the steps
-required to obtain the count file. Now, we want to read this into R so we
-can analyze it (RIP EXCEL). First, download the count data from canvas via this [link](https://kth.instructure.com/files/2360952/download?download_frd=1).
+```{r, echo = TRUE, eval = GRADE_MODE}
+source("checks.R")
+answer <- base_count(sequence)
+check_exercise_2(sequence,answer)
+```
 
-Put the file in your current working directory (cwd) and load it into R. If you
-are unsure what your cwd is just type ```getwd()``` and look at the path that's
-being printed.
+### Exercise 3
 
-To Load the data do :
+We usually store data in external files, meaning we usually have to _read_ it
+from these files. If we have a comma or tab separated file (extensions `.csv`
+and `.tsv` respectively) one way of doing this is by using the `read.table`
+function.
 
-```{r}
+If you fields are separated by commas (as in a `.csv`file ) use the argument
+`sep=','`, if they are tab separated use the argument `sep = '\t'`.
 
-counts <- read.table("reads.txt", sep = "\t")
+We will read our data from the file "reads.tsv", it is a **count matrix** with
+genes as rows and samples as columns. To read this file the command looks as
+follows:
+
+```{r,echo = TRUE, eval = TRUE}
+counts <- read.table("reads.tsv", sep = "\t")
+```
+
+You could now answer the following questions:
+
+*Q1:* How many different genes have data been collected from? (help : use `nrow`)
+*Q2 * How many patients have data been collected from? (help : use `dim`)
+*Q3:* Which 5 genes are most highly expressed across all samples? (help : use `sort` or `order`)
+
+Put your answers into a list `ans_ex3` with the following structure:
+
+```{r, echo = TRUE, eval = FALSE}
+# THIS IS AN EXAMPLE, DO NOT EDIT
+ans_ex3 <- list(a1 = NA, #answer to question 1 - numeric
+                a2 = NA, #answer to question 2 - numeric
+                a3 = NA, #answer to question 3 - character vector
+                )
+```
+
+Answer with the specified format (e.g, a numeric), **not** a text or written answer.
+
+```{r, echo = TRUE, eval = GRADE_MODE}
+
+# WRITE CODE TO GENERATE ans_ex3 HERE
+
+
+# modify this vector
+ans_ex3 <- list(a1 = NA,
+                a2 = NA,
+                a3 = NA)
 
 ```
 
-*Q1:* How many genes and samples are there in this data set? (HINT: e.g. use `dim()` or `nrows()`)
+To check that your answers are correct, run the following code chunk:
 
-*Q2:* Which 5 genes are expressed the most across all samples?
+```{r, echo = TRUE, eval = GRADE_MODE}
+source("checks.R")
+check_exercise_3(ans_ex3)
 
+```
 
 ## Plotting
 
-a basic scatterplot is done via the `plot()` function.
+Sooner or later you will come to a point where you want to visualize your
+results, since this is usually helpful for you and others to interpret them. We
+will therefore explore how we may plot data in R.
+
+We can generate a simple scatterplot by using the `plot()` function.
 
 ```{r}
+# Define a vector with 5 values
+c0 <- c(1, 3, 6, 4, 9)
+# Graph the vector c0 
+plot(c0)
+# Set title of the current plot
+title(main="Plot of single vector c0")
 
-# Define the vector with 5 values
-c <- c(1, 3, 6, 4, 9)
-
-# Graph the  vector with all defaults
-plot(c)
-
-# Define 2 vectors with equal amount of elements
+# Define 2 new vectors
 c1 <- c(1, 3, 6, 4, 9)
 c2 <- c(2, 5, 4, 5, 12)
 
 # Plot c1 using a y axis that ranges from -1 to 13
-plot(c1, type="o", col="blue", ylim=c(-1,13))
+
+plot(c1, # data to plot
+     col="blue", # color
+     ylim=c(-1,13) # y-axis range
+     )
 
 # Graph c2 with red dashed line and square points
-lines(c2, type="o", pch=22, lty=2, col="red")
+lines(c2, # data to plot
+      type = "b", #type of plot
+      pch=22, # marker type
+      lty=2, # line type
+      col="red" # color
+      )
 
 # Create a title with a red, bold/italic font
 title(main="Two Lines", col.main="black")
 
 # We can also make a histogram of our data
-
 hist(c1)
 
 ```
 
-Lets plot our count data.
+We can use a histogram to assess our count data; by plotting the rowsums
+(total observed gene expression across all samples) in a histogram  we are able
+to see how these (the sums) are distributed. We will `log` the sums in order to
+reduce the variance and the dynamic range of our data.
 
 ```{r}
 
 #Distribution of gene counts
-hist(log(rowSums(counts)))
+hist(log(rowSums(counts)),
+     main = "Logged Total Gene Counts"
+     )
 
 ```
-
-*Q3:* What are we seeing here? Explain the plot in two sentences!
 
 ## R/Bioconductor (Skip if already done)
 
 Bioconductor is a repository of R-packages specifically for biological analyses.
 It has relatively strict requirements for submission, including installation on
-every platform and proper documentation with a required tutorial (called a vignette)
-explaining how the package should be used.
+every platform and proper documentation with a required tutorial (called a
+vignette) explaining how the package should be used. You will need this in the
+upcoming labs.
 
-It is a "collection of bioinformatic tools" in short. 
+TLDR: it is a "collection of bioinformatic tools".
 
 To install Bioconductor, run this in R:
 
-```{r, eval=FALSE}
-
-if (!requireNamespace("BiocManager"))
-    install.packages("BiocManager")
-BiocManager::install()
-
+```{r, eval=FALSE, echo = TRUE}
+install.packages("BiocManager")
 ```
 
-Then, there are **a lot** of "packages" within bioconductor that you can install
-and use. To install such a package you use type `BiocManager::install()` and
-within install you type the name of the package, e.g.
+There are **a lot** of "packages" within bioconductor that you can install
+and use. To install a package from bioconductor use `BiocManager::install(PACKAGE_NAME)`
+where you replace `PACKAGE_NAME` with the package of interest, e.g.
 `BiocManager::install("SummarizedExperiment")`
 
-# Working with SummarizedExperiment
+## Working with SummarizedExperiment
 
 The SummarizedExperiment class is used to store matrices containing experimental
 results, which are commonly produced by sequencing experiments. Each object
@@ -377,73 +1064,50 @@ describing both the observations (features) and samples (phenotypes).
 
 A key aspect of the SummarizedExperiment class is the coordination of the
 meta-data and assays when sub-setting. For example, if you want to exclude a
-given sample you may do so for both the meta-data and assay in one operation, which
-ensures the meta-data and observed data will remain synchronized. Improperly
-accounting for meta and observational data has resulted in a number of incorrect
-results and retractions so this is a very desirable property.
+given sample you may do so for both the meta-data and assay in one operation,
+which ensures the meta-data and observed data will remain synchronized.
+
+Flawed handling of meta and observational data has resulted in a number
+of incorrect results and retractions so this is a very desirable property.
 
 Lets try it out!
 
-We begin by loading the necessary packages, the `SummarizedExperiment` class is
-contained in the package with the name `SummarizedExperiment` (doh). Go ahead
-and load it
+We begin by loading the required package, the `SummarizedExperiment` class is
+contained in - unsurprisingly - the package with the name
+`SummarizedExperiment`. Go ahead and load it:
 
-```{r, message=FALSE, warning=FALSE}
-
+```{r, echor =TRUE, eval = TRUE, message=FALSE, warning=FALSE}
 library(SummarizedExperiment)
-
 ```
 
-```{r, message=FALSE}
+Next we load a second library that contains our data called `airway`:
 
-# Check if data set is installed
-if(!("airway" %in% installed.packages()[,'Package'])) {
-  print("[INFO] : Will install 'airway' package")
-  BiocManager::install('airway')
-}
-# Load library
+```{r, echo = TRUE, eval = TRUE, message=FALSE}
 library(airway)
 # Load data
 data(airway)
 # Bing object to new identifier 
 se <- airway
 se
-
 ```
-
-*Q4:* How many genes does your SE have? How many samples?
 
 Within the summarizedExperiment, you can store all kinds of data. type
 `colData(se)` to view all sample data included. Type `rowData(se)` to view all
 gene data.
 
-*Q5:* What kind of sample data can you find, describe it briefly?
-
 To access a particular sample data, just type e.g. `se$cell` to find the cell data. 
 
 You can also store meta data for the entire data set, type `metadata(se)` to view it. 
 
-# Hand In Guidelines
+## Hand In Guidelines
 
-**How :** Briefly answer the questions marked with a ''Q'', there are 5 of them,
-in a text document (.docx, .md, .txt, etc..), this is your ''report'' for Lab1.
+**How :**  Go to the top of this document, set the variable (on line 14)
+`GRADE_MODE` to `TRUE`. Knit this document, and hand in the resulting html-file
+on Canvas. Make sure you have solved all the questions. If the document doesn't
+compile, there is something wring in the edited code.
 
-**Deadline**: Your report is due 23:59 December 6th 2019; if working in pairs -
-each of you should hand in (identical) reports where the names of both authors
-are clearly stated. For further information see the guidelines on the course
-web-page.
-
-
-# Appendix (If there is time and interest)
-
-The "ggplot" package offers is like the basic plot tools but on steroids, it has
-a lot of really nice features and allow you to make high quality figures with
-almost no effort. Getting good at plotting will allow you to make some quite
-cool plots as well as animations (check:
-https://www.tylermw.com/3d-ggplots-with-rayshader/). We
-will use plotting for plotting in the later labs, but to get familiar with the
-concept, try out this tutorial and play around with it (try e.g. to use it
-on the airway data, or our own count data):
-
-https://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html
+**Deadline**: Your report is due 23:59 one week after the scheduled lab session;
+if working in pairs - each of you should hand in two (identical) reports where the
+names of both authors are clearly stated. For further information see the
+guidelines on the course web-page.
 
