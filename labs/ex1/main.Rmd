@@ -52,10 +52,10 @@ of `R`, including:
 
 ## Looking for help
 
-Stackoverflow and google are your friends, but they will not always be there for
+Stackoverflow and Google are your friends, but they will not always be there for
 you (sad but true). However, for most R functions, you will be able to get a
 good overview of how to use them and how to apply them by typing:
-`?function_name` or `help(function_name)`, e.g. `?sum()` in your R console.
+`?function_name` or `help(function_name)`, e.g. `?sum` in your R console.
 
 ## Objects and variables
 
@@ -173,8 +173,8 @@ print(sprintf("Is foo greater than bar? Answer: %s!",
               ifelse(foo_greater_than_bar,"Yes","No")))
 ```
 
-There are also ways of linking logical expressions, creating a compund
-expresson. For example, you could check whether two expressions are true at the
+There are also ways of linking logical expressions, creating a compound
+expression. For example, you could check whether two expressions are true at the
 _same_ time. The two variants that you will mainly encouter in these labs are:
 
 * `&` - AND : both expressions must be `TRUE`
@@ -397,7 +397,7 @@ print(paste("The type of the first element of mixed_vector is :",
 
 ```
 
-had we we used a list insted, the output would have been different:
+If we use a list insted, the output will be different:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -444,7 +444,7 @@ print(paste("(Alt 2) The second element of the third element is :",second_of_thi
 
 The object `a_list_of_mixed` to some extent represent a 2d array, we can
 traverse both `a_list_of_mixed` itself (first dimension) and then the objects
-that constitute its elements (second dimenson). When the lists or vectors that
+that constitute its elements (second dimension). When the lists or vectors that
 we want to store are of different length, using a list is the best
 option, *BUT* if they are of equal length (structured) there are better options
 to choose from, being the `matrix` and `dataframe` types.
@@ -548,7 +548,7 @@ a_matrix[2,c(1,4)]
 The same conventions can be used to access elements in a data frame, but you can
 also use the `$` operator to access columns in data frames. However, if you do
 `a_df[,"col_name"]` or `a_df$col_name` this will return a vector and not a data
-frame. To extract a column and preseve its row/colnames do  `a_df["col_name"]`.
+frame. To extract a column and preseve its row/colnames do `a_df["col_name"]`.
 
 To exemplify:
 
@@ -590,7 +590,7 @@ minimum value in respective row, how do we do this?  One possibility would be to
 these values in a vector. That's a pretty messy and ugly solution, luckily we
 have the `apply` function to work with instead!
 
-Let us see how this function works:
+Let's see how this function works:
 
 ```{r,echo = TRUE, eval = TRUE}
 ?apply
@@ -707,7 +707,7 @@ programming language. In R we have `while`, `repeat` and  `for` loops, but here
 we'll focus to the `for` loops.
 
 Briefly summarized, a for loop iterates over some values in a 1d array and, at
-each iteration, executes a certain code block. The "skeletton" of a for loop is
+each iteration, executes a certain code block. The "skeleton" of a for loop is
 as follows:
 
 ```{r, echo = TRUE, eval = FALSE}
