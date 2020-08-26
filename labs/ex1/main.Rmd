@@ -1,7 +1,7 @@
 ---
-title: "Lab 1 - Intro"
+title: "Lab 1 - Introduction to R"
 author: "Alma Andersson"
-date: "TBA"
+date: "11-09-2020"
 output:
   tufte::tufte_html: default 
 ---
@@ -11,7 +11,11 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
 ```{r,echo = FALSE, eval =TRUE}
-GRADE_MODE <- F
+## Change FALSE to TRUE
+## as the last thing you do before
+## knitting and hanind in the report
+
+GRADE_MODE <- FALSE
 ```
 
 # Lab 1
