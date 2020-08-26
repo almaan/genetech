@@ -1,5 +1,5 @@
 ---
-title: "Lab2 - Single Cell RNAseq"
+title: "Lab3 - Single Cell RNAseq"
 author: "Original : Joseph Bergenstråhle - Edit : Alma Andersson, Sailendra Pradhananga "
 date: "06 Dec 19"
 output:
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
 ____
-## Lab2 - Single cell RNA seq (scRNA-seq)
+## Lab3 - Single cell RNA seq (scRNA-seq)
 ____
 
 Today, it's possible to get genomic information even from single cells. (You
@@ -27,9 +27,8 @@ ____
 
 Short primer: what is scRNA-seq?
 
-*  Measures the distribution of expression levels for each gene across a
-   population of cells.
-* Allows to study new biological questions in which cell-specific changes in
+*  Measures the expression levels for each gene across a population of cells.
+* Adresses biological questions in which cell-specific changes in
   transcriptome are important, e.g. cell type identification, heterogeneity of
   cell responses, stochasticity of gene expression, inference of gene regulatory
   networks across the cells.
@@ -39,17 +38,11 @@ Short primer: what is scRNA-seq?
    Genomics Chromium etc.
 *  Several computational analysis methods from bulk RNA-seq can be used.
 *  In most cases computational analysis requires adaptation of the existing
-   methods or development of new ones.
+   methods for bulk RNA-seq analyses or development of new ones.
 
 This is a general pipeline for an scRNA-seq analysis workflow
 
 ![](flowchart_rnaSeq.png)
-
-There are some specific challenges associated with single cell data. In
-particular, this data is often affected by what is known as **gene "dropouts"**
-(missing genes). In bulk sequencing, dropouts are less common because of higher
-sequencing depth and the fact that transcriptional differences between cells are
-averaged out over many cells and cell types.
 
 ____
 ## 2) Construct the expression matrix
@@ -59,26 +52,43 @@ Ok, let's start by looking at our expression matrix. Note that in the workflow
 schematic above, we will skip the Read QC, Alignment, Mapping QC, and Cell QC
 steps. Let's assume this (boring ;-)) stuff has already been done.
 
-So, we have provided you with an already quality-controlled dataset, consisting
+Here we have provided you with an already quality-controlled dataset, consisting
 of pluripotent stem cells. Load the data!
 
 ```{r, eval=FALSE}
-data <- read.table("tung/reads.txt")
+data <- read.table("tung/tung.tsv")
 ```
 
-### Seurat package 
+The object called `data` is an object of class `data.frame`. A `data.frame` 
+object is usually used to store any kind of tabular data in R. You can check 
+the dimensions of the `data.frame` to count the number of columns and rows.
 
-We will use the "Seurat" workflow, developed by the Satija Lab
-https://satijalab.org/ over at NYU. We use this as it's currently the best (imo)
-performing workflow for single cell data, which included specific normalization
-and transformation procedures that cope with the characteristics of single cell
-data.
+```{r, eval=FALSE}
+# Check class
+class(data)
 
-Do you remember the "SummarizedExperiment" from lab1? Here we will work with a
-"Seurat" object, and interacting with the object is quite similar in the sense
-that all information about the samples can be stored within the object.
+# Check dimensions
+dim(data)
+```
 
-Load the package (install via BiocManager::install() if not already installed)
+### The Seurat R package 
+
+We will use the "Seurat" R package, developed by the Satija Lab
+https://satijalab.org/ over at NYU. Seurat has become one of the most popular 
+tools for single cell analysis in R and is constantly updated with new features. 
+There are many tutorials available on their website to get started with various 
+types of analyses which is also a reason why it has become so popular among 
+researchers.
+
+A core feature of Seurat is the "Seurat" object. Without going into too much detail,
+this is an object designed to store all relevant input data as well as analysis results.
+
+If you have installed the Seurat R package, the only thing you need to create a 
+"Seurat" object is an expression matrix with cells in columns and genes in rows. 
+Once this object has been created, Seurat provides all the tools necessary to run 
+the steps described in the flowchart above using a set of predefined functions. 
+
+Load the Seurat R package (install via BiocManager::install() if not already installed)
 
 ```{r, eval=FALSE}
 BiocManager::install('Seurat')
@@ -86,10 +96,42 @@ library(Seurat)
 
 ```
 
-Let's create a Seurat object with our counts:
+Before we create our Seurat object, it can be useful to include some meta data as well. 
+This is a table with additional information about our cells, e.g. if they were processed
+in separate batches or obtained from different individuals. 
 
 ```{r, eval=FALSE}
-se <- CreateSeuratObject(counts = data)
+metadata <- read.table(file = "tung/tung_metadata.tsv", stringsAsFactors = FALSE)
+head(metadata)
+```
+
+Note that the rownames of the meta data table matches the column names of the expression
+matrix. This is important to make sure that the meta data is associated with the correct cells.
+
+Let's create a Seurat object with our expression matrix and meta data table.
+
+```{r, eval=FALSE}
+se <- CreateSeuratObject(counts = data, meta.data = metadata)
+```
+
+To access the meta data from your new Seurat object, you can use double brackets `[[]]`.
+
+```{r, eval=FALSE}
+head(se[[]])
+```
+
+Notice that you have some additional columns in your meta data whcih have been added 
+automatically when you created your Seurat object. For example; nCount_RNA which is the number 
+of unique molecules detected per cell and nFeature_RNA which is the number of unique genes
+detected per cell.
+
+You can access any column from you Seurat object using the `$`symbol, just like you would
+with a `data.frame` object. Below is an example of how to extract the "replicate" column
+and then summarizing how many cells from each replicate that we have.
+
+```{r, eval=FALSE}
+replicates <- se$replicate
+table(replicates)
 ```
 
 *Q1:* How many genes do we have? How many cells?
@@ -99,43 +141,87 @@ se <- CreateSeuratObject(counts = data)
 ```
 
 Single-cell data typically contains _a lot_ of "samples" (cells). Due to the
-size of the count matrix and the high frequency of dropouts, Seurat stores the
-data in a sparse matrix format. You can access the counts by typing:
+size of the count matrix and the high frequency of 0 values, Seurat stores the
+data in a "sparse matrix format" to save memory. 
+
+You can access the raw data using the `GetAssayData` function and specify that 
+you want to collect the raw expression matrix by typing `slot = "counts"`. Note 
+that this matrix is the same as the `data` matrix that we used to create our Seurat object, 
+but it's important to know how to extract data from the Seurat object as well. For example if 
+you want to access this matrix to apply a method which is not available from the 
+Seurat R package. 
 
 ```{r, eval=FALSE}
-se@assays$RNA[,]
+sparse.exprMat <- GetAssayData(se, slot = "counts")
 ```
 
-Notice how it looks. If you want to read out the full matrix (which could be needed for mathematical calculations), type:
+Now we have the raw expression matrix in a sparse format saved to a variable called 
+`sparse.exprMat`. Let's can have a look at the top left corner of the matrix (first 5 genes
+and first 5 cells). 
+
+```{r}
+# Check class of object 
+class(sparse.exprMat)
+
+# Extract top left corner
+sparse.exprMat[1:5, 1:5]
+```
+
+Note that there are a lot of dots in the expression matrix which represent 0 values and
+the class is called "dgCMatrix" which is a type of sparse matrix format. 
+
+Column names such as "NA19098.r1.A01" or "NA19098.r1.A02" represent unique cell identifiers,
+whereas the gene names are given here as gene symbols (HGNC nomenclature).
+
+Sometimes, it's easier to work with a "normal" matrix and if you want to you can simply convert
+the sparse matrix into a normal matrix using the `as.matrix` function:
 
 ```{r, eval=FALSE}
-as.matrix(se@assays$RNA[1:10, 1:10])
+exprMat <- as.matrix(sparse.exprMat)
+
+# Check class of object 
+class(exprMat)
+
+# Extract top left corner
+exprMat[1:5, 1:5]
 ```
 
-Notice how we print out the first 10 genes and the first 10 samples to avoid having to display the whole matrix.
+Note that the 0 values are back when vieweing the "normal" matrix. Many functions 
+used in R are specifically written to manipulate certain classes of objects and for 
+this reason you have to be careful and make sure that you have have the correct input 
+for the function that you want to use. Keep this in mind whenever you get an error message!
 
 ____
 ## 3) Quality Control (QC)
 ____
-Now, not all cells might be "good", in the sense that we could have only very
-little data (RNA "reads") from some of them, and to not impact our analysis such
-"bad samples" can be removed. It's usually a good idea to start to explore our
-data visually.
+
+Now, some cells in your expression matrix mght be too bad to include in your analysis. 
+Cells with very few detected RNA molecules might be too sparse to extract meaningful 
+information from. However, if these cells are kept they could have a negative impact on our
+analysis. It's usually a good idea to explore the data visually to make sense of various
+quality aspects and then apply some filters to decide what cells to keep.
 
 ### Total number of reads obtained
 
-We will use a histogram for this. To demonstrate, look at this example data:
+To visualize the distribution of total number of reads per cell, we can use a histogram. 
+Take a look at this pre-loaded example data showing air temperatures registered over 9 months:
 
 ```{r, eval=FALSE, echo=TRUE}
+# Extract the column called Temp and save it to a new variable
 Temperature <- airquality$Temp
+
+# Plot histogram
 hist(Temperature)
 ```
 
-By providing a vector of numbers, it's easy to plot the histogram. We can add
-e.g. vertical lines to specify cut-off points:
+We can add additional things to our histogram, e.g. a vertical line
+highlighting a cut-off point:
 
 ```{r, eval=FALSE, echo=TRUE}
+# plot histogram
 hist(Temperature)
+
+# Add a vertical line
 abline(v = 73, col = "red")
 ```
 
@@ -144,17 +230,10 @@ Based on prior experience of working with scRNA-seq data and the shape of the
 distribution, you decided of filtering threshold of 1 million reads. Include a
 vertical line in your figure to indicate this threshold.
 
-Hint: in the RStudio console, type the name of your Seurat object (e.g. "se")
-and then $, you will see some saved data vectors named "nCount_RNA" and
-"nFeature_RNA".
+Hint: you can access meta data using the `$` symbol
 
 ```{r, eval=FALSE, echo=TRUE}
-
-hist(colSums(as.matrix(se@assays$RNA[,])),
-     xlab = 'Total number of reads',
-     ylab = 'Samples')
-abline(v = 10^6,col = 'red')
-
+# Write your code / answer here
 ```
 
 ### Nr of unique genes detected
@@ -163,137 +242,215 @@ In addition, to ensure a sufficient sequencing depth for each sample, we also
 want to make sure that the reads are evenly distributed across the
 transcriptome.
 
-*Q3:* Make the similar kind of histogram as before,but now show the distribution
+*Q3:* Make the similar kind of histogram as before, but now show the distribution
 of the number of genes detected within each sample. This time, you decide to use
 a filtering threshold of 7000 genes. Include this threshold as a vertical line
 in your figure.
 
 ```{r, eval=FALSE, echo=TRUE}
 # Write your code / answer here
-
-noUnique <- colSums(as.matrix(se@assays$RNA[,]) > 0 )
-hist(noUnique,
-     xlab = 'Number of unique genes',
-     ylab = 'Samples')
-abline(v = 7000,
-       col = 'blue',
-       lw = 4)
-
 ```
 
 _____
 ## 4) Filter
 _____
 
-*Q4:* Let's filter the cells that fall below the thresholds from the earlier
-questions, i.e. with less than 1 million reads or less than 7 thousand unique
-genes.
+Filtering a "Seurat" object from low quality cells can be done by first identifying 
+the cell names that you want to keep and use these names to subset the object.
 
-Hint: You can use the function `subset` on the Seurat object to select which cells to keep!
+Let's filter the cells that fall below the thresholds from the earlier
+questions, i.e. with less than 1 million unique molecules or less than 7 thousand 
+unique genes. Below are a few lines of code to extract cell names for cells meeting 
+these two criteria and these cell names are stored in the `keep.cells` character vector.
+
+*Q4:* Use the `keep.cells` character vector to subset the "Seurat" object and complete the
+code chunk below. Save the new "Seurat" object into a variable called `se.subset`.
+
+Hint: You can for example use the `subset`. Type ?subset.Seurat in the R console to 
+open up a documentation window for the subset function.
 
 ```{r, eval=FALSE, echo=TRUE}
-thrsUni <- 7e3
-thrsTotal <- 1e6
-keepSamplesUni <- colSums(as.matrix(se@assays$RNA[,]) > 0) >= thrsUni
-keepSamplesTotal <- colSums(as.matrix(se@assays$RNA[,])) >= thrsTotal
-keepSamples <- keepSamplesUni & keepSamplesTotal
-keepSamples <- colnames(se@assays$RNA)[which(keepSamples)]
 
-# for Q5
-nTotalGenes <- rowSums(as.matrix(se@assays$RNA[,]))
-se <- subset(x = se, cells = keepSamples)
+# Select cell names with at least 1 million unique molecules
+set1 <- colnames(se)[se$nCount_RNA >= 1e6]
+# Select cell names with at least 7000 unique genes
+set2 <- colnames(se)[se$nFeature_RNA >= 7000]
 
+# Select cells which meet both criteria above (intersect)
+keep.cells <- intersect(set1, set2)
+
+# Now use these cell names to subset the "Seurat" object
+
+# Write your code / answer here
 
 ```
 
+You will often find that some genes are lowly expressed across your dataset. It can be a 
+good idea to filter out such genes as these are not always informative. We can compute the 
+overall expression per gene by summing up the count for each row:
 
-*Q5:* Let's also remove the genes that are too lowly expressed across our cells.
-Remove those with a total count value < 500.
+```{r, eval=FALSE}
+# First get the expression matrix
+sparse.exprMat <- GetAssayData(se, slot = "counts")
 
-Hint: Instead of using the `subset` function, try to find the genes to keep with
-the `rowSums()` function and index the Seurat object using square brackets
-(`[`)!
+# Convert it into a regular matrix
+exprMat <- as.matrix(exprMat)
+
+# Calculate row sums
+gene.counts <- rowSums(exprMat)
+
+# Check the results
+head(gene.counts)
+```
+
+*Q5:* Compute a new vector (call it `keep.genes`) containing the genes with a total
+expression lower than 500 across the whole dataset. The `keep.genes` character vector 
+should cosist of genes symbols.
+
+Hint: You can use the vector called `gene.counts` to determine what genes to keep. 
+Check the example above where we filtered out cells.
 
 ```{r, eval=FALSE, echo=TRUE}
 # Write your code / answer here
-
-countThrs <- 500
-keepGenes <- rowSums(as.matrix(se@assays$RNA[,])) > countThrs
-se <- se[keepGenes,]
 ```
+
+Now that we have this vector we can subset the "Seurat" object we did previously,
+but this time we'll apply the filter to the genes instead.
+
+```{r, eval=FALSE, echo=TRUE}
+se.subset <- subset(se.subset, features = keep.genes)
+```
+
+Now that we have filtered our object (`se.subset`), we should have fewer cells
+and fewer genes. 
 
 *Q6:* How many cells do we have now? How many genes?
 
 ```{r, eval=FALSE, echo=TRUE}
 # Write your code / answer here
-
-nGenes <- dim(se)[1]
-nCells <- dim(se)[2]
-
-print(sprintf(" GENES : %d | CELLS : %d",nGenes,nCells))
-
 ```
 
 _____
 ## 5) Normalization
 _____
 
-As you have noticed, when dealing with single cell data, due to the sparsity of
-the data, it can be especially challenging to find proper normalization methods.
-Some typical examples of normalization cluster the cells according to
-similarity, and then normalize groups of cells separately. However, here, we
-will use the SCTransform workflow
-(https://www.biorxiv.org/content/10.1101/576827v2) provided in the Seurat
-package:
+There are some specific challenges associated with single cell data. In particular, 
+the major challange is that the data is much sparser compared to bulk RNA-seq data. 
+A result of this is that the number of genes detected in a single cell is typically 
+only a fraction of the number of genes expressed across the genome. In other words, 
+a lot of genes have 0 expression in a cell.
+
+The missing genes are referred to as **gene "dropouts"** and makes it challenging to 
+compare expression levels across cells. 
+
+Dropouts are less common in bulk sequencing data because you measure expression 
+levels from a large number of cells at the same time. 
+
+The total amount of RNA molecules that can be detected in a cell (referred to as "library size") 
+depends on a number of technical and biological features. For example, larger cells typically 
+contain more RNA molceules while cells with a lot of RNAses contain less RNA as a result of degradation. 
+These are examples of sources of variability which we are not interested in and are commonly 
+referred to as "confounding factors". 
+
+To make the expression levels comparable across cells, we can adress confounding factors
+by applying a normalization method. A good normalization strategy can be used to transform a
+raw expression matrix into a new matrix where expression levels are comparable across cells 
+in a meaningful way. You can find a number of normalization 
+strategies and more in depth theory [here](https://scrnaseq-course.cog.sanger.ac.uk/website/cleaning-the-expression-matrix.html#normalization-theory).
+
+In this course, we will use the [SCTransform](https://www.biorxiv.org/content/10.1101/576827v2) method
+provided in the Seurat package:
 
 ```{r, eval=FALSE}
 se <- SCTransform(se)
 ```
 
-Now, you will have a new assay stored in the Seurat object: `se@assays$SCT`,
-which contains the transformed values. The SCT assay will also be set as the
-"active" assay, meaning that it will be used by default in the methods that you
-apply to your Seurat object (this is, for example, the case with the `RunPCA`
-function, which we will use below).
+Now, you will have a new "assay" stored in the Seurat object called "SCT",
+which contains the normalized data. This assay will automatically become 
+the "default assay" for subsequent analyses. The "active" assay contains 
+data that it will be used as input to any method that you apply to your 
+Seurat object. 
+
+If you type `DefaultAssay(se)`, you should get "SCT".
+
+```{r}
+DefaultAssay(se)
+```
+
+If you just print the object in your console, you will get some basic information 
+about the dataset such as what assays that are present and which one is active. 
+You could have any number of assays available and it's important to know what assay
+you're working on.
+
+```{r}
+se
+```
 
 _____
-## 6) Exploratory visualization
+## 6) Dimensionality reduction
 _____
 
-Pincipal Component Analysis (PCA) is a dimensionality reduction technique used
-to visualize high dimensional datasets. Let us first visualize our data in two
-dimensions with PCA. Seurat includes a number of functions to run dimensionality
-reductions such as `RunPCA()`, `RunICA()`, `RunTSNE()` etc.
+A single-cell dataset is composed of several cell types which are all characterized by the 
+expression of specific sets of genes. If we were to zoom in on a specific cell type, it is 
+reasonable to expect that there esxists some set a co-expressed genes which defines this cell type. 
+For example you might find that this cell type express genes related to neuronal development. 
 
-Try running PCA using the following command
+In reality, an expression matrix represent many complex interactions between genes and these 
+interactions can vary across different cell types and cell states. But there are typically clear 
+patterns in the data and what we want to do is to make sense of these patterns. 
+One major benefit with scRNA-seq data is that we can fish out these patterns using machine learning 
+methods. Dimensionality reduction methods represent a family of machine learning methods which are 
+particularly suitable for this task.
+
+As the name implies, a dimensionality reduction method can be used to reduce a high dimensional dataset into a 
+representation with fewer dimensions. These new dimensions can pick up sources of variability in the dataset, 
+such as signalling pathways, immune functions, proliferative activity, apoptotic activity and much more. The 
+interpretation of dimensionality reduction results can be confusing, but it can be helpful to think of them as 
+patterns representing some biological activity (or technical artefacts).
+
+For scRNA-seq data, these methods are absolutely crucial to visualize the data!
+
+Let's have a look at the most widely used dimensionality reduction method called 
+Pincipal Component Analysis (PCA). This method can be applied to our Seurat object 
+using the `RunPCA` function.
+
+Note that Seurat comes with a bunch of other methods for dimensionality reduction such as 
+`RunICA()`,`RunUMAP()`, `RunTSNE`, ...
+
+Let's first compute a PCA representation of our data:
 
 ```{r, eval=FALSE}
 se <- RunPCA(se)
 ```
 
+
 We can then plot the transformed data by using the function `DimPlot()` and specify the reduction that we want to use:
 
 ```{r, eval=FALSE}
-DimPlot(se, reduction="pca")
+DimPlot(se, reduction="pca", dims = c(1, 2))
 ```
 
-Now, we are missing some metadata information in our PCA here. However, looking
-at the colnames of our object, we notice that there are actually information
-here that we can use to group the data with:
+Here we have plotted the first two PCA vectors (1 and 2) by setting `dims = c(1, 2)` 
+and you can only visualize two at the time. PCA vectors are scaled at 0 so you will always 
+get both positive and negative values on the axes. You can already see that the cells 
+form some sort of structure in the plot.
 
-```{r, eval=FALSE}
-colnames(se)[1:10]
+We can also color the cells using information from our meta data table. Let's color
+the cells based on indiviudal:
+
+```{r}
+DimPlot(se, reduction = "pca", dims = c(1, 2), group.by = "individual")
 ```
 
-For example, "NA19098" is the individual and "r1" is the replicate. We can split
-the strings and add this data to the meta data slot in the Seurat object:
+Now we can see that there is some separation of the cells based on individual. Exporing these types
+of plots can be useful to find out if variablity in your data can somehow attributed to previous
+knowledge about your data. Looking at PC_2 you can see that a population of cells from individual 
+NA19098 differ from the other two individuals. You can also obtain a heatmap visualization showing 
+what genes that are driving this separation using the `DimHeatmap` function:
 
-```{r, eval=FALSE}
-se@meta.data$individual  <- sapply(strsplit(colnames(se), "[.]"), "[[", 1)
-se@meta.data$replicate <- sapply(strsplit(colnames(se), "[.]"), "[[", 2)
+```{r}
+DimHeatmap(se, dims = 2)
 ```
-
-The metadata can be used to annotate the plots produced by `DimPlot`.
 
 *Q7:* Produce a PCA plot where data points have been colored by "individual" and shaped by "replicate".
 
@@ -315,45 +472,47 @@ coloring the cells, can you draw any conclusion from the data?
 # Write your code / answer here
 ```
 
+
+
 _____
 ## 7) Clustering 
 _____
 
-Clustering is machine learning method of grouping data based on similarity.
-(https://www.nature.com/articles/nmeth.4299). This approach gives understanding
-of pattern in data. Given a set of data points, we can use clustering to
-classify each data based on similarity.
+Clustering refers to methods used to group samples (cells) based on gene expression
+similarity (https://www.nature.com/articles/nmeth.4299). Cluster obtained from scRNA-seq data
+are typically interpreted as cell types or cell states. The methods are typically unsupervised,
+meaning that we can define group structures in the data without knowing anything about
+the data beforehand.
 
 Let's try clustering our data!
 
-For this, we will use k-means, which is a standard approach to clustering.
-K-means partitions the data by assigning each data point to the closest cluster
-center. The k-means algorithm is non-deterministic.
-
-This means that we may get a different outcome each time we run it. To avoid
-non-determinism, we will make use of the R function `set.seed()`, which allows
-us to re-run random processes with the same outcome every time (given that we
-put the same number inside the set.seed function).
+For this, we will use k-means clustering, which is a standard approach to clustering.
+The k-means method that we will use here starts by assigning each cell to k groups 
+which are randomly initiated. Therefore the algorithm is non-deterministic, 
+meaning that we may get a different outcome each time we run it. To avoid this we 
+can use the `set.seed()` function which will ensure that the initiation process will
+remain the same every time we run it.
 
 
 *Q9:* Use the function `kmeans()` to cluster your cells into 5 different
-clusters and save the output as an object called "km". Use the parameters
+clusters and save the output as an object called ´km´. Use the parameters
 `iter.max=10` and `nstart=10` in your call to `kmeans`.
 
 Hint: Make sure that the dimensions of the count data has the right order so
 that you cluster the samples and not the genes. You may have to transpose the
-count matrix first!
+count matrix first! Also, have a look at the documentation by typing 
+`?kmeans` in the R console.
 
 ```{r, eval=FALSE}
 
 # Write your code / answer here
-set.seed(1337)
-km <- kmeans(x = t(as.matrix(se@assays$SCT[,])),
+set.seed(123)
+km <- kmeans(x = t(GetAssayData(se, slot = "counts")),
              centers = 5,
              iter.max  = 10,
              nstart = 10)
 
-labels <- km$clusters
+#labels <- km$clusters
 
 ```
 
@@ -361,7 +520,7 @@ labels <- km$clusters
 Now, we can color our data according to the cluster assignments. First, we store the cluster info in the meta data slot.
 
 ```{r, eval=FALSE}
-se@meta.data$cluster <- km$cluster
+se$cluster <- km$cluster
 ```
 
 *Q10:* Produce a new PCA plot and color the data points by their cluster annotation!
@@ -390,7 +549,7 @@ _______
 are 11 of those. You can your answer in this .Rmd file and submit your complete
 ''.Rmd'' as your ''report'' for Lab2.
 
-**Deadline**: Your report is due 23:59 December 13th 2019; if working in pairs -
+**Deadline**: Your report is due 23:59 December 13th 2020; if working in pairs -
 each of you should hand in (identical) reports where the names of both authors
 are clearly stated. For further information see the guidelines on the course
 web-page.
