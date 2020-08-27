@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>CB2040 Lab : Prep. Session</title>
+<meta name="author" content="Alma Andersson"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="./reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="./reveal.js/css/theme/night.css" id="theme"/>
+
+<link rel="stylesheet" href="./center.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1 class="title">CB2040 Lab : Prep. Session</h1><h2 class="author">Alma Andersson</h2><p class="date">Created: 2020-08-27 Thu 10:49</p>
+</section>
+
+<section>
+<section id="slide-org03ea5be">
+<h2 id="org03ea5be">Lab course Introduction</h2>
+<div class="outline-text-2" id="text-org03ea5be">
+</div>
+</section>
+<section id="slide-org5aa957b">
+<h3 id="org5aa957b">Teaching assistants</h3>
+<p>
+There are 3 of us, all working at the dept. of Gene Technology    
+</p>
+
+<ul>
+<li>Alma Andersson (almaan@kth.se)</li>
+<li>Ludvig Larsson (ludvig.larsson@scilifelab.se)</li>
+<li>Sami Saarenpää (sami.saarenpaa@scilifelab.se)</li>
+
+</ul>
+
+
+<div class="figure">
+<p><img src="./images/tas.png" alt="tas.png" />
+</p>
+</div>
+
+<p>
+Emails are welcome, but hands-on help with the exercises will be limited to the lab
+sessions.
+</p>
+
+<p>
+<b><b>NOTE</b></b>: Tag emails with [CB2040] in the subject line.<br />
+For example: <i>"[CB2040] Question about lab 2"</i>
+</p>
+
+</section>
+<section id="slide-org2657f54">
+<h3 id="org2657f54">Setup</h3>
+<p>
+There are 4 labs in total, one "main TA" for each:
+</p>
+<ol>
+<li data-fragment-index="1" class="fragment fade-in">Introduction to R [Alma]</li>
+<li data-fragment-index="2" class="fragment fade-in">Bulk RNA-seq analysis [Sami]</li>
+<li data-fragment-index="3" class="fragment fade-in">Single Cell RNA-seq analysis [Ludvig]</li>
+<li data-fragment-index="4" class="fragment fade-in">Spatial Transcriptomics analysis [Alma]</li>
+
+</ol>
+
+<p>
+All labs are in R, we assume:
+</p>
+<ul>
+<li class="fragment fade-in">access to a computer</li>
+<li class="fragment fade-in"><b><b>No prior</b></b> knowledge of R</li>
+<li class="fragment fade-in">Some familiarity with the <font color="green">terminal</font></li>
+
+</ul>
+
+</section>
+<section id="slide-orgbe398c7">
+<h3 id="orgbe398c7">Formalities</h3>
+<p>
+<b>Workflow:</b>
+</p>
+<ul>
+<li class="fragment fade-in">Labs are written in R markdown (more on this later)</li>
+<li class="fragment fade-in">You download the labs and add/modify the code according to the instructions and answer potential questions</li>
+<li class="fragment fade-in">You hand in the modified file in <b><b>Canvas</b></b></li>
+
+</ul>
+
+<p>
+<b>Deadlines:</b>
+</p>
+<ul>
+<li class="fragment fade-in">Hand-in: 1 week after lab session</li>
+<li class="fragment fade-in">Grading : 1 week after hand-in deadline</li>
+<li class="fragment fade-in">Revision : 1 week after correction deadline</li>
+
+</ul>
+
+<p class="fragment (fade-in) :frag_idx(3)">
+<i>NOTE:</i> Late reports will be corrected, but you will get a set of
+additional exercises to solve. An incomplete report
+is also considered late.
+</p>
+
+<p>
+<b>Working in pairs:</b>
+</p>
+<ul>
+<li class="fragment fade-in">OK!</li>
+<li class="fragment fade-in">hand in <i>identical</i> copies</li>
+<li class="fragment fade-in">both names should be stated in file</li>
+<li class="fragment fade-in">state in comment who you worked together with</li>
+
+</ul>
+
+</section>
+<section id="slide-org7abbdf8">
+<h3 id="org7abbdf8">Finding Information</h3>
+<p>
+All information you need will be found at:<br />
+</p>
+<p target="&quot;blank&quot;">
+<a href="https://github.com/almaan/genetech" target="&quot;blank&quot;">https://github.com/almaan/genetech</a>
+</p>
+
+<ul>
+<li>I will refer to this as "the course repo".</li>
+<li>Bookmark or save the link, we will be using it today</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org315cd29">
+<h2 id="org315cd29">R</h2>
+<div class="outline-text-2" id="text-org315cd29">
+</div>
+</section>
+<section id="slide-orgd0eba87">
+<h3 id="orgd0eba87">What?</h3>
+<ul>
+<li class="fragment fade-in">Programming language for "statistical computing"</li>
+<li class="fragment fade-in">Released in 1993</li>
+<li class="fragment fade-in">Open Source &#x2013;&gt; we like free stuff!</li>
+<li class="fragment fade-in">More than 15,000 additional packages! (add-ons)</li>
+<li class="fragment fade-in">Interpreted language &#x2013;&gt; very easy to work with!</li>
+
+</ul>
+
+<ul><li class="fragment fade-in visible" style="list-style-type:none;">
+<p>
+Example C++ : Compiled language
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-c++"><span style="color: #447799;">std</span>::<span style="color: #ffb964;">vector</span><span style="color: #8c8c8c;">&lt;</span><span style="color: #ffb964;">double</span><span style="color: #8c8c8c;">&gt;</span> <span style="color: #cf6a4c;">vec1</span> = <span style="color: #8c8c8c;">{</span><span style="color: #447799;">1</span>,<span style="color: #447799;">2</span>,<span style="color: #447799;">3</span>,<span style="color: #447799;">4</span><span style="color: #8c8c8c;">}</span>;
+<span style="color: #447799;">std</span>::<span style="color: #ffb964;">vector</span><span style="color: #8c8c8c;">&lt;</span><span style="color: #ffb964;">double</span><span style="color: #8c8c8c;">&gt;</span> <span style="color: #cf6a4c;">vec2</span> = <span style="color: #8c8c8c;">{</span><span style="color: #447799;">5</span>,<span style="color: #447799;">6</span>,<span style="color: #447799;">7</span>,<span style="color: #447799;">8</span><span style="color: #8c8c8c;">}</span>;
+<span style="color: #ffb964;">double</span> <span style="color: #cf6a4c;">prod</span> = <span style="color: #447799;">0</span>;
+
+<span style="color: #8197bf;">for</span> <span style="color: #8c8c8c;">(</span><span style="color: #ffb964;">int</span> <span style="color: #cf6a4c;">i</span> = <span style="color: #447799;">0</span>; i&lt;= vec1.size<span style="color: #93a8c6;">()</span>; i++<span style="color: #8c8c8c;">){</span>
+  prod += vec1<span style="color: #93a8c6;">[</span>i<span style="color: #93a8c6;">]</span>*vec2<span style="color: #93a8c6;">[</span>i<span style="color: #93a8c6;">]</span>;
+<span style="color: #8c8c8c;">}</span>
+</pre>
+</div>
+<p>
+Example R : Interpreted language
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-R">vec1 <span style="color: #447799;">&lt;-</span> c<span style="color: #8c8c8c;">(</span><span style="color: #447799;">1</span>,<span style="color: #447799;">2</span>,<span style="color: #447799;">3</span>,<span style="color: #447799;">4</span><span style="color: #8c8c8c;">)</span>
+vec2 <span style="color: #447799;">&lt;-</span> c<span style="color: #8c8c8c;">(</span><span style="color: #447799;">5</span>,<span style="color: #447799;">6</span>,<span style="color: #447799;">7</span>,<span style="color: #447799;">8</span><span style="color: #8c8c8c;">)</span>
+prod <span style="color: #447799;">&lt;-</span> vec1 <span style="color: #447799;">%*%</span>vec2
+</pre>
+</div>
+</li></ul>
+
+</section>
+<section id="slide-org8e4549e">
+<h3 id="org8e4549e">Why?</h3>
+<ul>
+<li data-fragment-index="1" class="fragment fade-in">One the most popular languages within the bioinformatic community</li>
+<li data-fragment-index="2" class="fragment fade-in">Extremely well designed for "<i>data wrangling</i>"</li>
+<li data-fragment-index="3" class="fragment fade_in">Has a <b><b>huge</b></b> ecosystem of packages for bioinformatic analysis</li>
+<li data-fragment-index="4" class="fragment fade-in">Superior graphics system (ggplot) - don't underestimate this&#x2026;</li>
+<li data-fragment-index="5" class="fragment fade-in">We believe it will give you an attractive and useful set of skills</li>
+
+</ul>
+
+<p>
+<span style="font-size:14px;font-style:italic">Sidenote: I hate R...</span>
+</p>
+
+</section>
+<section id="slide-org1eef120">
+<h3 id="org1eef120">Installation</h3>
+<p>
+We will start by installing R, to do this:
+</p>
+<ol>
+<li>Goto the course repo</li>
+<li>Find the section "R - a primer"</li>
+<li>Click the link listed after "Download R"</li>
+<li>Choose the proper OS and follow the instructions</li>
+
+</ol>
+
+<p>
+To test if you have a successfull install:
+Open up the terminal and type "R", then press ENTER<br />
+<br />
+You should see something like:
+</p>
+<pre  class="example">
+almz :: teaching/genetech » R
+
+R version 3.6.1 (2019-07-05) -- "Action of the Toes"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+&gt; 
+</pre>
+
+</section>
+</section>
+<section>
+<section id="slide-orgeb6d132">
+<h2 id="orgeb6d132">Rstudio</h2>
+<div class="outline-text-2" id="text-orgeb6d132">
+</div>
+</section>
+<section id="slide-org4cbd13b">
+<h3 id="org4cbd13b">What is it?</h3>
+<ul>
+<li class="fragment fade-in">When editing code it's common to use an IDE (<i>Integrated Development Environment</i>)</li>
+<li class="fragment fade-in">IDEs are designed to facilitate programming; there are plenty of them</li>
+<li class="fragment fade-in">Personal favorite is Emacs (first release 1976)</li>
+<li class="fragment fade-in">We will be using <font color="orange">Rstudio</font>, an IDE specifically designed for R; also very user friendly</li>
+<li class="fragment fade-in">In short, Rstudio is the tool you will be using to <i>edit</i> the code.</li>
+
+</ul>
+
+</section>
+<section id="slide-org73354b4">
+<h3 id="org73354b4">Installation</h3>
+<p>
+To install Rstudio, follow the steps below:
+</p>
+
+<ol>
+<li>Head back to the course repo and the "<i>R - a primer</i>" section</li>
+<li>Click the link listed after "<i>Download Rstudio</i>"</li>
+<li>Choose the proper OS and follow the instructions</li>
+<li>Shout at me if you experience issues!</li>
+
+</ol>
+<p>
+<br />
+If you have a successful install, the Rstudio program should be available for you to open. The icon looks something like:<br />
+</p>
+<p width="40%">
+<img src="https://helloacm.com/wp-content/uploads/2017/10/R-studio.png" alt="R-studio.png" width="40%" />
+<br />
+If you don't have a GUI - from the terminal, type in "rstudio" and the program should open up
+</p>
+
+</section>
+<section id="slide-orgc96fc21">
+<h3 id="orgc96fc21">Customizing Rstudio</h3>
+<p>
+To give you an idea of how Rstudio works, we'll give it a quick look.<br />
+<br />
+So, <b><b>Open up Rstudio</b></b>.<br />
+<br />
+There are a lot of things you can customize, for example: <i>color schemes, fonts, pane layouts, keybindings etc.</i>
+<br />
+To change any of these : <i>Tools&#x2013;&gt;Global Options</i>
+</p>
+
+</section>
+<section id="slide-org5d18d03">
+<h4 id="org5d18d03">Pane Layout</h4>
+<p>
+You may use whatever settings you want, but I recommend - to make things
+easy - that you use the same pane layout as me:
+</p>
+
+<div class="figure">
+<p><img src="./images/pane-layout.png" alt="pane-layout.png" width="40%" />
+</p>
+</div>
+
+</section>
+<section id="slide-org59b6330">
+<h3 id="org59b6330">Orienting Rstudio</h3>
+<ul>
+<li>Create a new file by: <i>File &#x2013;&gt; New File &#x2013;&gt; R Script</i></li>
+<li>You should see something like this:</li>
+
+</ul>
+
+<div class="figure">
+<p><img src="./images/rstudio-show.png" alt="rstudio-show.png" width="60%" />
+</p>
+</div>
+<ul>
+<li>There are some key features I want to point out: <b><b><font color="orange"> Source, Console, Terminal, and Environment</font></b></b></li>
+<li>One more feature (knitting) that I will come back to</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org4ebabad">
+<h2 id="org4ebabad">The Labs</h2>
+<div class="outline-text-2" id="text-org4ebabad">
+</div>
+</section>
+<section id="slide-org9d6923c">
+<h3 id="org9d6923c">Accessing the material</h3>
+<p>
+<b><b>Git and GitHub</b></b><br />
+</p>
+<ul>
+<li>All the lab material is hosted at github (the course repo).</li>
+<li><b><b>Git</b></b> is a system for distributed version control - github is one (nice) interface connected to it</li>
+<li>github is widely used among bioinformaticians and computational biologist, I host all my software there</li>
+
+</ul>
+<p>
+<br />
+<b><b>Download</b></b><br />
+To create a local copy of the labs on your own computer:
+</p>
+<ol>
+<li>Open a terminal window</li>
+<li>change to a directory  where you want the copy to be created</li>
+<li>Run the command:</li>
+
+</ol>
+<div class="org-src-container">
+
+<pre  class="src src-bash">git clone https://github.com/almaan/genetech.git
+</pre>
+</div>
+
+<p>
+You should now have a folder called <b><b>genetech</b></b> in your directory. Make sure such is the case.
+</p>
+
+</section>
+<section id="slide-orge7e1dbb">
+<h3 id="orge7e1dbb">Installing packages</h3>
+<p>
+<br />
+</p>
+<ul>
+<li>Packages allows you to execute complex actions without the need to write 1000 of lines of code &#x2013;&gt; NICE!</li>
+<li>Dependencies between packages can cause <b><b>a lot</b></b> of errors &#x2013;&gt; HEADACHES..</li>
+<li>I have written an installation script that should take care of this for you (fingers crossed..)</li>
+
+</ul>
+
+<p>
+<br />
+</p>
+<ol>
+<li>In a terminal, go to <i>"<code>genetech/labs/pre</code>"</i></li>
+<li>Execute the following command:</li>
+
+</ol>
+<div class="org-src-container">
+
+<pre  class="src src-R">Rscript --vanilla ./install-packages.R
+</pre>
+</div>
+
+</section>
+<section id="slide-orga5ab0c8">
+<h3 id="orga5ab0c8">Working with the code</h3>
+<p>
+To get an idea of how you work with the code, we will have a look at Lab 1
+</p>
+<ul>
+<li>Go to Rstudio</li>
+<li>Do <i>File&#x2013;&gt;Open File</i></li>
+<li>Choose the file <i>"<code>genetech/labs/ex1/main.Rmd</code>"</i></li>
+
+</ul>
+
+</section>
+<section id="slide-org4783141">
+<h4 id="org4783141">Changing author name</h4>
+<p>
+At the top of the file you will see:
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-yaml"><span style="color: #888888; font-style: italic;">---</span>
+<span style="color: #cf6a4c;">title</span>: <span style="color: #99ad6a;">"Lab 1 - Introduction to R"</span>
+<span style="color: #cf6a4c;">author</span>: <span style="color: #99ad6a;">"Alma Andersson"</span>
+<span style="color: #cf6a4c;">date</span>: <span style="color: #99ad6a;">"11-09-2020"</span>
+<span style="color: #cf6a4c;">output</span>:
+  <span style="color: #cf6a4c;">tufte::tufte_html</span>: default 
+<span style="color: #888888; font-style: italic;">---</span>
+</pre>
+</div>
+
+<p>
+Change the author field to your name(s)
+</p>
+
+</section>
+<section id="slide-orga06ec63">
+<h4 id="orga06ec63">Code chunks</h4>
+<p>
+<br />
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-rmd">{r,eval = TRUE, echo=TRUE}
+# bind the values 1337 to the variable fancy_name_1
+fancy_name_1 &lt;- 1337
+# print fancy_name_1
+print(sprintf("fancy_name_1 is : %d",fancy_name_1))
+</pre>
+</div>
+
+<ul>
+<li>The "boxes" with code are called <font color="orange">chunks</font>.</li>
+<li>If you "run" a chunk (press green arrow) variables will be stored in memory</li>
+<li>This is where you will put in code (when prompted)</li>
+<li>Don't change the settings (in curly brackets)</li>
+
+</ul>
+
+
+</section>
+<section id="slide-org9183688">
+<h4 id="org9183688">Knitting</h4>
+<ul>
+<li>R markdown &#x2013;&gt; {easy} &#x2013;&gt; html and pdf documents.</li>
+<li>This process is called <i>knitting</i></li>
+<li>To knit your document, press the <b><b>yarn symbol</b></b> that says "<b><b>Knit</b></b>"</li>
+<li>Your rendered document should show up in the "<i>View</i>" pane</li>
+<li>You should <b><b>always</b></b> hand in a knitted report (html)</li>
+<li>If your document does not knit successfully, something is wrong.</li>
+
+</ul>
+
+</section>
+<section id="slide-org6fbeaac">
+<h4 id="org6fbeaac">Knitting - a demo</h4>
+<p>
+<video controls src="file:///home/alma/Documents/PhD/teaching/genetech/presentation/vids/knit.mp4"></video>
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="./reveal.js/lib/js/head.min.js"></script>
+<script src="./reveal.js/js/reveal.js"></script>
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+mouseWheel: false,
+fragmentInURL: false,
+hashOneBasedIndex: false,
+pdfSeparateFragments: true,
+
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'slide', // see README of reveal.js for options
+transitionSpeed: 'default',
+
+// Optional libraries used to extend reveal.js
+dependencies: [
+ { src: './reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: './reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: './reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+</script>
+</body>
+</html>
