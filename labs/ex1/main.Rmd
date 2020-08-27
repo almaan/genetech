@@ -24,18 +24,19 @@ Welcome to the first lab! Here the objective is to get _you_ familiar with the
 programming language `R`, and some of the commands that we will be using
 throughout the remaining labs. For things to run smoothly in the more advanced
 labs, please work through these examples and make sure you understand what is
-going on - i.e, do not just click through the exercises. 
+going on - i.e, do not just click through the exercises.
 
 With that being said, let's get started!
 
-_NOTE_: Instructions regarding how to hand in this report are found at the very end of this page.
+_NOTE_: Instructions regarding how to hand in this report are found at the very
+end of this page.
 
 # Basic R operations
 
 We will first work through some  - but far from all - of the most basic elements
 of `R`, including:
 
-* Help command
+* Help commands
 * Arithmetics
 * Logical operators
 * Objects
@@ -59,18 +60,18 @@ good overview of how to use them and how to apply them by typing:
 
 ## Objects and variables
 
-Variables is one of the most standard features of any programming language; in
+Variables is one of the most basic features of any programming language; in
 short you can think of them as placeholders. $pi$ is a great exampel of a
 real-life variable, we use it whenever we want to indicate the value
-$3.14159265...$. In the same spirit, we can assign values or objects a specific
-name (e.g, fancy_variable), one huge benefit with this is that if we decide to
-change the value of `fancy_variable` from say `3` to `4`, only the one instance
-where we set the value of `fancy_variable`, the rest of the code remains intact.
+$3.14159265...$. Similarly, we can assign values or objects a specific name
+(e.g, `fancy_variable`), one huge benefit with this is that if we decide to
+change the value of `fancy_variable` from `3` to `4`, only the instance where we
+set the value of `fancy_variable` will have to be changed rather than all places
+where it is used.
 
 In R, you have 2 options when you want to bind an object or value to a name
-`var_name <- value` and `var_name = value`. The best practice is to always use
-`<-`, unless the right hand side is a mathematical expression (where an equal
-sign is more appropriate).
+`var_name <- value` and `var_name = value`. For assignment, the best practice is to always use
+`<-`, this is in line with Google's R Style Guide (widely used).
 
 ```{r,eval = TRUE, echo=TRUE}
 # bind the values 1337 to the variable fancy_name_1
@@ -81,7 +82,7 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 
 ```{r,echo=TRUE, eval=TRUE}
 # bind the sum of fancy_name_1 and 6671 to the variable fancy_name_2
-fancy_name_2 = fancy_name_1 + 6671
+fancy_name_2 <- fancy_name_1 + 6671
 # print fancy_name_2
 print(sprintf("fancy_name_2 is : %d",fancy_name_2))
 ```
@@ -91,7 +92,7 @@ print(sprintf("fancy_name_2 is : %d",fancy_name_2))
 
 Computations and manipulations of numbers are integral parts of any programming
 language, hence it's essential to know how to call for these kind of actions.
-Below you will see some examples of the perhaps most common mathetmatical
+Below you will see some examples of the more common mathetmatical
 operations that you will use.
 
 ```{r, eval=FALSE}
@@ -103,7 +104,7 @@ operations that you will use.
 7 %% 3 # => 1 (modulo)
 ```
 
-As in standard mathematics parenthesises are used to indicate the order by which
+As in standard mathematics, parenthesises are used to indicate the order by which
 these operations should be executed. For example:
 
 ```{r,eval=TRUE,echo=TRUE}
@@ -125,17 +126,17 @@ example:
 
 
 ```{r, eval=FALSE}
-log2(8) # => 2
-abs(-9.12) # => 4
-sqrt(3) # => 2
+log2(8) # => 3
+abs(-9.12) # => 9.12
+sqrt(4) # => 2
 ```
 
 ## Logical operators
-Once calculations have been performed using the different arithmetic operations,
-we usually want to assess and _compare_ our results, this is when logical
+Once calculations have been performed using different arithmetic operations,
+we usually want to assess and _compare_ our results; that's when logical
 operators come in handy; when used, they return a value that is either `TRUE` or
-`FALSE` depending on the expression you wrote down. Some of the most useful logical
-operators are:
+`FALSE` depending on the expression you wrote down. Some of the most useful
+logical operators are:
 
 * `==` : equal to - `TRUE` if LHS is equal to RHS
 * `>` : greater than - `TRUE` if LHS is greater than RHS
@@ -173,9 +174,9 @@ print(sprintf("Is foo greater than bar? Answer: %s!",
               ifelse(foo_greater_than_bar,"Yes","No")))
 ```
 
-There are also ways of linking logical expressions, creating a compound
+There are also ways of linking logical expressions, and thus creating a compound
 expression. For example, you could check whether two expressions are true at the
-_same_ time. The two variants that you will mainly encouter in these labs are:
+_same_ time. The two variants that you mainly will encounter in these labs are:
 
 * `&` - AND : both expressions must be `TRUE`
 * `|` - OR : one of the two expressions must be `TRUE`
@@ -190,7 +191,7 @@ expr_2 <- 9 < 13
 print(paste("The value of expr_1 is :",expr_1))
 print(paste("The value of expr_2 is :",expr_2))
 
-# make compund expressions
+# make compound expressions
 expr_3 <- expr_1 & expr_2 # is both expr_1 and expr_2 true? (AND operator)
 expr_4 <- expr_1 | expr_2 # is either of expr_1 and expr_2 true? (OR operator)
 
@@ -202,16 +203,16 @@ print(paste("The value of expr_4 is :",expr_4))
 
 **NOTE**: if you want to link expressions rather than variables, it's good practice to use parentheses
 ```{r, echo = TRUE, eval = TRUE}
-expr_1 <- 4 < 2 | 2 < 1  # bad
-expr_1 <- (4 < 2) | (2 < 1 ) # good
+expr_1 <- 4 < 2 | 2 < 1  # bad practice
+expr_1 <- (4 < 2) | (2 < 1 ) # good practice
 ```
 
 
 ### Data Classes
 Every (programming) language has it's own classes of objects, you have actually
-already worked with several different ones just in this lab! Just to get you
+already worked with several different ones in this lab! Just to get you
 familiar with the terminology, some of the _atomic classes_ (that build up every
-other class) are:
+other class in R) are:
 
 * numerics : real numbers - e.g, `3.0`, `3.14` and `-1000`. More precisely $x \in \mathbb{R}$
 * complex : complex numbers - e.g, `1 + 0i`, `-4 + 3i` and `0 + -1i` 
@@ -224,11 +225,12 @@ classes. For example, if we were to try and add a character to a numeric:
 ```{r, echo =TRUE, eval = FALSE}
 test_1 <- 3 + "a"
 ```
+Would give you the error message `Error in 3 + "a" : non-numeric argument to binary operator`
 
 R, being a _high level_ programming language, implements automatic type coercion
 - meaning you don't really have to pay too much attention to making sure you are
 using the correct types all the time. For example, if you add a numeric and
-complex value, the numeric is converted to a complex type and all is good:
+complex value, the numeric is converted to a complex type and all is good in the hood:
 
 ```{r, echo = TRUE, eval = TRUE}
 a_numeric <- 3
@@ -238,7 +240,7 @@ print(paste("a_numeric + a_complex = ",a_numeric + a_complex))
 ```
 *WARNING* : while the programming becomes easier (e.g., compared to C/C++ or
 Java) with this coercion, you should also be cautiuos - sometimes unexpected
-results and later on errors may be introduced. Take a look at what happens when
+results and errors may be introduced. Take a look at what happens when
 you compare a character with a numeric:
 
 ```{r, eval = TRUE, echo = FALSE}
@@ -246,11 +248,11 @@ result_1 <- "a" > 3
 print(paste("a > 3 is : ",result_1))
 ```
 
-What? This makes no sense at all, how can we even compare a character with a
+Say What? This makes no sense at all, how can we even compare a character with a
 number? Shouldn't this, if something, raise an error?
 
-The answer is that the numeric `3` gets coerced into a character `"3"` which is
-very much comparable to another character (if you, like in R, has a assigned an
+The answer is that the numeric `3` gets coerced into a character `"3"` which
+_can_ be compared to another character (if you, like in R, have assigned an
 order to the characters)
 
 ## Arrays
@@ -262,7 +264,7 @@ with 1d arrays first.
 
 ### 1d arrays - lists and vectors
 
-1d arrays come in two flavors, either as lists or as vectors. Which you create
+1d arrays come in two flavors, either as _lists_ or as _vectors_. Which you create
 accordingly:
 
 ```{r,eval=TRUE, echo=TRUE}
@@ -290,16 +292,15 @@ To exemplify, let us access the 4th element from our vector and list respectivel
 
 ```{r, echo = TRUE, eval =TRUE}
 
-a_list_2nd_element <- a_list[[4]]
-a_vector_2nd_element <- a_vector[4]
+a_list_4th_element <- a_list[[4]]
+a_vector_4th_element <- a_vector[4]
 
-print(paste("The fourth element of our list is : ",a_list_2nd_element))
-print(paste("The fourth element of our vector is : ",a_vector_2nd_element))
+print(paste("The fourth element of our list is : ",a_list_4th_element))
+print(paste("The fourth element of our vector is : ",a_vector_4th_element))
  
 ```
 
-
-We could also assign "names" to our array elements:
+We could also assign "names" to our array elements (note how we are using `=` and not `<-`):
 
 ```{r,eval=TRUE, echo=TRUE}
 a_list <- list(birth_date = 20200504,
@@ -318,7 +319,7 @@ a_vector <- c(element_1 = "wind",
 ```
 
 We can still access our elements by specifying their position, but now also by
-their names; sometimes, this allows you to write more readable code and keep
+their names; sometimes, this allows you to write more **readable code** and keep
 better track of what elements you access. 
 
 To access an element by name, for _lists_ use the `$` symbol or `[['name']]`;
@@ -361,13 +362,13 @@ If we want to subset our lists and vectors we could either do:
 * `a_list[1:3]` - creates a new list including the first to third element
 * `a_list[c(name_1,name_2)]` - creates a new list with elements "name_1" and "name_2"
 * `a_vector[1:3]` - creates a new vector including the first to third element
-* `a_vector[c(name_1,name_2)]` - creates a new vector with elements "name_1" and "name_2"
+* `a_vector[c(name_1,name_3)]` - creates a new vector with elements "name_1" and "name_3"
 
 As an example:
 
 ```{r, echo =TRUE, eval=TRUE}
-a_list_subset <- a_list[1:3]
-a_vector_subset <- a_vector[c("slot_1","slot_2","slot_3")]
+a_list_subset <- a_list[1:3] #subset a_list
+a_vector_subset <- a_vector[c("slot_1","slot_2","slot_3")] #subset a_vector
 
 print('The subsetted list "a_list_subset" is:')
 print(a_list_subset)
@@ -377,9 +378,9 @@ print(a_vector_subset)
 
 Lists and vectors seem pretty similar, but there is one - very important - feature that differs between them:
 
-Vectors are *homogenous* while lists can be *heterogenous*.
+Vectors are *homogeneous* while lists can be *heterogeneous*.
 
-This means that all the elements in a _vector_ must be of the same type, and if
+This means that **all elements in a vector must be of the same type**, and if
 they aren't they will be coerced to it, i.e., you can not have a vector of both
 numerics and characters. See what happens when we try to declare such a vector:
 
@@ -397,7 +398,7 @@ print(paste("The type of the first element of mixed_vector is :",
 
 ```
 
-If we use a list insted, the output will be different:
+If we use a list instead, the output will be different:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -425,7 +426,7 @@ a_list_of_mixed <- list(list_1 = list("hello",13,TRUE),
                         )
 ```
 
-*NOTE* : This functionality does not exist for vectors
+*NOTE* : This functionality **does not** exist for vectors
 
 If we want to access the second element in the vector that makes up the third element of `a_list_of_mixed` we would do:
 
@@ -444,10 +445,12 @@ print(paste("(Alt 2) The second element of the third element is :",second_of_thi
 
 The object `a_list_of_mixed` to some extent represent a 2d array, we can
 traverse both `a_list_of_mixed` itself (first dimension) and then the objects
-that constitute its elements (second dimension). When the lists or vectors that
-we want to store are of different length, using a list is the best
-option, *BUT* if they are of equal length (structured) there are better options
-to choose from, being the `matrix` and `dataframe` types.
+that constitute its elements (second dimension).
+
+When the lists or vectors that we want to store are of different length, using a
+list is the best option, *BUT* if they are of equal length (structured arrays)
+there are better options to choose from, being the `matrix` and `dataframe`
+types - more on these very soon.
 
 ### Vector functions
 
@@ -475,10 +478,11 @@ a_new_vector %*% a_new_vector # => dot product : 463.2863
 ```
 ## Structured 2d Arrays
 
-As eluded to above, when we have structured or _tabular_ data there are two data structures that are particularly useful:
+As eluded to above, when we have structured or _tabular_ data there are two data
+structures that are particularly useful:
 
-* Matrices - for homogenous data
-* Dataframes - for heterogenous data
+* Matrices - for homogeneous data
+* Dataframes - for heterogeneous data
 
 As a reference:
 
@@ -584,11 +588,12 @@ print(paste("the min value of a_matrix is :", a_matrix_min))
 
 ```
 
-so that is interesting, but what if we wanted the max value in each column and
-minimum value in respective row, how do we do this?  One possibility would be to
-: isolate each row/column, compute the max/min value manually and finally store
-these values in a vector. That's a pretty messy and ugly solution, luckily we
-have the `apply` function to work with instead!
+that is convenient, but what if we wanted the max value in each column and
+minimum value in respective row, how do we do this?
+
+One possibility would be to: isolate each row/column, compute the max/min value
+manually and finally store these values in a vector. However, that's a pretty messy and
+ugly solution, luckily we have the `apply` function to work with instead!
 
 Let's see how this function works:
 
@@ -596,20 +601,20 @@ Let's see how this function works:
 ?apply
 ```
 
-The help section may a bit hard to interpret, but in short it says that if we
+The help section may a bit "icky" to interpret, but in short it says that if we
 have an array `X` and a function `FUN` we can apply this function along any
 dimension (`MARGIN`) by using apply, it will then treat the rows/columns as
 individual vectors to which `FUN` is applied.
 
 **NOTE** : rows are considered the first dimension, columns the second 
 
-Let's say that we want to compute the max value of each column in `a_matrix`, then we have:
+Let's say that we want to compute the max value of each column (dimension 2) in `a_matrix`, then we have:
 
 * `X` : `a_matrix`
 * `MARGIN` : 2
 * `FUN` : `max` (note we do not _call_ `max` here, only provide the name)
 
-and in action this becomes:
+in action this becomes:
 
 ```{r, echo = TRUE, eval = TRUE}
 a_matrix_col_max <- apply(a_matrix,2,max) 
@@ -617,14 +622,14 @@ a_matrix_col_max <- apply(a_matrix,2,max)
 
 *COMMENT*: For lists and vectors, similar functions to `apply` exist (check out `lapply` and `sapply`).
 
-Since programmers are inherently lazy, some operations like getting the column
-have been included as standard functions in R, meaning you
-don't have to use `apply` but can call them directly. Some examples are:
+Since programmers are inherently lazy, some operations - like getting the column
+sums - have been included as standard functions in R, meaning you don't have to
+use `apply` but can call them directly. Some examples are:
 
 * `{row,col}Sums`: compute and return the total sum for each row or column
 * `{row,col}Means`: compute and return the mean for each row or column
 
-As you can see the results are similar to if we used `apply`:
+As you can see the results are the same as if we had used `apply`:
 
 ```{r, echo = TRUE, eval = TRUE}
 a_matrix_row_mean_1 <- apply(a_matrix,1,mean) 
@@ -638,11 +643,12 @@ print(a_matrix_row_mean_2)
 
 ## Functions
 
-Varibles allow you to specify a certain value only _once_ instead of every time
-you use it, functions allow you to do the same but for _actions_. In short, you
-associate a certain action to a function, and whenever you want to execute that
-action, you simply call the function. We call the input to our functions
-"parameters" or "arguments".
+Variables allow you to specify a certain value _once_ instead of every time
+you use it, functions does the same but for _actions_. In short, you
+associate a certain action to a function name, and whenever you want to execute that
+action, you simply call the function.
+
+We call the input to our functions "parameters" or "arguments".
 
 You have already used several "pre-defined" functions, like `apply` and `max` -
 but sometimes (quite often) we want to expand the repertoire of actions that we
@@ -664,7 +670,7 @@ function_name <- function(parameter_1,parameter_2,...) {
 ```
 
 Say for example that we want a function called `sphere_volume` that computes the
-volume of sphere given the radius, the mathematical formula for this is:
+volume of a sphere given its radius, the mathematical formula for this is:
 
 \begin{equation}
 V(r) = \frac{4\pi r^3}{3}
@@ -676,7 +682,7 @@ Let us use $3.14$ as an approximation of $\pi$, then our function would look lik
 
 sphere_volume <- function(r) {
   pi_approx <- 3.14
-  volume <- 4.0 / 3.0 * r ^3 * pi
+  volume <- 4.0 / 3.0 * r ^3 * pi_approx
   return(volume)
 }
 
@@ -703,7 +709,7 @@ print(sprintf(msg,radius_2,volume_2))
 ## For loops
 
 Just as variables and functions, loops are key features of almost any
-programming language. In R we have `while`, `repeat` and  `for` loops, but here
+programming language. In R we have `while`, `repeat` and `for` loops, but here
 we'll focus to the `for` loops.
 
 Briefly summarized, a for loop iterates over some values in a 1d array and, at
@@ -718,7 +724,9 @@ for (i in vec) {
 }
 ```
 
-here `vec` would be the array we iterated over. To give a less abstract example, we can define a vector that contains all numbers from 1 to 5, done by `vec <- c(1:5)` and then in each iteration print the value we are at:
+here `vec` would be the array we iterated over. To give a less abstract example,
+we can define a vector that contains all numbers from 1 to 5, done by `vec <-
+c(1:5)` and then in each iteration print the value we are at:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -730,7 +738,7 @@ for (i in vec) {
 
 ```
 
-the elements in our arrays do not have to be numbers or in any specific order:
+the elements in our arrays do not have to be numbers or given in a sequential order:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -755,7 +763,7 @@ F_{n-1} + F_{n-2} & \textrm{else} & \\
 
 _NOTE_: the above equation looks better in the knitted document
 
-Implementing this in could could for example look like:
+Implementing this in could for example look like:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -887,8 +895,8 @@ print(round(vec %*% c(1337,69,42,666,80085)) == 151677)
 ### Exercise 2
 
 In the code chunk below, a vector represesenting a genomic sequence is
-generated, each element in the vector is one base in the sequence. You can
-do not have to pay attention to this particular code.
+generated, each element in the vector is one base in the sequence. You do
+not have to pay attention to this particular code but should **run it**.
 
 ```{r, echo = TRUE, eval =TRUE}
 sequence <- sample(c("A","C","T","G"),
@@ -906,7 +914,8 @@ contain, to be more specific:
 
 `base_count(sequence)` should return a vector where the elements are named
 "A,C,T,G" and their associated value represents the number of each base in
-`sequence`. This vector could, for example, look like `c(A = 11, C = 132, T = 761, G = 41)`.
+`sequence`. This vector could, for example, look like `c(A = 11, C = 132, T =
+761, G = 41)`.
 
 
 ```{r, echo = TRUE, eval = GRADE_MODE}
@@ -929,10 +938,10 @@ check_exercise_2(sequence,answer)
 
 We usually store data in external files, meaning we usually have to _read_ it
 from these files. If we have a comma or tab separated file (extensions `.csv`
-and `.tsv` respectively) one way of doing this is by using the `read.table`
+and `.tsv`) one way of doing this is by using the `read.table`
 function.
 
-If you fields are separated by commas (as in a `.csv`file ) use the argument
+If your fields are separated by commas (as in a `.csv`file ) use the argument
 `sep=','`, if they are tab separated use the argument `sep = '\t'`.
 
 We will read our data from the file "reads.tsv", it is a **count matrix** with
@@ -947,7 +956,7 @@ You could now answer the following questions:
 
 *Q1:* How many different genes have data been collected from? (help : use `nrow`)
 *Q2 * How many patients have data been collected from? (help : use `dim`)
-*Q3:* Which 5 genes are most highly expressed across all samples? (help : use `sort` or `order`)
+*Q3:* Which **5 genes** are most highly expressed across all samples? (help : use `sort` or `order`)
 
 Put your answers into a list `ans_ex3` with the following structure:
 
@@ -964,7 +973,6 @@ Answer with the specified format (e.g, a numeric), **not** a text or written ans
 ```{r, echo = TRUE, eval = GRADE_MODE}
 
 # WRITE CODE TO GENERATE ans_ex3 HERE
-
 
 # modify this vector
 ans_ex3 <- list(a1 = NA,
@@ -984,12 +992,12 @@ check_exercise_3(ans_ex3)
 ## Plotting
 
 Sooner or later you will come to a point where you want to visualize your
-results, since this is usually helpful for you and others to interpret them. We
-will therefore explore how we may plot data in R.
+results. Visualization is usually helpful for you and others to interpret the
+results. We will therefore explore how we may plot data in R.
 
 We can generate a simple scatterplot by using the `plot()` function.
 
-```{r}
+```{r,echo = TRUE, eval = TRUE}
 # Define a vector with 5 values
 c0 <- c(1, 3, 6, 4, 9)
 # Graph the vector c0 
@@ -1029,7 +1037,7 @@ We can use a histogram to assess our count data; by plotting the rowsums
 to see how these (the sums) are distributed. We will `log` the sums in order to
 reduce the variance and the dynamic range of our data.
 
-```{r}
+```{r,eval=TRUE,echo=TRUE}
 
 #Distribution of gene counts
 hist(log(rowSums(counts)),
@@ -1043,21 +1051,21 @@ hist(log(rowSums(counts)),
 Bioconductor is a repository of R-packages specifically for biological analyses.
 It has relatively strict requirements for submission, including installation on
 every platform and proper documentation with a required tutorial (called a
-vignette) explaining how the package should be used. You will need this in the
-upcoming labs.
+vignette) explaining how the package should be used. **You will need this in the
+upcoming labs**.
 
-TLDR: it is a "collection of bioinformatic tools".
+TLDR: it is a "Bioconductor is a collection of bioinformatic tools".
 
-To install Bioconductor, run this in R:
+If you haven't already installed Bioconductor, run this in R:
 
 ```{r, eval=FALSE, echo = TRUE}
 install.packages("BiocManager")
 ```
 
-There are **a lot** of "packages" within bioconductor that you can install
-and use. To install a package from bioconductor use `BiocManager::install(PACKAGE_NAME)`
-where you replace `PACKAGE_NAME` with the package of interest, e.g.
-`BiocManager::install("SummarizedExperiment")`
+There are **a lot** of "packages" within bioconductor that you can install and
+use. To install a package from bioconductor use
+`BiocManager::install(PACKAGE_NAME)` where you replace `PACKAGE_NAME` with the
+package of interest, e.g. `BiocManager::install("SummarizedExperiment")`
 
 ## Working with SummarizedExperiment
 
@@ -1066,13 +1074,14 @@ results, which are commonly produced by sequencing experiments. Each object
 stores observations of one or more samples, along with additional meta-data
 describing both the observations (features) and samples (phenotypes).
 
-A key aspect of the SummarizedExperiment class is the coordination of the
+A key aspect of the `SummarizedExperiment` class is its coordination of the
 meta-data and assays when sub-setting. For example, if you want to exclude a
-given sample you may do so for both the meta-data and assay in one operation,
+given sample you may do so for both the count and meta-data in one operation,
 which ensures the meta-data and observed data will remain synchronized.
 
-Flawed handling of meta and observational data has resulted in a number
-of incorrect results and retractions so this is a very desirable property.
+Bad coordination of meta-and observational data has resulted in a number of
+incorrect results and paper retractions, hence why this is a very desirable
+property.
 
 Lets try it out!
 
@@ -1084,7 +1093,7 @@ contained in - unsurprisingly - the package with the name
 library(SummarizedExperiment)
 ```
 
-Next we load a second library that contains our data called `airway`:
+Next we load a second package that contains same data, this package is called `airway`:
 
 ```{r, echo = TRUE, eval = TRUE, message=FALSE}
 library(airway)
@@ -1099,13 +1108,13 @@ Within the summarizedExperiment, you can store all kinds of data. type
 `colData(se)` to view all sample data included. Type `rowData(se)` to view all
 gene data.
 
-To access a particular sample data, just type e.g. `se$cell` to find the cell data. 
+To access a particular sample's data, just type e.g. `se$cell` to find the cell data. 
 
 You can also store meta data for the entire data set, type `metadata(se)` to view it. 
 
 ## Hand In Guidelines
 
-**How :**  First, go to the top of this document, on line 14 set
+**How :**  First, go to the top of this document, on line 18 set
 `GRADE_MODE = TRUE`. Next, knit this document, and hand in the resulting html-file
 on Canvas. Make sure you have solved all the questions. If the document doesn't
 compile, there is something wrong with the code.
