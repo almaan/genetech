@@ -4,6 +4,7 @@
 #+OPTIONS: num:nil toc:nil
 #+REVEAL_THEME: night 
 #+MACRO: color @@html:<font color="$1">$2</font>@@
+#+HTML_HEAD: <base target="_blank">
 
 
 #+Title: CB2040 Lab Prep
@@ -11,6 +12,8 @@
 #+Email: almaan@kth.se
 
 * Lab course Introduction
+  
+For these slides: [[https://almaan.github.io/genetech/][https://almaan.github.io/genetech/]]
   
 ** Teaching assistants   
 
@@ -65,18 +68,18 @@ is also considered late.
 *Working in pairs:*
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(3 3 3 3)
     - OK!
+    - Pair = 2 people
     - hand in /identical/ copies
     - both names should be stated in file
     - state in comment who you worked together with
 
 ** Finding Information
-   All information you need will be found at:\\
+   All information you need can be found at:\\
 #+ATTR_HTML: :target "blank"
 [[https://github.com/almaan/genetech][https://github.com/almaan/genetech]]
 
 - I will refer to this as "the course repo".
 - Bookmark or save the link, we will be using it today
-- This presentation is there as well, at: /=https://github.com/almaan/genetech/docs/index.html=/
 
 * R
   
@@ -121,7 +124,7 @@ Example R : Interpreted language
 We will start by installing R, to do this:
   1. Goto the course repo
   2. Find the section "R - a primer"
-  3. Click the link listed after "Download R"
+  3. Click the link listed after "[[https://ftp.acc.umu.se/mirror/CRAN/][Download R]]"
   4. Choose the proper OS and follow the instructions
  
 To test if you have a successfull install:
@@ -161,13 +164,13 @@ Type 'q()' to quit R.
 - IDEs are designed to facilitate programming; there are plenty of them
 - Personal favorite is Emacs (first release 1976)
 - We will be using {{{color(orange,Rstudio)}}}, an IDE specifically designed for R; also very user friendly
-- In short, Rstudio is the tool you will be using to /edit/ the code.
+- In short, Rstudio is the tool you will be using to /edit/ your code.
 
 ** Installation
    To install Rstudio, follow the steps below:
    
     1. Head back to the course repo and the "/R - a primer/" section
-    2. Click the link listed after "/Download Rstudio/"
+    2. Click the link listed after "[[https://rstudio.com/products/rstudio/download/#download][Download Rstudio]]"
     3. Choose the proper OS and follow the instructions
     4. Shout at me if you experience issues!
 \\
@@ -175,11 +178,11 @@ If you have a successful install, the Rstudio program should be available for yo
 #+ATTR_HTML: :width 40%
 [[https://helloacm.com/wp-content/uploads/2017/10/R-studio.png]]
 \\
-If you don't have a GUI - from the terminal, type in "rstudio" and the program should open up
+If you don't have a GUI - from the terminal, type in ~rstudio~ and the program should open up
 
 ** Customizing Rstudio
 
-To give you an idea of how Rstudio works, we'll give it a quick look.\\
+To get an idea of how Rstudio works, we'll have a quick look at it.\\
 \\
 So, **Open up Rstudio**.\\
 \\
@@ -198,22 +201,22 @@ To change any of these : /Tools-->Global Options/
    - You should see something like this:
    #+ATTR_HTML: :width 60%
    [[./images/rstudio-show.png]]
-   - There are some key features I want to point out: **{{{color(orange, Source\, Console\, Terminal\, and Environment)}}}**
-   - One more feature (knitting) that I will come back to
+   - There are some key features I want to point out: **{{{color(cyan, Source\, Console\, Terminal\, and Environment)}}}**
+   - One more feature (/knitting/) that I will come back to
 
 * The Labs
   
 ** Accessing the material
  
 **Git and GitHub**\\
-    - All the lab material is hosted at github (the course repo).
-    - **Git** is a system for distributed version control - github is one (nice) interface connected to it
-    - github is widely used among bioinformaticians and computational biologist, I host all my software there
+    - All lab material is hosted at github (the course repo).
+    - **Git** is a system for distributed version control - github is one (nice) interface
+    - github is widely used among bioinformaticians and computational biologist. I host all my software there
 \\
 **Download**\\
 To create a local copy of the labs on your own computer:
 1. Open a terminal window
-2. change to a directory  where you want the copy to be created
+2. Change to a directory  where you want the copy to be created
 3. Run the command:
 #+BEGIN_SRC bash
 git clone https://github.com/almaan/genetech.git
@@ -223,7 +226,7 @@ You should now have a folder called **genetech** in your directory. Make sure su
 
 ** Installing packages
  \\  
-   - Packages allows you to execute complex actions without the need to write 1000 of lines of code --> NICE!
+   - Packages allows you to execute complex actions without the need to write 1000s of lines of code --> NICE!
    - Dependencies between packages can cause **a lot** of errors --> HEADACHES..
    - I have written an installation script that should take care of this for you (fingers crossed..)
 
@@ -238,7 +241,7 @@ Rscript --vanilla ./install-packages.R
 
 To get an idea of how you work with the code, we will have a look at Lab 1
    - Go to Rstudio
-   - Do /File-->Open File/
+   - Do: /File-->Open File/
    - Choose the file /"=genetech/labs/ex1/main.Rmd="/
 
 *** Changing author name
@@ -266,14 +269,15 @@ fancy_name_1 <- 1337
 # print fancy_name_1
 print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 #+END_SRC
-
+ #+ATTR_REVEAl: :frag (fade-in)
     - The "boxes" with code are called {{{color(orange,chunks)}}}.
-    - If you "run" a chunk (press green arrow) variables will be stored in memory
-    - This is where you will put in code (when prompted)
+    - If you "run" a chunk (press green arrow) the code inside will be exectueted
+    - This is where /you/ will put in code (when prompted)
     - Don't change the settings (in curly brackets)
 
 
 *** Knitting
+ #+ATTR_REVEAL: :frag (fade-in)
     - R markdown --> {easy} --> html and pdf documents.
     - This process is called /knitting/
     - To knit your document, press the **yarn symbol** that says "**Knit**"
@@ -282,5 +286,13 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
     - If your document does not knit successfully, something is wrong.
 
 *** Knitting - a demo
-    @@html:<video controls src="file:///home/alma/Documents/PhD/teaching/genetech/presentation/vids/knit.mp4"></video>@@
+    @@html:<video controls src="./vids/knit.mp4"></video>@@
       
+* Wrap up
+  - First lab session: 13:00-17:00, 9/11/2020 @ B3 ~(59°21'05.7"N 18°04'06.8"E)~
+  - Questions are welcome!
+  - I will hang around a bit after this session.
+   
+@@html:<h2> Thanks for the attention!</h2> @@
+#+ATTR_HTML: :width 25%
+[[https://img2.pngio.com/download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png]]
