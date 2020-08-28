@@ -615,7 +615,7 @@ _______
 ## Hand In Guidelines
 _______
 **How :** Briefly answer the questions marked with a ''Q'' in .Rmd file. There
-are 11 of those. You can your answer in this .Rmd file and submit your complete
+are 12 of those. You can your answer in this .Rmd file and submit your complete
 ''.Rmd'' as your ''report'' for Lab2.
 
 **Deadline**: Your report is due 23:59 December 13th 2020; if working in pairs -
