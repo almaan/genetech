@@ -560,14 +560,56 @@ Monocytes.
 
 *Q11:* Draw a new plot showing the expression of these three markers across the celltypes. 
 
-Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details) which is very 
-similar to the function `DimPlot()`. Alternatively you can visualize the marker expression 
-using another function called `VlnPlot()` (type ?VlnPlot in the R console for details).
+Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details) 
+which is very similar to the function `DimPlot()`. Alternatively you can visualize the marker 
+expression using another function called `VlnPlot()` (type ?VlnPlot in the R console for details).
 
 ```{r, eval=FALSE}
 
 # Write your answer here
 ```
+
+_____
+## 7) Marker detection
+_____
+
+In the clustering section above you got a Seurat object where the cells had already been assigned 
+a celltype label (annotated). But how would you go about if you needed to do this yourself?
+
+What you typically want to know is what genes are specifically expressed in each cluster?
+Seurat offers a couple of functions to explore this, but what you typically do is to run a 
+differential expression (DE) test pairwise for each cluster against the background (all other cells).
+
+Let's run `FindAllMarkers()` to get a table of differentially expressed genes:
+
+```{r}
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+
+# Select top markers
+library(dplyr)
+top2.markers <- group_by(pbmc.markers, cluster)
+top2.markers <- top_n(x = top2.markers, n = 2, wt = avg_logFC)
+top2.markers
+```
+
+In the `top2.markers` table you can find the top 2 most distinct marker genes per celltype 
+based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_logFC
+(short for average log-foldchange) that measures the expression in a celltype relative to its 
+background or p_val_adj (short for adjusted p-value) which gives you a significance score for each gene.
+
+*Q12:* Draw a new plot showing the expression of one marker per celltype on the UMAP embedding.
+
+Hint: Use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details). You can 
+adjust the size of the plot window by shanges the fig.width and fig.height options below.
+
+```{r, eval=FALSE, fig.width=10, fig.height=12}
+# Write your code/answer here
+```
+
+In some cases you might find that a gene is highly expressed in multiple clusters. This
+just means that the marker gene that you have chosen is not specific to only one cluster. 
+It can be very time consuming to find good marker genes so it's usually a good idea to 
+read up on the literature to see what markers other people have found previously. 
 
 _______
 ## Hand In Guidelines
