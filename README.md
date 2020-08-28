@@ -81,7 +81,7 @@ execute the above steps in the order that they are given.
 ### Cloning the repo
 
 Git is a system developed for distributed version control, which basically means
-that meaning that it prevents people working with on the same project from
+that meaning that it prevents people working on the same project from
 overwriting each other's code, you can think of it as a sort of "Google Docs"
 for programming (but way more sophisticated).
 
@@ -143,7 +143,9 @@ You will also apply some of the concepts introduced in Lab2, in order to make
 sense of your spatial data.
 
 ### Preparatory work
-You should more or less have all tools required to conduct this lab on your computer, meaning you won't have to install plenty of new packages. However, we recommended that you read up a bit on the following concepts:
+You should more or less have all tools required to conduct this lab on your computer, 
+meaning you won't have to install plenty of new packages. However, we recommended 
+that you read up a bit on the following concepts:
 
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
