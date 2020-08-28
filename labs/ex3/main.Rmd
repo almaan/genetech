@@ -442,15 +442,10 @@ the cells based on indiviudal:
 DimPlot(se, reduction = "pca", dims = c(1, 2), group.by = "individual")
 ```
 
-Now we can see that there is some separation of the cells based on individual. Exporing these types
+Now we can see that there is some separation of the cells based on individual. Exploring these types
 of plots can be useful to find out if variablity in your data can somehow attributed to previous
 knowledge about your data. Looking at PC_2 you can see that a population of cells from individual 
-NA19098 differ from the other two individuals. You can also obtain a heatmap visualization showing 
-what genes that are driving this separation using the `DimHeatmap` function:
-
-```{r}
-DimHeatmap(se, dims = 2)
-```
+NA19098 differ from the other two individuals. 
 
 *Q7:* Produce a PCA plot where data points have been colored by "individual" and shaped by "replicate".
 
@@ -472,17 +467,39 @@ coloring the cells, can you draw any conclusion from the data?
 # Write your code / answer here
 ```
 
+For the rest of this lab, we'll use a different dataset with peripheral
+blood mononuclear cells (PBMCs). When you run `pbmc <- readRDS("tung/pbmc")` 
+you will get a Seurat object which has already been normalized. PBMCs contain 
+mainly immune cells such as lymphocytes and monocytes.
 
+```{r}
+pbmc <- readRDS("tung/pbmc")
+```
+
+Let's try another dimensionality reduction method called UMAP. This method
+is commonly used to "embed" the cells into a 2D map that can be very useful
+for visualization purposes. 
+
+```{r, eval=FALSE}
+pbmc <- RunUMAP(pbmc, dims = 1:30)
+DimPlot(pbmc, reduction = "umap")
+```
+
+Here you can already see some interesting structure in the data whcih represent
+different cell type populations. Right now we don't 
 
 _____
 ## 7) Clustering 
 _____
 
 Clustering refers to methods used to group samples (cells) based on gene expression
-similarity (https://www.nature.com/articles/nmeth.4299). Cluster obtained from scRNA-seq data
-are typically interpreted as cell types or cell states. The methods are typically unsupervised,
-meaning that we can define group structures in the data without knowing anything about
-the data beforehand.
+similarity (https://www.nature.com/articles/nmeth.4299). The methods are typically 
+unsupervised, meaning that we can define group structures in the data without knowing 
+anything about the data beforehand. It's important to keep in mind that clustering
+methods will find structure in the data, whether it makes sense or not. In the case 
+of scRNA-seq analysis, you are typically interested in defining cell types. However 
+you need to characterize the clusters yourself to see if they make sense or not
+which can be a very challenging task! 
 
 Let's try clustering our data!
 
@@ -516,7 +533,6 @@ km <- kmeans(x = t(GetAssayData(se, slot = "counts")),
 
 ```
 
-
 Now, we can color our data according to the cluster assignments. First, we store the cluster info in the meta data slot.
 
 ```{r, eval=FALSE}
@@ -524,7 +540,6 @@ se$cluster <- km$cluster
 ```
 
 *Q10:* Produce a new PCA plot and color the data points by their cluster annotation!
-
 
 ```{r, eval=FALSE}
 # Write your code / answer here
