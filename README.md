@@ -128,7 +128,16 @@ TBA
 
 ## Lab 3 | Single Cell RNA-seq analysis
 **Main Responsible TA:** Ludvig Larsson<br>
-TBA
+
+In this lab you will be working on two different single-cell datasets. Single-cell 
+RNA sequencing (or scRNA-seq) have exploded in the last decade and has become one of 
+the most valuable tools in genomics to define celltypes, explore cell states, study 
+cell to cell interactions, track differentiation processes over time, study response 
+to drugs and much more. ScRNA-seq has methods have also become important tools in ongoing 
+research efforts to create atlases of all the organs in the human body and we are still
+learning more about new cell types and cell states every year. 
+In this lab we will use the popular Seurat R package to explore some of the most essential 
+parts of a scRNA-seq analysis workflow. 
 
 ## Lab 4 | Spatial Transcriptomics analysis
 
