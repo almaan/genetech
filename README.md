@@ -81,7 +81,7 @@ execute the above steps in the order that they are given.
 ### Cloning the repo
 
 Git is a system developed for distributed version control, which basically means
-that meaning that it prevents people working with on the same project from
+that meaning that it prevents people working on the same project from
 overwriting each other's code, you can think of it as a sort of "Google Docs"
 for programming (but way more sophisticated).
 
@@ -128,7 +128,16 @@ TBA
 
 ## Lab 3 | Single Cell RNA-seq analysis
 **Main Responsible TA:** Ludvig Larsson<br>
-TBA
+
+In this lab you will be working on two different single-cell datasets. Single-cell 
+RNA sequencing (or scRNA-seq) have exploded in the last decade and has become one of 
+the most valuable tools in genomics to define celltypes, explore cell states, study 
+cell to cell interactions, track differentiation processes over time, study response 
+to drugs and much more. ScRNA-seq methods have also become important tools in ongoing 
+research efforts to create atlases of all the organs in the human body and we are still
+learning more about new cell types and cell states every year. 
+In this lab we will use the popular Seurat R package to explore some of the most essential 
+parts of a scRNA-seq analysis workflow. 
 
 ## Lab 4 | Spatial Transcriptomics analysis
 
@@ -143,7 +152,9 @@ You will also apply some of the concepts introduced in Lab2, in order to make
 sense of your spatial data.
 
 ### Preparatory work
-You should more or less have all tools required to conduct this lab on your computer, meaning you won't have to install plenty of new packages. However, we recommended that you read up a bit on the following concepts:
+You should more or less have all tools required to conduct this lab on your computer, 
+meaning you won't have to install plenty of new packages. However, we recommended 
+that you read up a bit on the following concepts:
 
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
