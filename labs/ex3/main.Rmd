@@ -56,7 +56,7 @@ Here we have provided you with an already quality-controlled dataset, consisting
 of pluripotent stem cells. Load the data!
 
 ```{r, eval=FALSE}
-data <- read.table("tung/tung.tsv")
+data <- read.table("data/tung.tsv")
 ```
 
 The object called `data` is an object of class `data.frame`. A `data.frame` 
@@ -91,7 +91,7 @@ the steps described in the flowchart above using a set of predefined functions.
 Load the Seurat R package (install via BiocManager::install() if not already installed)
 
 ```{r, eval=FALSE}
-BiocManager::install('Seurat')
+#BiocManager::install('Seurat')
 library(Seurat)
 
 ```
@@ -101,7 +101,7 @@ This is a table with additional information about our cells, e.g. if they were p
 in separate batches or obtained from different individuals. 
 
 ```{r, eval=FALSE}
-metadata <- read.table(file = "tung/tung_metadata.tsv", stringsAsFactors = FALSE)
+metadata <- read.table(file = "data/tung_metadata.tsv", stringsAsFactors = FALSE)
 head(metadata)
 ```
 
@@ -130,8 +130,7 @@ with a `data.frame` object. Below is an example of how to extract the "replicate
 and then summarizing how many cells from each replicate that we have.
 
 ```{r, eval=FALSE}
-replicates <- se$replicate
-table(replicates)
+table(se$replicate)
 ```
 
 *Q1:* How many genes do we have? How many cells?
@@ -299,13 +298,13 @@ exprMat <- as.matrix(exprMat)
 # Calculate row sums
 gene.counts <- rowSums(exprMat)
 
-# Check the results
+# Check the results 
 head(gene.counts)
 ```
 
 *Q5:* Compute a new vector (call it `keep.genes`) containing the genes with a total
 expression lower than 500 across the whole dataset. The `keep.genes` character vector 
-should cosist of genes symbols.
+should consist of genes symbols.
 
 Hint: You can use the vector called `gene.counts` to determine what genes to keep. 
 Check the example above where we filtered out cells.
@@ -358,8 +357,9 @@ raw expression matrix into a new matrix where expression levels are comparable a
 in a meaningful way. You can find a number of normalization 
 strategies and more in depth theory [here](https://scrnaseq-course.cog.sanger.ac.uk/website/cleaning-the-expression-matrix.html#normalization-theory).
 
-In this course, we will use the [SCTransform](https://www.biorxiv.org/content/10.1101/576827v2) method
-provided in the Seurat package:
+In this course, we will use a method called variance stabilizing transformation, 
+[VST](https://www.biorxiv.org/content/10.1101/576827v2) method which is provided 
+by the `SCTransform()` function from the Seurat package:
 
 ```{r, eval=FALSE}
 se <- SCTransform(se)
@@ -392,37 +392,40 @@ _____
 
 A single-cell dataset is composed of several cell types which are all characterized by the 
 expression of specific sets of genes. If we were to zoom in on a specific cell type, it is 
-reasonable to expect that there esxists some set a co-expressed genes which defines this cell type. 
-For example you might find that this cell type express genes related to neuronal development. 
+reasonable to expect that there exists some set a co-expressed genes which defines this cell type. 
+For example, you might find that a cell type express genes related to neuronal activity, immune 
+respones or oxygen transport. 
 
-In reality, an expression matrix represent many complex interactions between genes and these 
-interactions can vary across different cell types and cell states. But there are typically clear 
+In reality, an expression matrix represent many complex interactions between different genes and these 
+interactions can vary across different cell types and cell states. But there are typically some very clear
 patterns in the data and what we want to do is to make sense of these patterns. 
-One major benefit with scRNA-seq data is that we can fish out these patterns using machine learning 
+One major benefit with scRNA-seq data is that we can fish out different patterns using machine learning 
 methods. Dimensionality reduction methods represent a family of machine learning methods which are 
 particularly suitable for this task.
 
 As the name implies, a dimensionality reduction method can be used to reduce a high dimensional dataset into a 
 representation with fewer dimensions. These new dimensions can pick up sources of variability in the dataset, 
-such as signalling pathways, immune functions, proliferative activity, apoptotic activity and much more. The 
-interpretation of dimensionality reduction results can be confusing, but it can be helpful to think of them as 
-patterns representing some biological activity (or technical artefacts).
+such as signalling pathways, immune functions, metabolic activity, apoptotic activity and much more. The most 
+useful patterns are often the ones that represent some biological variability, but you can also find patterns 
+that represent technical variability. An example of this could be if you have doublet cells in your data. We are 
+only interested in analyzing individual cells, but sometimes two or more "connected" cells slip through the 
+experimental procedure because of technical limitations. We can adress most of the technical variability using 
+normalization and filtering procedures, but you should always keep an eye things like this.
 
-For scRNA-seq data, these methods are absolutely crucial to visualize the data!
+The interpretation of dimensionality reduction vectors can be confusing, so it can be helpful to think of them as 
+patterns representing some biological or technical variability.
 
-Let's have a look at the most widely used dimensionality reduction method called 
+For scRNA-seq data, dimensionality reduction methods are also crucial to visualize the data! 
+
+First, let's have a look at the most widely used dimensionality reduction method called 
 Pincipal Component Analysis (PCA). This method can be applied to our Seurat object 
 using the `RunPCA` function.
-
-Note that Seurat comes with a bunch of other methods for dimensionality reduction such as 
-`RunICA()`,`RunUMAP()`, `RunTSNE`, ...
 
 Let's first compute a PCA representation of our data:
 
 ```{r, eval=FALSE}
 se <- RunPCA(se)
 ```
-
 
 We can then plot the transformed data by using the function `DimPlot()` and specify the reduction that we want to use:
 
@@ -442,15 +445,10 @@ the cells based on indiviudal:
 DimPlot(se, reduction = "pca", dims = c(1, 2), group.by = "individual")
 ```
 
-Now we can see that there is some separation of the cells based on individual. Exporing these types
+Now we can see that there is some separation of the cells based on individual. Exploring these types
 of plots can be useful to find out if variablity in your data can somehow attributed to previous
 knowledge about your data. Looking at PC_2 you can see that a population of cells from individual 
-NA19098 differ from the other two individuals. You can also obtain a heatmap visualization showing 
-what genes that are driving this separation using the `DimHeatmap` function:
-
-```{r}
-DimHeatmap(se, dims = 2)
-```
+NA19098 differ from the other two individuals. 
 
 *Q7:* Produce a PCA plot where data points have been colored by "individual" and shaped by "replicate".
 
@@ -468,85 +466,156 @@ DimPlot(se,
 *Q8:* Try some other dimensionality reduction methods and play around with
 coloring the cells, can you draw any conclusion from the data?
 
+Note that Seurat comes with a bunch of other methods for dimensionality reduction such as 
+`RunICA()`,`RunUMAP()`, `RunTSNE`, ...
+
 ```{r, eval=FALSE}
 # Write your code / answer here
 ```
 
+For the rest of this lab, we'll use a different dataset with peripheral
+blood mononuclear cells (PBMCs). PBMCs are extracted from blood samples 
+and contain mainly immune cells such as lymphocytes and monocytes. 
 
+When you run `pbmc <- readRDS("data/pbmc")` 
+you will get a Seurat object that has already been normalized. 
+
+```{r}
+pbmc <- readRDS("data/pbmc")
+```
+
+Let's try another dimensionality reduction method called UMAP. This method
+is commonly used to "embed" the cells into a 2D map that can be very useful
+for visualization purposes. 
+
+```{r, eval=FALSE}
+pbmc <- RunUMAP(pbmc, dims = 1:30)
+DimPlot(pbmc, reduction = "umap")
+```
+
+Here you can already see some interesting structures in the data; some bigger blobs and some
+smaller blobs. This type of visualization can be very useful to get some overview of the data
+but we shouldn't draw too many conclusions from it. Now the question is, where do we draw the 
+lines to separate these blobs into groups of similar cells?
 
 _____
 ## 7) Clustering 
 _____
 
-Clustering refers to methods used to group samples (cells) based on gene expression
-similarity (https://www.nature.com/articles/nmeth.4299). Cluster obtained from scRNA-seq data
-are typically interpreted as cell types or cell states. The methods are typically unsupervised,
-meaning that we can define group structures in the data without knowing anything about
-the data beforehand.
+Clustering of scRNA-seq data refers to methods used to group samples (cells) based on gene expression
+similarity (https://www.nature.com/articles/nmeth.4299). The methods are typically 
+unsupervised or semi-supervised, meaning that we can define group structures in the 
+data with little or no prior knowledge about the data beforehand. It's important to 
+keep in mind that clustering methods will find structure in the data, but doen't let 
+you know if the structures make sense or not. 
 
-Let's try clustering our data!
+In the case of scRNA-seq analysis, you are typically interested in defining cell types. 
+What people usually do is to cluster the cells and then define (annotate) the clusters as 
+different cell types based on their specific expression of "marker genes". Here, marker 
+genes can be thought of as genes known to be specifically expressed by a specific cell type, 
+e.g. CD19 is known to be expressed only by B-cells. However, you should know that most of the 
+time you can tweak parameters to obtain different clusters and it can be very difficult to 
+find the optimal parameter settings. 
 
-For this, we will use k-means clustering, which is a standard approach to clustering.
-The k-means method that we will use here starts by assigning each cell to k groups 
-which are randomly initiated. Therefore the algorithm is non-deterministic, 
-meaning that we may get a different outcome each time we run it. To avoid this we 
-can use the `set.seed()` function which will ensure that the initiation process will
-remain the same every time we run it.
+Let's try clustering our data using the default method provided by Seurat's 
+`FindNeighbors()` and `FindClusters()` functions. The parameter called `resolution` can
+be tweaked to obtain a different number of clusters. Lowering this value will result in fewer clusters
+and increasing this value will result in more clusters. Here we will use the default resolution of 0.8.
 
+*Q9:* Use `DimPlot` to color the cells by cluster on the "umap" graph. Write down how many 
+clusters you got using a resolution of 0.8.
 
-*Q9:* Use the function `kmeans()` to cluster your cells into 5 different
-clusters and save the output as an object called ´km´. Use the parameters
-`iter.max=10` and `nstart=10` in your call to `kmeans`.
-
-Hint: Make sure that the dimensions of the count data has the right order so
-that you cluster the samples and not the genes. You may have to transpose the
-count matrix first! Also, have a look at the documentation by typing 
-`?kmeans` in the R console.
+Hint: Look at the meta.data of you Seurat object. Here you can find the clustering results
+which will be called something like "SCT_snn_res...".
 
 ```{r, eval=FALSE}
 
-# Write your code / answer here
-set.seed(123)
-km <- kmeans(x = t(GetAssayData(se, slot = "counts")),
-             centers = 5,
-             iter.max  = 10,
-             nstart = 10)
+pbmc <- FindNeighbors(pbmc, dims = 1:30, reduction = "pca")
+pbmc <- FindClusters(pbmc, resolution = 0.8)
 
-#labels <- km$clusters
+# Write code here
 
 ```
 
 
-Now, we can color our data according to the cluster assignments. First, we store the cluster info in the meta data slot.
-
-```{r, eval=FALSE}
-se$cluster <- km$cluster
-```
-
-*Q10:* Produce a new PCA plot and color the data points by their cluster annotation!
-
+*Q10:* Re-run the `FindClusters()` function using a resolution of 0.3 and 1.2. Use `DimPlot` 
+to visualize these clusters on the "umap" graph and write down how many clusters you get.
 
 ```{r, eval=FALSE}
 # Write your code / answer here
-
-DimPlot(se,
-        reduction = 'pca',
-        group.by = 'cluster',
-        shape.by = NULL)
-
 ```
 
-*Q11:* Does this result surprise you or do the clusters make sense? Why/Why not? Explain your reasoning!
+We have already provided a column in the meta data slot with celltype labels so you do 
+not need to do the dirty work of defining clusters, identifying markers and annotating 
+the clusters.
+
+```{r}
+pbmc <- SetIdent(pbmc, value = "celltype")
+DimPlot(pbmc, group.by = "celltype", label = T)
+```
+
+These cluster annotation have been determined based on marker genes found in the literature.
+For example, MS4A1 is expressed specifically by B-cells, PPBP on platelet cells and CD14 on 
+Monocytes. 
+
+*Q11:* Draw a new plot showing the expression of these three markers across the celltypes. 
+
+Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details) 
+which is very similar to the function `DimPlot()`. Alternatively you can visualize the marker 
+expression using another function called `VlnPlot()` (type ?VlnPlot in the R console for details).
 
 ```{r, eval=FALSE}
+
 # Write your answer here
 ```
+
+_____
+## 7) Marker detection
+_____
+
+In the clustering section above you got a Seurat object where the cells had already been assigned 
+a celltype label (annotated). But how would you go about if you needed to do this yourself?
+
+What you typically want to know is what genes are specifically expressed in each cluster?
+Seurat offers a couple of functions to explore this, but what you typically do is to run a 
+differential expression (DE) test pairwise for each cluster against the background (all other cells).
+
+Let's run `FindAllMarkers()` to get a table of differentially expressed genes:
+
+```{r}
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+
+# Select top markers
+library(dplyr)
+top2.markers <- group_by(pbmc.markers, cluster)
+top2.markers <- top_n(x = top2.markers, n = 2, wt = avg_logFC)
+top2.markers
+```
+
+In the `top2.markers` table you can find the top 2 most distinct marker genes per celltype 
+based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_logFC
+(short for average log-foldchange) that measures the expression in a celltype relative to its 
+background or p_val_adj (short for adjusted p-value) which gives you a significance score for each gene.
+
+*Q12:* Draw a new plot showing the expression of one marker per celltype on the UMAP embedding.
+
+Hint: Use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details). You can 
+adjust the size of the plot window by shanges the fig.width and fig.height options below.
+
+```{r, eval=FALSE, fig.width=10, fig.height=12}
+# Write your code/answer here
+```
+
+In some cases you might find that a gene is highly expressed in multiple clusters. This
+just means that the marker gene that you have chosen is not specific to only one cluster. 
+It can be very time consuming to find good marker genes so it's usually a good idea to 
+read up on the literature to see what markers other people have found previously. 
 
 _______
 ## Hand In Guidelines
 _______
 **How :** Briefly answer the questions marked with a ''Q'' in .Rmd file. There
-are 11 of those. You can your answer in this .Rmd file and submit your complete
+are 12 of those. You can your answer in this .Rmd file and submit your complete
 ''.Rmd'' as your ''report'' for Lab2.
 
 **Deadline**: Your report is due 23:59 December 13th 2020; if working in pairs -
