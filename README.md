@@ -14,7 +14,7 @@ repo, such as guidelines regarding the execution of the labs, contact
 information, deadlines and brief descriptions of the labs with links to material
 that might be of help to you.
 
-The slides from the first lecture (introduction) can be found [here](link).
+The slides from the first lecture (introduction) can be found [here](https://almaan.github.io/genetech).
 
 ## R - a primer
 
@@ -56,7 +56,7 @@ you want to place yourself in a very good position and gain somewhat of a
 headstart we'd recommend you to have a look at some of the online tutorials out
 there, there's plenty to choose from ("R programming tutorial" has `1 390 000
 000` hits on google... ), so at least one should be compatible with your
-preferred way of learning.
+preferred ways of learning.
 
 ## Lab 1 | Basic R programming and markdown
 
@@ -81,9 +81,9 @@ execute the above steps in the order that they are given.
 ### Cloning the repo
 
 Git is a system developed for distributed version control, which basically means
-that meaning that it prevents people working on the same project from
-overwriting each other's code, you can think of it as a sort of "Google Docs"
-for programming (but way more sophisticated).
+that it prevents people working on the same project from overwriting each
+other's code, you can think of it as a sort of "Google Docs" for programming
+(but way more sophisticated).
 
 You will create a copy the code that we (the TAs) have put up here by _cloning_
 this repository. To do this, open the terminal and:
