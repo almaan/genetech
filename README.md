@@ -110,9 +110,9 @@ course, is to:
 1. Install R (you cannot install R packages before you have installed R)
 2. From the terminal run the file `install-packages.R`, to do so:
     1. Open the terminal
-    2. Go to the directory this cloned repo (the one called `genetech`)
+    2. Go to the directory of the cloned repo (the one called `genetech`)
     3. Change directory to `labs/prep`
-    4. Run the command `Rscript --vanilla .install-packages.R**
+    4. Run the command `Rscript --vanilla .install-packages.R`
 
 
 ### Hand-in
@@ -167,7 +167,7 @@ author: "Alma Andersson"
 date: "11-09-2020"
 output:
   tufte::tufte_html: default 
----
+/---
 ```
 When you hand in the modified lab, change the author field to your name(s).
 
