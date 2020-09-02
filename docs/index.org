@@ -56,9 +56,9 @@ All labs are in R, we assume that you have:
 
 *Deadlines:*
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(2 2 2)
-    - Hand-in: 1 week after lab session
+    - Hand-in: 1 week after scheduled lab session
     - Grading : 1 week after hand-in deadline
-    - Revision : 1 week after correction deadline
+    - Revision : 1 week after grading deadline
  
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(3)
 /NOTE:/ Late reports will be corrected, but you will get a set of
@@ -117,8 +117,6 @@ Example R : Interpreted language
    - Has a **huge** ecosystem of packages for bioinformatic analysis
    - Superior graphics system (ggplot) - don't underestimate this...
    - We believe it will give you an attractive and useful set of skills
-   
-   @@html:<span style="font-size:14px;font-style:italic">Sidenote: I hate R...</span>@@
   
 ** Installation
 We will start by installing R, to do this:
@@ -180,7 +178,7 @@ If you have a successful install, the Rstudio program should be available for yo
 \\
 If you don't have a GUI - from the terminal, type in ~rstudio~ and the program should open up
 
-** Customizing Rstudio
+** Exploring Rstudio
 
 To get an idea of how Rstudio works, we'll have a quick look at it.\\
 \\
@@ -196,7 +194,7 @@ To change any of these : /Tools-->Global Options/
 #+ATTR_HTML: :width 40%
     [[./images/pane-layout.png]]
 
-** Orienting Rstudio
+** Features of Rstudio
    - Create a new file by: /File --> New File --> R Script/
    - You should see something like this:
    #+ATTR_HTML: :width 60%
@@ -209,14 +207,14 @@ To change any of these : /Tools-->Global Options/
 ** Accessing the material
  
 **Git and GitHub**\\
-    - All lab material is hosted at github (the course repo).
-    - **Git** is a system for distributed version control - github is one (nice) interface
-    - github is widely used among bioinformaticians and computational biologist. I host all my software there
+    - All lab material is hosted at GitHub (the course repo).
+    - **Git** is a system for distributed version control - GitHub is one (nice) interface
+    - GitHub is widely used among bioinformaticians and computational biologist. I host all my software there
 \\
 **Download**\\
 To create a local copy of the labs on your own computer:
 1. Open a terminal window
-2. Change to a directory  where you want the copy to be created
+2. Go to a directory  where you want the copy to be created
 3. Run the command:
 #+BEGIN_SRC bash
 git clone https://github.com/almaan/genetech.git
@@ -231,7 +229,7 @@ You should now have a folder called **genetech** in your directory. Make sure su
    - I have written an installation script that should take care of this for you (fingers crossed..)
 
 \\
-  1. In a terminal, go to /"=genetech/labs/pre="/
+  1. In a terminal, go to /"=genetech/labs/prep="/
   2. Execute the following command:
 #+BEGIN_SRC R
 Rscript --vanilla ./install-packages.R
@@ -269,30 +267,29 @@ fancy_name_1 <- 1337
 # print fancy_name_1
 print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 #+END_SRC
- #+ATTR_REVEAl: :frag (fade-in)
     - The "boxes" with code are called {{{color(orange,chunks)}}}.
-    - If you "run" a chunk (press green arrow) the code inside will be exectueted
+    - If you "run" a chunk (press green arrow) the code inside will be executed
     - This is where /you/ will put in code (when prompted)
     - Don't change the settings (in curly brackets)
 
 
 *** Knitting
  #+ATTR_REVEAL: :frag (fade-in)
-    - R markdown --> {easy} --> html and pdf documents.
+    - R markdown --> html and pdf documents.
     - This process is called /knitting/
     - To knit your document, press the **yarn symbol** that says "**Knit**"
-    - Your rendered document should show up in the "/View/" pane
+    - Your rendered document should show up in the "/Viewer/" pane
     - You should **always** hand in a knitted report (html)
     - If your document does not knit successfully, something is wrong.
 
-*** Knitting - a demo
+***  A demo
     @@html:<video controls src="./vids/knit.mp4"></video>@@
       
 * Wrap up
   - First lab session: 13:00-17:00, 9/11/2020 @ B3 ~(59°21'05.7"N 18°04'06.8"E)~
   - Questions are welcome!
-  - I will hang around a bit after this session.
+  - We will hang around a bit after this session.
    
-@@html:<h2> Thanks for the attention!</h2> @@
+  @@html:<h2> Thanks for the attention!</h2> @@
 #+ATTR_HTML: :width 25%
 [[https://img2.pngio.com/download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png]]
