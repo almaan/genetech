@@ -76,7 +76,7 @@ In R, you have 2 options when you want to bind an object or value to a name
 ```{r,eval = TRUE, echo=TRUE}
 # bind the values 1337 to the variable fancy_name_1
 fancy_name_1 <- 1337
-# print fancy_name_1
+# print the variable fancy_name_1
 print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 ```
 
