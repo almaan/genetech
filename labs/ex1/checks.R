@@ -35,11 +35,11 @@ cb <- function(sequence) {
 check_exercise_3 <- function(ans){
   a1 <- decrypt(362026828)
   a2 <- decrypt(746595)
-  a3 <- c("hqvj3333359ca86",
-          "hqvj33333574896",
-          "hqvj333334abb5b",
-          "hqvj333334a66a5",
-          "hqvj3333348b355")
+  a3 <- c("hqvj333334ba-45",
+          "hqvj333334bab6a",
+          "hqvj3333355a586",
+          "hqvj333334baaa9",
+          "huffc33463")
   
   a3 <- sapply(a3,
                d_caesar)
@@ -91,7 +91,7 @@ decrypt <- function(y) {
 
 e_caesar <- function(x) {
  out <- c()
- legend <- c(letters,c(0:9))
+ legend <- c(letters,c(0:9),"-")
  ln <- length(legend)
  
  for (let in unlist(strsplit(tolower(x),""))){
@@ -106,7 +106,7 @@ e_caesar <- function(x) {
 
 d_caesar <- function(x) {
  out <- c()
- legend <- c(letters,c(0:9))
+  legend <- c(letters,c(0:9),"-")
  ln <- length(legend)
  
  for (let in unlist(strsplit(tolower(x),""))){
