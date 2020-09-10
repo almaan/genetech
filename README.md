@@ -28,7 +28,7 @@ considered as statistics applied to biological data, hence R with it's rich
 library of tools for statistical analysis has become popular to use among
 bioinformaticians.
 
-* **Why use R?:** The usefulness of a language is too a large
+* **Why use R?:** The usefulness of a language is to a large
 extent dependent on the community, and people contributing with libraries.
 Whilst R as an language in no way is superior to for example Python or Julia, as
 of now the set of available tools for bioinformatic analysis in R by far exceeds
