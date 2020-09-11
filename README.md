@@ -61,6 +61,7 @@ preferred ways of learning.
 ## Lab 1 | Basic R programming and markdown
 
 **Main Responsible TA:** Alma Andersson<br>
+**Lab Status:** <span style="color:green">Ready</span><br>
 
 Here you will familiarize yourself with some of the basic syntax and
 documentation in R. This lab will lay the foundation for the two next labs,
@@ -124,10 +125,12 @@ exercises correctly.
 
 ## Lab 2 | Bulk RNA-seq analysis
 **Main Responsible TA:** Sami Saarenpää<br>
+**Lab Status:** <span style="color:red"> Under Construction</span><br>
 TBA
 
 ## Lab 3 | Single Cell RNA-seq analysis
 **Main Responsible TA:** Ludvig Larsson<br>
+**Lab Status:** <span style="color:red"> Under Construction</span><br>
 
 In this lab you will be working on two different single-cell datasets. Single-cell 
 RNA sequencing (or scRNA-seq) have exploded in the last decade and has become one of 
@@ -142,6 +145,7 @@ parts of a scRNA-seq analysis workflow.
 ## Lab 4 | Spatial Transcriptomics analysis
 
 **Main Responsible TA:** Alma Andersson<br>
+**Lab Status:** <span style="color:red"> Under Construction</span><br>
 
 In this lab you will work with Spatial Transcriptomics (ST) data (as prestend by
 Ståhl et.al). While similar to single cell data in some ways, there

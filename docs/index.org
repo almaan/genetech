@@ -6,7 +6,6 @@
 #+MACRO: color @@html:<font color="$1">$2</font>@@
 #+HTML_HEAD: <base target="_blank">
 
-
 #+Title: CB2040 Lab Prep
 #+Author: Alma Andersson
 #+Email: almaan@kth.se
@@ -50,8 +49,8 @@ All labs are in R, we assume that you have:
  
 *Workflow:*
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(1 1 1)
-  * Labs are written in R markdown (more on this later)
-  * Download exercises --> modify files in-place --> hand in modified file
+  * Labs are written in R markdown (more on this later)}}
+  * Download exercises --> modify files in-place --> hand in modified file}
   * You hand in the modified file via **Canvas**
 
 *Deadlines:*
@@ -103,7 +102,8 @@ is also considered late.
     }
 #+END_SRC
 Example R : Interpreted language
-#+BEGIN_SRC R
+#+BEGIN_SRC RR
+
   vec1 <- c(1,2,3,4)
   vec2 <- c(5,6,7,8)
   prod <- vec1 %*%vec2
