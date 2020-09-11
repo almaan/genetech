@@ -61,7 +61,7 @@ good overview of how to use them and how to apply them by typing:
 ## Objects and variables
 
 Variables is one of the most basic features of any programming language; in
-short you can think of them as placeholders. $pi$ is a great exampel of a
+short you can think of them as placeholders. $pi$ is a great example of a
 real-life variable, we use it whenever we want to indicate the value
 $3.14159265...$. Similarly, we can assign values or objects a specific name
 (e.g, `fancy_variable`), one huge benefit with this is that if we decide to
@@ -107,7 +107,7 @@ operations that you will use.
 7 %% 3 # => 1 (modulo)
 ```
 
-As in standard mathematics, parenthesises are used to indicate the order by which
+As in standard mathematics, parentheses are used to indicate the order by which
 these operations should be executed. For example:
 
 ```{r,eval=TRUE,echo=TRUE}
@@ -135,6 +135,7 @@ sqrt(4) # => 2
 ```
 
 ## Logical operators
+
 Once calculations have been performed using different arithmetic operations,
 we usually want to assess and _compare_ our results; that's when logical
 operators come in handy; when used, they return a value that is either `TRUE` or
@@ -212,6 +213,7 @@ expr_1 <- (4 < 2) | (2 < 1 ) # good practice
 
 
 ### Data Classes
+
 Every (programming) language has it's own classes of objects, you have actually
 already worked with several different ones in this lab! Just to get you
 familiar with the terminology, some of the _atomic classes_ (that build up every
@@ -444,7 +446,6 @@ print(paste("(Alt 1) The second element of the third element is :",second_of_thi
 print(paste("(Alt 2) The second element of the third element is :",second_of_third_2))
 
 ```
-
 
 The object `a_list_of_mixed` to some extent represent a 2d array, we can
 traverse both `a_list_of_mixed` itself (first dimension) and then the objects
