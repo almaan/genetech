@@ -29,7 +29,7 @@ going on - i.e, do not just click through the exercises.
 With that being said, let's get started!
 
 _NOTE_: Instructions regarding how to hand in this report are found at the very
-end of this page.
+end of this document.
 
 # Basic R operations
 
@@ -70,8 +70,8 @@ set the value of `fancy_variable` will have to be changed rather than all places
 where it is used.
 
 In R, you have 2 options when you want to bind an object or value to a name
-`var_name <- value` and `var_name = value`. For assignment, the best practice is to always use
-`<-`, this is in line with Google's R Style Guide (widely used).
+`var_name <- value` and `var_name = value`. For assignment, the best practice is
+to always use `<-`, this is in line with Google's R Style Guide (widely used).
 
 ```{r,eval = TRUE, echo=TRUE}
 # bind the values 1337 to the variable fancy_name_1
@@ -79,6 +79,9 @@ fancy_name_1 <- 1337
 # print the variable fancy_name_1
 print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 ```
+
+One variable can be used in the assignment of a value to another variable, as
+you may see below:
 
 ```{r,echo=TRUE, eval=TRUE}
 # bind the sum of fancy_name_1 and 6671 to the variable fancy_name_2
@@ -90,9 +93,9 @@ print(sprintf("fancy_name_2 is : %d",fancy_name_2))
 
 ### Arithmetic operations
 
-Computations and manipulations of numbers are integral parts of any programming
-language, hence it's essential to know how to call for these kind of actions.
-Below you will see some examples of the more common mathetmatical
+Computation with and manipulations of numbers are integral parts of any
+programming language, hence it's essential to know how to call for these kind of
+actions. Below you will see some examples of the more common mathetmatical
 operations that you will use.
 
 ```{r, eval=FALSE}
@@ -121,7 +124,7 @@ print(sprintf("ex_3 : %f",ex_3))
 ### Mathematical operators
 
 There is a plethora of different mathematical functions in R, usually their
-names resemble those of the mathematical operations that they represent, for
+names resemble those of the mathematical operations they execute, for
 example:
 
 
@@ -140,7 +143,7 @@ logical operators are:
 
 * `==` : equal to - `TRUE` if LHS is equal to RHS
 * `>` : greater than - `TRUE` if LHS is greater than RHS
-* `>=` : greater than or equal to - `TRUE` if LHS is greater or equal to RHS
+* `>=` : greater than or equal to - `TRUE` if LHS is greater than or equal to RHS
 * `<` : less than - `TRUE` if LHS is less than RHS
 * `<=` : less than or equal to - `TRUE` if LHS is less than or equal to RHS
 * `!=` : not equal to - `TRUE` if LHS is not equal to RHS
@@ -239,7 +242,7 @@ a_complex <- 4 - 2i
 print(paste("a_numeric + a_complex = ",a_numeric + a_complex))
 ```
 *WARNING* : while the programming becomes easier (e.g., compared to C/C++ or
-Java) with this coercion, you should also be cautiuos - sometimes unexpected
+Java) with this automatic coercion, you should also be cautiuos - sometimes unexpected
 results and errors may be introduced. Take a look at what happens when
 you compare a character with a numeric:
 
@@ -251,21 +254,21 @@ print(paste("a > 3 is : ",result_1))
 Say What? This makes no sense at all, how can we even compare a character with a
 number? Shouldn't this, if something, raise an error?
 
-The answer is that the numeric `3` gets coerced into a character `"3"` which
-_can_ be compared to another character (if you, like in R, have assigned an
-order to the characters)
+What's happening here is that the numeric `3` gets coerced into a character
+`"3"` which _can_ be compared to another character (if you, like in R, have
+assigned an order to the characters.
 
 ## Arrays
 
-The next element to introduce is _arrays_, these are fundamental structures that
-you will use *a lot*. In a nutshell, arrays let us associate multiple values to
-a single object. We'll be focusing on 1 and 2 dimensional arrays, let us start
-with 1d arrays first.
+The next elements to introduce are _arrays_, these are fundamental structures
+that you will use *a lot*. In a nutshell, arrays let us associate multiple
+values to a single object. We'll be focusing on 1 and 2 dimensional arrays, let
+us start with 1d arrays first.
 
 ### 1d arrays - lists and vectors
 
-1d arrays come in two flavors, either as _lists_ or as _vectors_. Which you create
-accordingly:
+1d arrays come in two flavors, either as _lists_ or as _vectors_. Which you
+create accordingly:
 
 ```{r,eval=TRUE, echo=TRUE}
 a_list <- list(20200504,
@@ -318,7 +321,7 @@ a_vector <- c(element_1 = "wind",
               shape_2 ="round")
 ```
 
-We can still access our elements by specifying their position, but now also by
+Now, we can still access our elements by specifying their position, but now also by
 their names; sometimes, this allows you to write more **readable code** and keep
 better track of what elements you access. 
 
@@ -450,7 +453,7 @@ that constitute its elements (second dimension).
 When the lists or vectors that we want to store are of different length, using a
 list is the best option, *BUT* if they are of equal length (structured arrays)
 there are better options to choose from, being the `matrix` and `dataframe`
-types - more on these very soon.
+types - more on these soon.
 
 ### Vector functions
 
@@ -724,7 +727,7 @@ for (i in vec) {
 }
 ```
 
-here `vec` would be the array we iterated over. To give a less abstract example,
+here `vec` would be the array we iterate over. To give a less abstract example,
 we can define a vector that contains all numbers from 1 to 5, done by `vec <-
 c(1:5)` and then in each iteration print the value we are at:
 
@@ -823,7 +826,7 @@ if (condition_1) {
 **NOTE**: You can add as many `else if` statements as you want, but only one `if` and `else`
 **NOTE**: You should always follow the order of the statements above: first `if`, then `else if` (if you have any) and last `else`
 
-To give you a somewhat less abstract example, run the chunk below _a couple of
+To give you an example, run the chunk below _a couple of
 times_ to see how the conditionals work:
 
 ```{r, echo = TRUE, eval = TRUE}
@@ -852,7 +855,8 @@ for some exercises. To pass the lab, all exercises must be correctly completed.
 
 ### Exercise 1
 
-Create a data frame (named `count.data`) with 3 samples and 5 genes. Make all count values = 1
+Create a data frame (named `count.data`) with 3 samples and 5 genes. Rows are
+samples, genes are columns. Make all count values = 1
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
@@ -991,11 +995,12 @@ check_exercise_3(ans_ex3)
 
 ## Plotting
 
-Sooner or later you will come to a point where you want to visualize your
-results. Visualization is usually helpful for you and others to interpret the
-results. We will therefore explore how we may plot data in R.
+Sooner or later you will come to a point in your work where you want to
+visualize your results. Visualization is usually helpful for you and others to
+interpret the results. We will therefore explore how we may plot data in R.
 
-We can generate a simple scatterplot by using the `plot()` function.
+There are several different built in functions that allow you to plot your data,
+you find some examples of these below:
 
 ```{r,echo = TRUE, eval = TRUE}
 # Define a vector with 5 values
@@ -1054,7 +1059,7 @@ every platform and proper documentation with a required tutorial (called a
 vignette) explaining how the package should be used. **You will need this in the
 upcoming labs**.
 
-TLDR: it is a "Bioconductor is a collection of bioinformatic tools".
+TLDR: "Bioconductor is a collection of bioinformatic tools".
 
 If you haven't already installed Bioconductor, run this in R:
 
@@ -1075,11 +1080,12 @@ stores observations of one or more samples, along with additional meta-data
 describing both the observations (features) and samples (phenotypes).
 
 A key aspect of the `SummarizedExperiment` class is its coordination of the
-meta-data and assays when sub-setting. For example, if you want to exclude a
-given sample you may do so for both the count and meta-data in one operation,
-which ensures the meta-data and observed data will remain synchronized.
+meta-data and assay when sub-setting. For example, if you want to exclude a
+given sample you should do this both in the count and meta-data in one
+operation, which ensures the meta-data and observed data will remain
+synchronized.
 
-Bad coordination of meta-and observational data has resulted in a number of
+Bad coordination of meta-and count data has resulted in a number of
 incorrect results and paper retractions, hence why this is a very desirable
 property.
 
@@ -1099,16 +1105,16 @@ Next we load a second package that contains same data, this package is called `a
 library(airway)
 # Load data
 data(airway)
-# Bing object to new identifier 
+# Bind object to new identifier 
 se <- airway
 se
 ```
 
-Within the summarizedExperiment, you can store all kinds of data. type
+Within the summarizedExperiment, you can store all kinds of data. Type
 `colData(se)` to view all sample data included. Type `rowData(se)` to view all
 gene data.
 
-To access a particular sample's data, just type e.g. `se$cell` to find the cell data. 
+To access a particular sample's data, just type  `se$sample`. 
 
 You can also store meta data for the entire data set, type `metadata(se)` to view it. 
 
