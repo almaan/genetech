@@ -1,5 +1,7 @@
 ---
-title: "Lab2 - Bulk RNAseq"
+title: "Lab2 - Bulk RNA-seq analysis"
+author: "Sami Saarenpää"
+date: "22 Sep 20"
 output:
   BiocStyle::html_document
 vignette: |
@@ -12,21 +14,33 @@ vignette: |
 knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
-## Intro
+# Introduction
 
-For this part of the lab we are looking at RNAseq data from mice tumors treated with different kinase inhibitors. Each (A-F) is tested on several mice and the tumor response is recorded (i.e. did the tumor continue to grow above a certain threshold or not). The responses are binary classified as "responder" and "Non_responder". 
+For this part of the lab we are exploring RNA-seq data from mice tumors which are treated with different kinase inhibitors. 
+Each drug (A-F) is tested on several mice and the tumor response is recorded (i.e. did the tumor continue to grow above a certain threshold or not). 
+The responses are binary classified as "responder" and "Non_responder". 
 
-## General workflow
 
-This is a general pipeline for an scRNA-seq analysis workflow
+# General workflow
+
+This is a general pipeline for a bulk RNA-seq analysis workflow.
+When you have raw sequencing reads, filter them based on quality and map them back to the reference genome or you use de novo assembly tool to construct the genome. 
+In the next step you filter the mapping results and remove PCR duplicates. 
+Normalisation is needed for the reads because there is differences in the amount of reads, samples, mapping bias etc. 
+Differential gene expression analysis, clustering and network analysis follow normalisation. 
 
 ![](flowchart_rnaSeq.png)
 
-In this lab, we will once again omit several steps and start with a count matrix of transcripts, after alignment and mapping has been carried out. 
+In this lab, we once again omit several steps and start with a count matrix of transcripts, after alignment and mapping has been carried out. 
+We will explore different tools that can be used for quality control, differential gene expression and clustering. 
+
+# Analysis pipeline
 
 ## Loading packages
 
-The following packages should be loaded. Remember, if you haven't installed a specific package, use `BiocManager::install("packageName")`. When running this, you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip updating the rest of the packages for this lab (which can otherwise take some time)
+The following packages should be loaded. 
+Remember, if you haven't installed a specific package, use `BiocManager::install("packageName")`. 
+When running this, you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip updating the rest of the packages for this lab (which can otherwise take some time).
 
 ```{r, message=FALSE, warning=FALSE}
 library(SummarizedExperiment)
@@ -38,7 +52,7 @@ library(viridis)
 
 ## Load data
 
-Download the "Data" folder from Canvas and put it in the same directory as you are currently working in. 
+The data for the second lab is available from Github in genetech/labs/ex2/.
 
 ```{r, echo=T}
 
@@ -58,11 +72,12 @@ metadata <- as.data.frame(cbind(treatment, outcome, replicate))
 
 ```
 
-Now, you have a data frame called "metadata", with experimental meta data information. 
+Now, you have a data frame called "metadata", with experimental information. 
 
-### Create a SummarizedExpermient object with the loaded counts
+##SummarizedExperiment
 
-See `?SummarizedExperiment` to see how to add meta data as a parameter to the function call. 
+Create a SummarizedExpermient object with the loaded counts.
+See `?SummarizedExperiment` to see how to add metadata as a parameter to the function call. 
 
 ```{r}
 
@@ -70,8 +85,8 @@ See `?SummarizedExperiment` to see how to add meta data as a parameter to the fu
 
 ```
 
-In order to extract the metadata you type e.g. `se$treatment`
-In order to extract the count data, you type `assays(se)$counts`
+In order to extract the metadata you type e.g. `se@metadata$treatment`.
+In order to extract the count data, you type `assays(se)$counts`.
 
 ## Pre-processing 
 
