@@ -125,7 +125,7 @@ exercises correctly.
 
 ## Lab 2 | GWAS and bulk RNA-seq analysis
 **Main Responsible TA:** Sami Saarenpää<br>
-**Lab Status:** <span style="color:red"> Under Construction</span><br>
+**Lab Status:** <span style="color:green">Ready</span><br>
 
 This lab is divided into two parts. In the first part we will explore variant calling 
 and GWAS which are commonly used in genome analysis.
