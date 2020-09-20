@@ -50,7 +50,7 @@ library(ggplot2)
 library(viridis)
 ```
 
-## Load data
+## Load the data
 
 The data for the second lab is available from Github in genetech/labs/ex2/.
 
@@ -74,7 +74,7 @@ metadata <- as.data.frame(cbind(treatment, outcome, replicate))
 
 Now, you have a data frame called "metadata", with experimental information. 
 
-##SummarizedExperiment
+## SummarizedExperiment
 
 Create a SummarizedExpermient object with the loaded counts.
 See `?SummarizedExperiment` to see how to add metadata as a parameter to the function call. 
@@ -90,11 +90,12 @@ In order to extract the count data, you type `assays(se)$counts`.
 
 ## Pre-processing 
 
-Testing for differential expression for many genes simultaneously adds to the multiple testing burden, reducing the power to detect DE genes.
+We are testing several samples for differential expression of many genes simultaneously. This adds to the multiple testing burden, reducing the power to detect DE genes.
 
 Therefore, we filter out genes with all zero or low counts that does not add anything in terms of evidence for differential expression. 
 
-Perform filtering, exlude all genes that have a total count value across all samples of <=10.
+Perform filtering, exlude all genes that have a total count value across all samples of <=10. 
+Use the skills you learnt in LAB1. 
 
 ```{r}
 
@@ -102,18 +103,20 @@ Perform filtering, exlude all genes that have a total count value across all sam
 
 ```
 
-print your summarizedExperiment
+Now print again your SummarizedExperiment object. 
 
 ```{r}
 
 #Write code
 
 ```
+
+## DESeq2
 
 We will use DESeq2 for DE analysis. 
 
-Since tools for differential expression analysis are comparing the counts between sample groups for the same gene, gene length does *not* need to be accounted for by the tool. However, sequencing depth and RNA composition *do need* to be taken into account.
-
+To study DE genes we *don't need* to take into an account gene length because the tools for DE analysis are comparing the counts between sample groups for the same gene.
+However, sequencing depth and RNA composition *do need* to be taken into account.
 To normalize for sequencing depth and RNA composition, DESeq2 uses the median of ratios method. On the user-end there is only one step, but on the back-end there are multiple steps involved, as described below.
 
 Let's start by looking at the variability of sequencing depth across our samples: (is normalization needed?)
@@ -132,7 +135,7 @@ boxplot(log2(f + 0.5), ylab = "log (base 2) read counts + 0.5")
 Q1 - What is your interpretation from the plot?
 
 ```{r}
-# Add answer
+# Add an answer
 ```
 
 Now, in order to use the DESeq2 workflow, we first need to create a DESeq2 object to store our data. (Similar to our SummarizedExperiment). The code to do this is given below:
@@ -179,16 +182,18 @@ Do you spot the difference?
 
 ## Exploratory analysis
 
-When exploring RNAseq data, you usually want to perform some kind of transformation before visualization. Otherwise, highly expressed genes tend to dominate the result. 
+When exploring RNAseq data, you usually want to perform some kind of transformation before visualization. 
+Otherwise, highly expressed genes tend to dominate the result. 
 A common method to deal with this is to simply take the log2 of the counts. 
-However, this can lead to the opposite situation - lowly expressed genes getting to much influence on the result. Another frequently used method is the variance-stabilizing transformation (VST). VST is included in the DESeq2 package. 
+However, this can lead to the opposite situation - lowly expressed genes getting to much influence on the result. 
+Another frequently used method is the variance-stabilizing transformation (VST). VST is included in the DESeq2 package. 
 
 In RNA-Seq data, genes with larger average expression have on average larger observed variances across samples. This is called "heteroscedasticity". If we VST transform the data, the standard deviation becomes more constant along the whole dynamic range. 
 The following picture illustrate this:
 
 ![effect of vst transformation](lab2_vst.png)
 
-Lets transform our data via the vst method before looking at our samples:
+Let's transform our data via the vst method before looking at our samples:
 
 ```{r}
 
@@ -234,7 +239,7 @@ resultsNames(dds)
 
 For example, "group_AR_vs_ANR", contains the DE result comparing Drug A "Responder" vs Drug A "Non-responder". 
 
-A contrast is a linear combination of estimated log2 fold changes, which can be used to test if differences between groups are equal to zero. To extract the DE result for a specific 
+A contrast is a linear combination of estimated log2 fold changes, which can be used to test if differences between groups are equal to zero. To extract the DE result for a specific drug, let's use results command: 
 
 ```{r}
 
@@ -242,9 +247,9 @@ res <- results(dds, contrast=c("group", "BR", "BNR"))
 
 ```
 
-Note that the log2 fold change and Wald test p value will be for the last variable. (PS. see [this link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an explanation on the wald test.)
+Note that the log2 fold change and Wald test p value will be for the last variable. (See [this link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an explanation on the Wald test.)
 
-PS: The genes with adjusted p-value of NA have less mean normalized counts than the optimal threshold.
+NOTE: The genes with adjusted p-value of NA have less mean normalized counts than the optimal threshold.
 
 Now, use this method to find the top 50 upregulated and downregulated genes (based on adjusted p-value) for each specific drug, i.e. for drug A -> compare responders vs non-responders. Do this for all drugs and create a list of the genes.
 
