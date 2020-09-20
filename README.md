@@ -150,6 +150,11 @@ In this part we will identify differentially expressed genes of different kinase
 We will use DESeq2 for differential gene expression analysis, visualise the results with heatmap and identify some 
 of these genes. 
 
+### Hand-in 
+
+You will hand in two different .html files, one for each part. Remember to change the author information before 
+handing in the labs. 
+
 ## Lab 3 | Single Cell RNA-seq analysis
 **Main Responsible TA:** Ludvig Larsson<br>
 **Lab Status:** <span style="color:red"> Under Construction</span><br>
