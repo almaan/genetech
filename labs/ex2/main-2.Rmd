@@ -28,9 +28,9 @@ library(dplyr)
 
 # Lab info 
 
-We will will use the data from Saw et.al (2017) to illustrate the genome-wide association studies (GWAS). We will map the genetic determinants of cholesterol levels within three Southeast Asian populations.
+We will will use the data from Saw et.al (2017) to illustrate the genome-wide association studies (GWAS). We will map the genetic determinants of cholesterol levels within three Southeast Asian populations. 
 
-In this part of the lab we will give you the output of the R code directly. Instead the focus is to understand what type of data one could get out of variant analysis and genome-wide association studies (GWAS). 
+In this part of the lab we will give you the output of the R code directly. Instead the focus is to understand what type of data one could get out of variant analysis and genome-wide association studies (GWAS). The data is available here: https://github.com/monogenea/GWAStutorial. If you want to run the code, just copy the whole repo to the "../genetech/labs/ex2/data"
 
 Use the provided template to answer the questions! 
 
@@ -59,15 +59,15 @@ These steps are already made for you, but to get the overall picture ->
 #you don't have to run the code!
 
 #Loading the SNP data
-load("data/GWAS/GWAStutorial/conversionTable.RData")
+load("data/GWAStutorial/conversionTable.RData")
  
-pathM <- paste("data/GWAS/GWAStutorial/public/Genomics/108Malay_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+pathM <- paste("data/GWAStutorial/public/Genomics/108Malay_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
 SNP_M <- read.plink(pathM[1], pathM[2], pathM[3])
  
-pathI <- paste("data/GWAS/GWAStutorial/public/Genomics/105Indian_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+pathI <- paste("data/GWAStutorial/public/Genomics/105Indian_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
 SNP_I <- read.plink(pathI[1], pathI[2], pathI[3])
  
-pathC <- paste("data/GWAS/GWAStutorial/public/Genomics/110Chinese_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
+pathC <- paste("data/GWAStutorial/public/Genomics/110Chinese_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
 SNP_C <- read.plink(pathC[1], pathC[2], pathC[3])
  
 # Merge the three SNP datasets
@@ -87,9 +87,9 @@ So, lets start where the SNPs are already called. We also have some metadata alo
 ```{r, eval=FALSE, echo=FALSE}
 
 # Load lipid datasets & match SNP-Lipidomics samples
-lipidsMalay <- read.delim("data/GWAS/GWAStutorial/public/Lipidomic/117Malay_282lipids.txt", row.names = 1)
-lipidsIndian <- read.delim("data/GWAS/GWAStutorial/public/Lipidomic/120Indian_282lipids.txt", row.names = 1)
-lipidsChinese <- read.delim("data/GWAS/GWAStutorial/public/Lipidomic/122Chinese_282lipids.txt", row.names = 1)
+lipidsMalay <- read.delim("data/GWAStutorial/public/Lipidomic/117Malay_282lipids.txt", row.names = 1)
+lipidsIndian <- read.delim("data/GWAStutorial/public/Lipidomic/120Indian_282lipids.txt", row.names = 1)
+lipidsChinese <- read.delim("data/GWAStutorial/public/Lipidomic/122Chinese_282lipids.txt", row.names = 1)
 all(Reduce(intersect, list(colnames(lipidsMalay),
   colnames(lipidsIndian),
   colnames(lipidsChinese))) == colnames(lipidsMalay)) # TRUE
@@ -111,8 +111,8 @@ origin <- origin[match(matchingSamples, origin$sample.id),]
 genData <- list(SNP = SNP$genotype, MAP = SNP$map, LIP = lip)
 
 # Write processed omics and GDS
-save(genData, origin, file = "data/GWAS/GWAStutorial/PhenoGenoMap.RData")
-write.plink("data/GWAS/GWAStutorial/convertGDS", snps = SNP$genotypes)
+save(genData, origin, file = "data/GWAStutorial/PhenoGenoMap.RData")
+write.plink("data/GWAStutorial/convertGDS", snps = SNP$genotypes)
  
 # Clear memory
 rm(list = ls())
@@ -138,8 +138,8 @@ Again, this is already made for you... Just keep in mind that various filtering 
 #  }
 #}
 
-source("data/GWAS/GWAStutorial/GWASfunction.R")
-load("data/GWAS/GWAStutorial/PhenoGenoMap.RData")
+source("data/GWAStutorial/GWASfunction.R")
+load("data/GWAStutorial/PhenoGenoMap.RData")
  
 # Use SNP call rate of 100%, MAF of 0.1 (very stringent)
 maf <- 0.1
@@ -166,9 +166,9 @@ genData$LIP <- genData$LIP[het_call,]
 # LD and kinship coeff
 ld <- .2
 kin <- .1
-snpgdsBED2GDS(bed.fn = "data/GWAS/GWAStutorial/convertGDS.bed", 
-              bim.fn = "data/GWAS/GWAStutorial/convertGDS.bim",
-              fam.fn = "data/GWAS/GWAStutorial/convertGDS.fam", 
+snpgdsBED2GDS(bed.fn = "data/GWAStutorial/convertGDS.bed", 
+              bim.fn = "data/GWAStutorial/convertGDS.bim",
+              fam.fn = "data/GWAStutorial/convertGDS.fam", 
               out.gdsfn = "myGDS", 
               cvt.chr = "char")
 genofile <- snpgdsOpen("myGDS", readonly = F)
