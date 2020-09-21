@@ -148,9 +148,8 @@ back-end there are multiple steps involved, as described below.
 Let's start by looking at the variability of sequencing depth across our
 samples: (is normalization needed?)
 
-Count data is not normally distributed, so if we want to examine the
-distributions of the raw counts we need to log the counts. Next we’ll use box
-plots to check the distribution of the read counts on the log2 scale.
+Next we’ll use box plots to check the distribution of the read counts.
+For convenience, we apply a log2 transformation before visual inspection of the data because the distribution is skewed towards lower values. 
 
 ```{r}
 
@@ -243,7 +242,7 @@ Let's transform our data via the VST method before looking at our samples:
 
 ```{r}
 
-#Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable calles vst.data
+#Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable called vst.data
 
 
 ```
