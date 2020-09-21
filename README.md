@@ -136,7 +136,7 @@ In this part we will identify differentially expressed genes of different kinase
 We will use DESeq2 for differential gene expression analysis, visualise the results with heatmap and identify some of these genes. 
 
 In the second part we will explore variant calling 
-and GWAS which are commonly used in genome analysis.
+and GWAS which are commonly used to analyse different traits on genomic level.
 
 Variant calling identifies single nucleotide polymorphisms (SNPs) and small insertions and deletions (indels) from NGS data. 
 There are available plenty of tools to search for variants from genomes and they have become a standard in population based studies.
