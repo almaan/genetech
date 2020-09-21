@@ -243,7 +243,7 @@ Let's transform our data via the VST method before looking at our samples:
 
 ```{r}
 
-#Do this by using the DESeq2 function vst(), with parameter blind=FALSE
+#Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable calles vst.data
 
 
 ```
@@ -254,7 +254,7 @@ Using the VST transformed counts, we can create a heatmap:
 
 ```{r}
 
-sampleDists <- dist(t(assay(vst)))
+sampleDists <- dist(t(assay(vst.data)))
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(vst$treatment, vst$outcome, vst$replicate, sep="-")
 colnames(sampleDistMatrix) <- NULL
@@ -295,7 +295,7 @@ result for a specific drug, we may use results command:
 
 ```{r}
 
-res <- results(dds, contrast=c("group", "BR", "BNR"))
+res <- results(dds, contrast=c("group", "BR", "BNR"), tidy = TRUE)
 
 ```
 
