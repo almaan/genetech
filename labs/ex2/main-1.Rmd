@@ -25,15 +25,18 @@ The responses are binary classified as "responder" and "Non_responder".
 
 This is a general pipeline for a bulk RNA-seq analysis workflow:
 
-pre-processing:
+pre-processing (yellow):
   * Check quality ofraw reads and filter out reads with poor quality
   * Align reads to a reference genome (or contruct a _de novo_ genome assembly if a reference is unavailable)
-  * Filter out aligned reads with poor mapping stats and remove PCR duplicates
+  * Annotate aligned reads to gene loci
+  * Filter out aligned reads with poor mapping stats and remove PCR duplicates (if applicable)
 
-quality control and normalization:
-  * Normalization is needed to adjust for technical variability across samples, e.g. differences in the amount of reads and experimental date 
+quality control and normalization (orange):
+  * Check quality of gene expression vectors and remove poor quality samples
+  * Normalization is needed to adjust for technical variability across samples, e.g. differences in the amount of reads 
+  * Adjust for other confounding factors, e.g. gender specific expression, experimental date and age 
   
-analysis:
+analysis (blue):
   * Differential gene expression analysis, clustering and network analysis 
 
 ![](flowchart_rnaSeq.png)
