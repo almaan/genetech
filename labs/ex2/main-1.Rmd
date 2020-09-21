@@ -1,5 +1,5 @@
 ---
-title: "Lab2 - Bulk RNA-seq analysis"
+title: "Lab2 - Bulk RNA-seq analysis and GWAS"
 author: "Sami Saarenpää"
 date: "22 Sep 20"
 output:
