@@ -25,14 +25,21 @@ grow above a certain threshold or not). The responses are binary classified as
 
 # General workflow
 
-This is a general pipeline for a bulk RNA-seq analysis workflow. When you have
-raw sequencing reads, filter them based on quality and map them back to the
-reference genome, or you use de novo assembly tool to construct the genome.
+This is a general pipeline for a bulk RNA-seq analysis workflow:
 
-In the next step you filter the mapping results and remove PCR duplicates.
-Normalisation is needed for the reads because there is differences in the amount
-of reads, samples, mapping bias etc. Differential gene expression (DGE) analysis,
-clustering and network analysis usually follow normalisation.
+pre-processing (yellow):
+  * Check quality of raw reads and filter out reads with poor quality
+  * Align reads to a reference genome (or construct a _de novo_ genome assembly if a reference is unavailable)
+  * Annotate aligned reads to gene loci
+  * Filter out aligned reads with poor mapping stats and remove PCR duplicates (if applicable)
+
+quality control and normalization (orange):
+  * Check quality of gene expression vectors and remove poor quality samples
+  * Normalization is needed to adjust for technical variability across samples, e.g. differences in the amount of reads 
+  * Adjust for other confounding factors, e.g. gender specific expression, experimental date and age 
+  
+analysis (blue):
+  * Differential gene expression analysis, clustering and network analysis 
 
 ![](flowchart_rnaSeq.png)
 
