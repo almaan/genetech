@@ -38,17 +38,18 @@ Use the provided template to answer the questions!
 
 Genome-wide association (GWA) studies scan an entire species genome for association between up to millions of SNPs/indels and a given trait of interest. Notably, the trait of interest can be virtually any sort of phenotype ascribed to the population, be it qualitative (e.g. disease status) or quantitative (e.g. height). 
 
-Essentially, given p SNPs and n samples or individuals, a GWAS will fit p independent univariate linear models, each based on n samples, using the genotype of each SNP as predictor of the trait of interest. The significance of association (P-value) in each of the p tests is determined from the coefficient estimate \beta  of the corresponding SNP (technically speaking, the significance of association is P(\beta|H_0: \beta=0) ). It's necessary to adjust the resulting P-values using multiple hypothesis testing methods such as Bonferroni, Benjamini-Hochberg or false discovery rate (FDR).
+Essentially, given p SNPs and n samples or individuals, a GWAS will fit p independent univariate linear models, each based on n samples, using the genotype of each SNP as predictor of the trait of interest. The significance of association (P-value) in each of the p tests is determined from the coefficient estimate $\beta$  of the corresponding SNP (technically speaking, the significance of association is $P(\beta|H_0: \beta=0)$ ). Since we are testing multiple SNP's it's necessary to adjust the resulting P-values using multiple hypothesis testing (MHT) methods such as Bonferroni, Benjamini-Hochberg or false discovery rate (FDR).
+
 
 ## Data
 
 Data is from Saw et.al (2017): https://www.nature.com/articles/s41467-017-00413-x.
 
-There is a mixed population of 316 Chinese, Indian and Malay in the study. These individuals were characterized using high-throughput SNP-chip sequencing, transcriptomics and lipidomics. In this data, we have >2.5 million SNP markers as well as cholesterol levels which we will search for associations.
+There is a mixed population of 316 Chinese, Indian and Malay in the study. These individuals were characterized using high-throughput SNP-chip sequencing, transcriptomics and lipidomics. In this data, we have >2.5 million SNP markers as well as cholesterol levels which we will search for associations with.
 
 ## General workflow
 
-These steps are already made for you, but to get the overall picture -> 
+These steps have already been executed (i.e., you do not have to do them), but to get the overall picture -> 
 
 ![](gwas_lab_0.png)
 
@@ -82,7 +83,7 @@ newIDs <- conversionTable[match(SNP$map$SNP[SNP$map$SNP %in% mappedSNPs], names(
 SNP$map$SNP[rownames(SNP$map) %in% mappedSNPs] <- newIDs
 ```
 
-So, lets start where the SNPs are already called. We also have some metadata along with our samples (lipid measurements on each patient and their country). We lack all info on some of the samples, so we only keep complete cases (a quite common situation..). 
+So, lets start where the SNPs are already called. We also have some metadata along with our samples (lipid measurements on each patient and their country). We lack all info on some of the samples, so we only keep complete cases (a quite common solution). 
 
 ```{r, eval=FALSE, echo=FALSE}
 
@@ -90,6 +91,7 @@ So, lets start where the SNPs are already called. We also have some metadata alo
 lipidsMalay <- read.delim("data/GWAStutorial/public/Lipidomic/117Malay_282lipids.txt", row.names = 1)
 lipidsIndian <- read.delim("data/GWAStutorial/public/Lipidomic/120Indian_282lipids.txt", row.names = 1)
 lipidsChinese <- read.delim("data/GWAStutorial/public/Lipidomic/122Chinese_282lipids.txt", row.names = 1)
+
 all(Reduce(intersect, list(colnames(lipidsMalay),
   colnames(lipidsIndian),
   colnames(lipidsChinese))) == colnames(lipidsMalay)) # TRUE
@@ -121,7 +123,7 @@ rm(list = ls())
 
 ### Pre-processing
 
-Since we are working with huge date, it would be in order to conduct some filtering prior to analysis. Lets:
+Since we are working with a huge dataset, it would be in order to conduct some filtering prior to analysis. Let us:
 - discarding SNPs with call rate < 1  or  Minor-allele frequency (MAF) < 0.1
 - discarding samples with call rate < 100%, IBD kinship coefficient > 0.1 or inbreeding coefficient |F| > 0.1
 
@@ -216,9 +218,15 @@ Let's use a standard go-to visualization method for high dimensional data as an 
 
 ```{r, eval=FALSE, echo=FALSE}
 # PCA
+
+# set random seed for reproducibility
 set.seed(100)
+
+# conduct pca
 pca <- snpgdsPCA(genofile, sample.id = geno.sample.ids, 
                  snp.id = snpset.ibd, num.thread = 1)
+
+# construct dataframe with the two first PC's
 pctab <- data.frame(sample.id = pca$sample.id,
                     PC1 = pca$eigenvect[,1],
                     PC2 = pca$eigenvect[,2],
@@ -311,7 +319,7 @@ Q2: How many significant SNPs do you see? And if so, what chromosomes are those 
 ```
 
 
-Lets also include a little sanity check of our result by using a Q-Q plot. Here, we contrast the distribution of the resulting p-values against that expected by chance. If the two are identical, we get a x=y line. If our method to obtain our result are sound, we should in theory get a x=y line with a few deviating values suggestive of association. Otherwise, we might have confounding factors that cause problems for our approach. 
+Lets also include a little sanity check of our result by using a Q-Q plot. Here, we contrast the distribution of the resulting p-values against those expected by chance. If the two are identical, we get a x=y line. If our method to obtain our result is sound, we should in theory get a x=y line with a few deviating values suggestive of association. Otherwise, we might have confounding factors that cause problems for our approach. 
 
 ```{r, eval=FALSE, echo=FALSE}
 
@@ -337,7 +345,7 @@ Q3: What is your interpretation of the Q-Q plot?
 
 ## Functional interpretation
 
-Each SNP is identified via an ID, lets take a look at the identified significant variants. You an search e.g https://www.ncbi.nlm.nih.gov/snp/ with this ID as input to find out information about the variant. 
+Each SNP is identified via an ID, lets take a look at the identified significant variants. You can search e.g https://www.ncbi.nlm.nih.gov/snp/ with this ID as input to find out information about the variant. 
 
 Q4: Is there any variant that are within a gene? Can you find any potential biological association of interest with regards to cholesterol? 
 
