@@ -127,12 +127,20 @@ exercises correctly.
 **Main Responsible TA:** Sami Saarenpää<br>
 **Lab Status:** <span style="color:green">Ready</span><br>
 
-This lab is divided into two parts. In the first part we will explore variant calling 
+This lab is divided into two parts. 
+
+In the first part of the lab we will explore RNA-seq data analysis.
+After the first publication in 2009 (Wang et.al) this method has allowed researchers to study gene expression in RNA level introducing a baseline for methods developed after like single cell RNA-seq and spatial transcriptomics. 
+
+In this part we will identify differentially expressed genes of different kinase inhibitors in treated mice tumors. 
+We will use DESeq2 for differential gene expression analysis, visualise the results with heatmap and identify some of these genes. 
+
+In the second part we will explore variant calling 
 and GWAS which are commonly used in genome analysis.
 
 Variant calling identifies single nucleotide polymorphisms (SNPs) and small insertions and deletions (indels) from NGS data. 
-Bioinformatic tools to identify these changes have increased at the same rate as more and more genomic data is available.
-We will analyse variants using genome wide assisiation study (GWAS). 
+There are available plenty of tools to search for variants from genomes and they have become a standard in population based studies.
+In this lab we will analyse variants using genome wide association study (GWAS). 
 In GWAS the genetic variants in different individuals are analysed to see if any variant is associated with a trait like major diseases in humans or flowering time in plants. 
 Basically, GWAS tries to find correlation between phenotype and changes in genomic
 areas on a population level. 
@@ -141,16 +149,10 @@ Because this part takes a long time to compute, the output of the code is alread
 Instead the focus is to understand what type of data one could get out of variant analysis and GWAS analysis. 
 If you want later to use the code, you will be able to run it. 
 
-In the second part of the lab we will explore RNA-seq data analysis.
-After the first publication in 2009 (Wang et.al) this method has allowed researchers to study gene expression in RNA level introducing a baseline for methods developed after like single cell RNA-seq and spatial transcriptomics. 
-
-In this part we will identify differentially expressed genes of different kinase inhibitors in treated mice tumors. 
-We will use DESeq2 for differential gene expression analysis, visualise the results with heatmap and identify some of these genes. 
-
 ### Hand-in 
 
-You will hand in two different .html files, one for each part. 
-Remember to change the author information before handing in the labs. 
+You will hand in one knitted html file in Canvas latest one week after the lab. 
+Remember to change the author information before handing in the lab. 
 
 ## Lab 3 | Single Cell RNA-seq analysis
 **Main Responsible TA:** Ludvig Larsson<br>
