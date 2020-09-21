@@ -28,18 +28,23 @@ library(dplyr)
 
 # Lab info 
 
-We will will use the data from Saw et.al (2017) to illustrate the genome-wide association studies (GWAS). We will map the genetic determinants of cholesterol levels within three Southeast Asian populations. 
+We will will use the data from Saw et.al (2017) to illustrate the genome-wide association studies (GWAS). We will map the genetic determinants of 
+cholesterol levels within three Southeast Asian populations. 
 
-In this part of the lab we will give you the output of the R code directly. Instead the focus is to understand what type of data one could get out of variant analysis and genome-wide association studies (GWAS). The data is available here: https://github.com/monogenea/GWAStutorial. If you want to run the code, just copy the whole repo to the "../genetech/labs/ex2/data"
+In this part of the lab we will give you the output of the R code directly. Instead the focus is to understand what type of data one could get out 
+of variant calling and genome-wide association studies (GWAS). The data for the GWAS part is available here: https://github.com/monogenea/GWAStutorial. 
+If you want to run the code (*not required*), just copy the whole repo to the "../genetech/labs/ex2/data" and run it from there. 
 
 Use the provided template to answer the questions! 
 
 ## What is GWAS?
 
-Genome-wide association (GWA) studies scan an entire species genome for association between up to millions of SNPs/indels and a given trait of interest. Notably, the trait of interest can be virtually any sort of phenotype ascribed to the population, be it qualitative (e.g. disease status) or quantitative (e.g. height). 
+Genome-wide association (GWA) studies scan an entire species genome for association between up to millions of SNPs/indels and a given trait of interest. 
+Notably, the trait of interest can be virtually any sort of phenotype ascribed to the population, be it qualitative (e.g. disease status) or 
+quantitative (e.g. height). 
 
-Essentially, given p SNPs and n samples or individuals, a GWAS will fit p independent univariate linear models, each based on n samples, using the genotype of each SNP as predictor of the trait of interest. The significance of association (P-value) in each of the p tests is determined from the coefficient estimate $\beta$  of the corresponding SNP (technically speaking, the significance of association is $P(\beta|H_0: \beta=0)$ ). Since we are testing multiple SNP's it's necessary to adjust the resulting P-values using multiple hypothesis testing (MHT) methods such as Bonferroni, Benjamini-Hochberg or false discovery rate (FDR).
-
+Essentially, given p SNPs and n samples or individuals, a common method is to fit p linear models, each based on n samples, using the genotype of each SNP as predictor of the trait of interest. GWAS can be univariate or multivariate depending how many traits are being studied. 
+The significance of association (P-value) in each of the p tests is determined from the coefficient estimate $\beta_{i}$  of the corresponding SNP (technically speaking, the significance of association is $P(\beta_{i}|H_0: \beta_{i}=0)$ ). Since we are testing multiple SNP's it's necessary to adjust the resulting P-values using multiple hypothesis testing (MHT) methods such as Bonferroni, Benjamini-Hochberg or false discovery rate (FDR).
 
 ## Data
 
@@ -308,7 +313,7 @@ dev.off()
 
 ![Manhattan plot](gwas_lab_2.png)
 
-Q2: How many significant SNPs do you see? And if so, what chromosomes are those on?
+Q2: How many significant SNPs do you see when the significance level of $5x10^{-6}$ is used? And if so, what chromosomes are those on?
 
 ```{r, eval=FALSE, echo=TRUE}
 
