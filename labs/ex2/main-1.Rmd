@@ -16,31 +16,40 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 
 # Introduction
 
-For this part of the lab we are exploring RNA-seq data from mice tumors which are treated with different kinase inhibitors. 
-Each drug (A-F) is tested on several mice and the tumor response is recorded (i.e. did the tumor continue to grow above a certain threshold or not). 
-The responses are binary classified as "responder" and "Non_responder". 
+For this part of the lab we are exploring RNA-seq data from mice tumors which
+are treated with different kinase inhibitors. Each drug (A-F) is tested on
+several mice and the tumor response is recorded (i.e. did the tumor continue to
+grow above a certain threshold or not). The responses are binary classified as
+"responder" and "Non_responder".
 
 
 # General workflow
 
-This is a general pipeline for a bulk RNA-seq analysis workflow.
-When you have raw sequencing reads, filter them based on quality and map them back to the reference genome or you use de novo assembly tool to construct the genome. 
-In the next step you filter the mapping results and remove PCR duplicates. 
-Normalisation is needed for the reads because there is differences in the amount of reads, samples, mapping bias etc. 
-Differential gene expression analysis, clustering and network analysis follow normalisation. 
+This is a general pipeline for a bulk RNA-seq analysis workflow. When you have
+raw sequencing reads, filter them based on quality and map them back to the
+reference genome, or you use de novo assembly tool to construct the genome.
+
+In the next step you filter the mapping results and remove PCR duplicates.
+Normalisation is needed for the reads because there is differences in the amount
+of reads, samples, mapping bias etc. Differential gene expression (DGE) analysis,
+clustering and network analysis usually follow normalisation.
 
 ![](flowchart_rnaSeq.png)
 
-In this lab, we once again omit several steps and start with a count matrix of transcripts, after alignment and mapping has been carried out. 
-We will explore different tools that can be used for quality control, differential gene expression and clustering. 
+In this lab, we once again omit several steps and start with a count matrix of
+transcripts, after alignment and mapping has been carried out. We will explore
+different tools that can be used for quality control, differential gene
+expression and clustering.
 
 # Analysis pipeline
 
 ## Loading packages
 
-The following packages should be loaded. 
-Remember, if you haven't installed a specific package, use `BiocManager::install("packageName")`. 
-When running this, you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip updating the rest of the packages for this lab (which can otherwise take some time).
+The following packages should be loaded. Remember, if you haven't installed a
+specific package, use `BiocManager::install("packageName")`. When running this,
+you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip
+updating the rest of the packages for this lab (which can otherwise take some
+time).
 
 ```{r, message=FALSE, warning=FALSE}
 library(SummarizedExperiment)
@@ -52,7 +61,8 @@ library(viridis)
 
 ## Load the data
 
-The data for the second lab is available from Github in genetech/labs/ex2/.
+The data for the second lab is available from the cloned GitHub repo, found in
+genetech/labs/ex2/data/.
 
 ```{r, echo=T}
 
@@ -76,8 +86,9 @@ Now, you have a data frame called "metadata", with experimental information.
 
 ## SummarizedExperiment
 
-Create a SummarizedExpermient object with the loaded counts.
-See `?SummarizedExperiment` to see how to add metadata as a parameter to the function call. 
+Create a SummarizedExpermient object with the loaded counts, call this object `se`. See
+`?SummarizedExperiment` to see how to add metadata as a parameter to the
+function call.
 
 ```{r}
 
@@ -90,12 +101,15 @@ In order to extract the count data, you type `assays(se)$counts`.
 
 ## Pre-processing 
 
-We are testing several samples for differential expression of many genes simultaneously. This adds to the multiple testing burden, reducing the power to detect DE genes.
+We are testing several samples for differential expression of many genes
+simultaneously. This adds to the multiple testing issue, reducing the power to
+detect DE (differentially expressed) genes.
 
-Therefore, we filter out genes with all zero or low counts that does not add anything in terms of evidence for differential expression. 
+Therefore, we filter out genes with all zero or low counts that does not add
+anything in terms of evidence for differential expression.
 
-Perform filtering, exlude all genes that have a total count value across all samples of <=10. 
-Use the skills you learnt in LAB1. 
+Perform filtering, exlude all genes that have a total count value across all
+samples of $<=10$. Use the skills you learned in Lab 1.
 
 ```{r}
 
@@ -103,7 +117,7 @@ Use the skills you learnt in LAB1.
 
 ```
 
-Now print again your SummarizedExperiment object. 
+Now print your SummarizedExperiment object. 
 
 ```{r}
 
@@ -115,13 +129,21 @@ Now print again your SummarizedExperiment object.
 
 We will use DESeq2 for DE analysis. 
 
-To study DE genes we *don't need* to take into an account gene length because the tools for DE analysis are comparing the counts between sample groups for the same gene.
-However, sequencing depth and RNA composition *do need* to be taken into account.
-To normalize for sequencing depth and RNA composition, DESeq2 uses the median of ratios method. On the user-end there is only one step, but on the back-end there are multiple steps involved, as described below.
+To study DE genes we *don't need* to take into an account gene length because
+the tools for DE analysis are comparing the counts between sample groups for the
+same gene. However, sequencing depth and RNA composition *do need* to be taken
+into account.
 
-Let's start by looking at the variability of sequencing depth across our samples: (is normalization needed?)
+To normalize for sequencing depth and RNA composition, DESeq2 uses
+the median of ratios method. On the user-end there is only one step, but on the
+back-end there are multiple steps involved, as described below.
 
-NB: Count data is not normally distributed, so if we want to examine the distributions of the raw counts we need to log the counts. Next we’ll use box plots to check the distribution of the read counts on the log2 scale.
+Let's start by looking at the variability of sequencing depth across our
+samples: (is normalization needed?)
+
+Count data is not normally distributed, so if we want to examine the
+distributions of the raw counts we need to log the counts. Next we’ll use box
+plots to check the distribution of the read counts on the log2 scale.
 
 ```{r}
 
@@ -138,21 +160,26 @@ Q1 - What is your interpretation from the plot?
 # Add an answer
 ```
 
-Now, in order to use the DESeq2 workflow, we first need to create a DESeq2 object to store our data. (Similar to our SummarizedExperiment). The code to do this is given below:
+Now, in order to use the DESeq2 workflow, we first need to create a DESeq2
+object to store our data. (Similar to our SummarizedExperiment). The code to do
+this is given below:
 
 
 ```{r, warning=FALSE, message=FALSE}
 
 #Create the DESeqDataSet (set design = ~1, which we change later)
-dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts, colData = metadata, design = ~ 1)
+dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
+                              colData = metadata, design = ~ 1)
 
 #Combine factors of interest into a single factor with all combinations of the original factors
-dds$group <- factor(paste0(dds$treatment, dds$outcome))
+dds$group <- factor(paste0(dds$treatment,
+                           dds$outcome))
 design(dds) <- ~ group
 
 ```
 
-Now, we can use the DESeq2 function `DESeq`. This is a function that performs several steps, including normalization. The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
+Now, we can use the DESeq2 function `DESeq`. This is a function that performs
+several steps, including normalization. The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -162,15 +189,18 @@ dds <- DESeq(dds)
 
 This might take a few minutes.
 
-If you now print the dds object, you will see that the structure is similar to the SummarizedExperiment, but with some new assays and colData. 
+If you now print the `dds` object, you will see that the structure is similar to
+the SummarizedExperiment, but with some new assays and colData.
 
 ```{r}
 dds
 ```
 
-For each sample, we now have a sizefactor (stored in colData). We can use this sizefactor to normalize our samples by dividing the raw count with the size factor. This is stored in `counts(dds, normalized=T)`
+For each sample, we now have a sizefactor (stored in colData). We can use this
+sizefactor to normalize our samples by dividing the raw count with the size
+factor. This is stored in `counts(dds, normalized=T)`
 
-Make a similar boxplot as before, on the normalized data. 
+Make a similar boxplot as before, but with the normalized data.
 
 ```{r}
 #Write code
@@ -182,18 +212,27 @@ Do you spot the difference?
 
 ## Exploratory analysis
 
-When exploring RNAseq data, you usually want to perform some kind of transformation before visualization. 
-Otherwise, highly expressed genes tend to dominate the result. 
-A common method to deal with this is to simply take the log2 of the counts. 
-However, this can lead to the opposite situation - lowly expressed genes getting to much influence on the result. 
-Another frequently used method is the variance-stabilizing transformation (VST). VST is included in the DESeq2 package. 
+When exploring RNAseq data, you usually want to perform some kind of
+transformation before visualization. Otherwise, highly expressed genes tend to
+dominate the result. A common method to deal with this is to simply take the
+log2 of the counts (with a pseudocount added). However, this can lead to the
+opposite situation - lowly expressed genes getting to much influence on the
+result.
 
-In RNA-Seq data, genes with larger average expression have on average larger observed variances across samples. This is called "heteroscedasticity". If we VST transform the data, the standard deviation becomes more constant along the whole dynamic range. 
-The following picture illustrate this:
+Another frequently used method is the variance-stabilizing transformation (VST),
+this is used to disentangle the mean-variance relationship seen in count data.
+VST is included in the DESeq2 package.
+
+
+In RNA-Seq data, genes with larger mean expression tend to have higher observed
+variances across samples. Random variables for which variance differ across
+certain ranges of values are called "heteroscedastic". If we VST transform
+the data, the standard deviation (sd) becomes more constant along the whole dynamic
+range. The following picture illustrate this:
 
 ![effect of vst transformation](lab2_vst.png)
 
-Let's transform our data via the vst method before looking at our samples:
+Let's transform our data via the VST method before looking at our samples:
 
 ```{r}
 
@@ -204,7 +243,7 @@ Let's transform our data via the vst method before looking at our samples:
 
 ### Heatmap
 
-Using the vst transformed counts, we can create a heatmap:
+Using the VST transformed counts, we can create a heatmap:
 
 ```{r}
 
@@ -231,15 +270,21 @@ Q2 - Is there any sample that stands out? What would you do with it?
 
 ## Differential expression
 
-When we conduct DE analysis in this manner, we are comparing 2 conditions against each other. As noted, we have several different conditions in this data set, each pairwise comparison is saved as separate results in our dds object. To view what we have:
+When we conduct DE analysis in this manner, we are comparing 2 conditions
+against each other. As noted, we have several different conditions in this data
+set, each pairwise comparison is saved as separate results in our dds object. To
+view what we have:
 
 ```{r}
 resultsNames(dds)
 ```
 
-For example, "group_AR_vs_ANR", contains the DE result comparing Drug A "Responder" vs Drug A "Non-responder". 
+For example, "group_AR_vs_ANR", contains the DE result comparing Drug A
+"Responder" vs Drug A "Non-responder".
 
-A contrast is a linear combination of estimated log2 fold changes, which can be used to test if differences between groups are equal to zero. To extract the DE result for a specific drug, let's use results command: 
+A contrast is a linear combination of estimated log2 fold changes, which can be
+used to test if differences between groups are equal to zero. To extract the DE
+result for a specific drug, we may use results command:
 
 ```{r}
 
@@ -247,11 +292,18 @@ res <- results(dds, contrast=c("group", "BR", "BNR"))
 
 ```
 
-Note that the log2 fold change and Wald test p value will be for the last variable. (See [this link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an explanation on the Wald test.)
+Note that the log2 fold change and Wald test p-values will be for the last
+variable. (See [this
+link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an
+explanation on the Wald test.)
 
-NOTE: The genes with adjusted p-value of NA have less mean normalized counts than the optimal threshold.
+NOTE: The genes with adjusted p-values of NA have less mean normalized counts
+than the optimal threshold.
 
-Now, use this method to find the top 50 upregulated and downregulated genes (based on adjusted p-value) for each specific drug, i.e. for drug A -> compare responders vs non-responders. Do this for all drugs and create a list of the genes.
+Now, use this method to find the top 50 upregulated and downregulated genes
+(based on adjusted p-value) for each specific drug, i.e. for drug A -> compare
+responders vs non-responders. Do this for all drugs and create a list of the
+genes.
 
 
 ```{r}
@@ -259,7 +311,9 @@ Now, use this method to find the top 50 upregulated and downregulated genes (bas
 ```
 
 
-Q3 - Is there any overlap between these genes across drugs? Are there some genes that seem to correlate with all responders regardless of drug? Is there any drug with a specific set of genes?
+Q3 - Is there any overlap between these genes across drugs? Are there some genes
+that seem to correlate with all responders regardless of drug? Is there any drug
+with a specific set of genes?
 
 Hint: the function `intersect()` could be useful
 
@@ -272,5 +326,3 @@ Q4 - Take one or two genes and look it up. Can you make any conclusion? Motivate
 ```{r}
 # Add answer
 ```
-
-
