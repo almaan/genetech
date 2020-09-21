@@ -1,7 +1,7 @@
 ---
 title: "Lab3 - Single Cell RNAseq"
 author: "Original : Joseph Bergenstråhle - Edit : Ludvig Larsson, Alma Andersson, Sailendra Pradhananga "
-date: "06 Dec 19"
+date: "04 Oct 2020"
 output:
   tufte::tufte_html: default 
 ---
@@ -14,12 +14,10 @@ ____
 ## Lab3 - Single cell RNA seq (scRNA-seq)
 ____
 
-Today, it's possible to get genomic information even from single cells. (You
-should have heard about single cell RNA-seq in the lectures!). Traditionally,
-many of the methods used to analyze RNA-seq data were developed with standard
-"bulk" RNA-seq in mind. However, some of the underlying assumptions that are
-used for "bulk" RNA-seq methods are not appropriate for analyzing scRNA-seq
-data.
+In the previus computer lab session, you got to explore some tools to analyze 
+RNA sequencing data from "bulk" samples. However, nowadays it's possible to get genomic 
+information even from single cells (you should have heard about single cell 
+RNA-seq in the lectures!). 
 
 The most obvious advantages with the new single cell technologies is the 
 fact that we're no longer measuring an average across a larger population and
@@ -28,60 +26,85 @@ This opens up for a number of possibilities to study tissues and organs at an
 unpresedented resolution. Today, reseearchers can collect even millions of 
 cells from a tissue to create atlases, a bit like a google earth for cell types. 
 
+It is also worth mentioning that historically, many of the methods developed 
+transcriptomic analysis were developed with "bulk" RNA-seq data in mind. 
+Many of the ideas used for things like quality control, normalization, DE analysis etc.
+can still be applied to single-cell datasets, but some of the underlying assumptions 
+for "bulk" RNA-seq data are no longer applicable. Nowadays there's an abundance of 
+single-cell specific strategies to solve the same tasks more efficiently! 
+
 ____
 ## 1) Introduction
 ____
 
 Short primer: what is scRNA-seq?
 
-* Measures the expression levels for each gene across a population of cells.
-* Adresses biological questions in which cell-specific changes in
-  transcriptome are important, e.g. cell type identification, heterogeneity of
-  cell responses, stochasticity of gene expression, inference of gene regulatory
-  networks across the cells.
-* Currently there are several different protocols in use, e.g. SMART-seq2,
+  * Experimental protocols that measure expression levels for thousands of genes 
+  each gene across a population of cells
+  * Adresses biological questions in which cell-specific changes in transcriptome 
+  are important, e.g. cell type identification and characterization, cell type 
+  specific response to external stimuli, differentiation trajectories, cell-cell
+  communications, regulatory networks etc.
+  * Currently there are several different protocols in use, e.g. SMART-seq2,
   CELL-seq and Drop-seq.
-*  There are also commercial platforms available, including the Fluidigm C1, 10X
+  *  There are also commercial platforms available, including the Fluidigm C1, 10X
    Genomics Chromium etc.
-*  Several computational analysis methods from bulk RNA-seq can be used.
-*  In most cases computational analysis requires adaptation of the existing
-   methods for bulk RNA-seq analyses or development of new ones.
+  *  In most cases computational analysis requires adaptation of the existing
+   methods for "bulk" RNA-seq analyses or development of new ones.
    
 
-This is a general pipeline for an scRNA-seq analysis workflow
+Below is a general pipeline for an scRNA-seq data processing and analysis workflow. 
+Note that the general workflow is very similar to "bulk" RNA-seq data analysis!
 
 ![](flowchart_rnaSeq.png)
+
+### Data processing
+
+The first three steps (yellow) are data processing steps which will not be part of this
+lab. In summary, the raw data that comes out of the sequencing instrument needs to be
+processed into an expression matrix with a count estimate for each gene and cell. 
+
+
+### Analysis
+
+The next three steps (orange) includes filtering and normalization of the data to 
+end up with a representative expression matrix where outlier data points have been 
+removed and technical sources of variability has been reduced (e.g. difference in read 
+depth, and batch effects)
+
+The last part of the workflow (blue) includes all methods used for analysis, including 
+dimensionality reduction, clustering, differential expression and much much more. 
 
 ____
 ## 2) Construct the expression matrix
 ____
 
-Ok, let's start by looking at our expression matrix. Note that in the workflow
-schematic above, we will skip the Read QC, Alignment, Mapping QC, and Cell QC
-steps. Let's assume this (boring ;-)) stuff has already been done.
+Here we will work on a scRNA-seq gene expression matrix which has already been processed
+for us [Tung et al](https://www.nature.com/articles/srep39921). This means that in the workflow
+schematic above, we will skip the Read QC, Alignment and Mapping QC (the boring stuff).
 
-Here we have provided you with an already quality-controlled dataset, consisting
-of pluripotent stem cells. Load the data!
+Let's start by loading our expression matrix. 
 
-```{r, eval=FALSE}
+```{r read_data}
 data <- read.table("data/tung.tsv")
-
 ```
 
 The object called `data` is an object of class `data.frame`. A `data.frame` 
-object is usually used to store any kind of tabular data in R. It's always a 
-good idea to get familiar with the data, so you can for example check the class,  
-dimensions and the content of the `data.frame`. This `data.frame` contains 
-single-cell data where the genes (features) are in the rows and cells are in columns.
+object is usually used to store any kind of tabular data in R and they can also 
+contain heterogeneous data. 
 
-```{r, eval=FALSE}
+It's always a good idea to get familiar with the data, so you can for example check the class,  
+dimensions and the content of the `data.frame`. This `data.frame` contains single-cell data 
+where the genes (features) are in the rows and cells are in columns.
+
+```{r check_object}
 # Check class
 class(data)
 
 # Check dimensions
 dim(data)
 
-# Print top left corner
+# Print top left corner (see what the content looks like)
 data[1:5, 1:5]
 
 ```
@@ -91,38 +114,39 @@ data[1:5, 1:5]
 We will use the "Seurat" R package, developed by the Satija Lab
 https://satijalab.org/ at NYU. Seurat has become one of the most popular 
 tools for single cell analysis in R and is constantly updated with new features. 
-There are many tutorials available on their website to get started with various 
+There are many detailed tutorials available on their website to get started with various 
 types of analyses which is also a reason why it has become so popular among 
 researchers.
 
 A core feature of Seurat is the `Seurat` object. Without going into too much detail,
-this is an object designed to store all relevant input data as well as analysis results.
-This includes raw expression data, normalized data, dimensionality reduction outputs and
-much more. The `Seurat` object is an S4 class object and has a bunch of methods 
-associated with it. The methods available from the `Seurat` package are just like functions 
-in R, but have been specifically designed to work on `Seurat` objects. Many of them are 
-just there for convenience to make it easier to extract and put in data into the `Seurat` object.
-We will familiarize ourselves with some of these functions, but it's always a good idea to 
-explore the package documentation to make life easier.
+this is an object designed to store expression matrices (raw and normalized) as well 
+as meta data and analysis results. The idea with using this type of object is to keep 
+everything organized in one place, make it easier to run code and to minimize the risk 
+of making mistakes.
 
-If you have installed the Seurat R package, the only thing you need to create a 
-`Seurat` object is an expression matrix with cells in columns and genes in rows. 
-Once this object has been created, Seurat provides all the tools necessary to run 
-the steps described in the flowchart above using a set of predefined functions. 
+The `Seurat` object is an S4 class object and has a bunch of _methods_ associated with it. 
+The _methods_ available from the `Seurat` package are just like functions in R, but have 
+been specifically designed to work on `Seurat` objects (meaning that they will most likely not work on 
+other object types). Many of them are just there for convenience to make it easier to extract 
+and put in data into the `Seurat` object. We will familiarize ourselves with some of these 
+_methods_, but it's always a good idea to explore the package documentation to make life easier.
+
+If you have installed the Seurat package, the only thing you need to get going is an 
+expression matrix with cells in columns and genes in rows. 
 
 Load the Seurat R package (install via BiocManager::install() if not already installed)
 
-```{r, eval=FALSE}
+```{r load_seurat, warning=FALSE, message=FALSE}
 #BiocManager::install('Seurat')
 library(Seurat)
 
 ```
 
 Before we create our `Seurat` object, it can be useful to include some meta data as well. 
-Meta data is typically a table with additional information about our cells, e.g. if they were processed
-in separate batches or obtained from different individuals. 
+Meta data is typically a table with additional information about our cells, e.g. if they 
+were processed in separate batches or obtained from different individuals. 
 
-```{r, eval=FALSE}
+```{r load_metadata}
 metadata <- read.table(file = "data/tung_metadata.tsv", stringsAsFactors = FALSE)
 head(metadata)
 
@@ -136,36 +160,38 @@ sprintf("gene expression colnames matches meta data rownames: %s", check)
 Note that the rownames of the meta data table matches the column names of the expression
 matrix. This is important to make sure that the meta data is associated with the correct cells.
 
-Let's create a `Seurat` object with our expression matrix and meta data table.
+Let's create a `Seurat` object with our expression matrix and meta data `data.frame`.
 
-```{r, eval=FALSE}
+```{r create_seurat}
 se <- CreateSeuratObject(counts = data, meta.data = metadata)
 ```
 
-To access the meta data from your new Seurat object, you can use double brackets `[[]]`.
+To access the meta data from your new Seurat object, you can use double brackets `[[]]`. (You can 
+of course save this meta data to a new variable if you like doing something like this: `mdata <- se[[]]`)
 
-```{r, eval=FALSE}
+```{r head_seurat_object}
 # Check the meta data
 head(se[[]])
 
 ```
 
-Notice that you have some additional columns in your meta data whcih have been added 
-automatically when you created your Seurat object. For example; `nCount_RNA` which is the number 
+Notice that you have some additional columns in your meta data which have been added 
+automatically when you created your `Seurat` object. For example; `nCount_RNA` which is the number 
 of unique molecules detected per cell and `nFeature_RNA` which is the number of unique genes
-detected per cell. 
+detected per cell. These are the two most common quality metrics and you will be using them
+to filter the data later.
 
 You can access any column from you Seurat object using the `$` symbol, just like you would
 with a `data.frame` object. Below is an example of how to extract the "replicate" column
-and then summarizing how many cells from each replicate that we have.
+and then summarizing how many cells from each replicate that we have using the `table` function.
 
-```{r, eval=FALSE}
+```{r table_reps}
 table(se$replicate)
 ```
 
-*Q1:* How many genes do we have? How many cells?
+*Q1:* How many genes do we have? How many cells do we have?
 
-```{r, eval=FALSE, echo=TRUE}
+```{r print_stats}
 # Write your code / answer here
 # Replace NA with the correct values
 
@@ -178,23 +204,24 @@ cat(sprintf("Number of genes: %s\nNumber of cells: %s", number.of.genes, number.
 
 Single-cell data typically contains _a lot_ of "samples" (cells). Due to the
 size of the count matrix and the high frequency of 0 values, `Seurat` stores the
-data in a "sparse matrix format" to save memory. 
+data in a "sparse matrix" format to save memory. 
 
 You can access the raw data using the `GetAssayData` method and specify that 
 you want to collect the raw expression matrix by typing `slot = "counts"`. Note 
-that this matrix is the same as the `data` matrix that we used to create our `Seurat` object. 
+that this matrix is the same as the `data` matrix that we used to create our `Seurat` object,
+just in a different format. 
 It's important to know how to extract data from the Seurat object as well, for example when 
-you need to apply a method which is not available from the `Seurat` R package. 
+you need to apply a method that is not available from the `Seurat` R package. 
 
-```{r, eval=FALSE}
+```{r sparse_matrix, eval=FALSE}
 sparse.exprMat <- GetAssayData(se, slot = "counts")
 ```
 
 Now we have the raw expression matrix in a sparse format saved to a variable called 
-`sparse.exprMat`. Let's have a look at the top left corner of the matrix (first 5 genes
-and first 5 cells). 
+`sparse.exprMat`. Let's check the class of the matrix and have a look at the top left 
+corner (first 5 genes and first 5 cells). 
 
-```{r}
+```{r check_class_sparse}
 # Check class of object 
 class(sparse.exprMat)
 
@@ -202,17 +229,17 @@ class(sparse.exprMat)
 sparse.exprMat[1:5, 1:5]
 ```
 
-Note that class of the matrix is called "dgCMatrix" which is a type of sparse matrix format. 
+The class of the matrix is called "dgCMatrix" which is a type of sparse matrix format. 
 This format is only useful when the data contains a lot of 0 values, which is the case for 
-scRNA-seq data. The 0 values aren't actually stored in memory which saved a lot of space.
+scRNA-seq data. Using this format, the 0 values aren't actually stored in memory which saves a lot of space.
 
 Column names such as "NA19098.r1.A01" or "NA19098.r1.A02" represent unique cell identifiers,
-whereas the gene names are given here as gene symbols (HGNC nomenclature).
+whereas the gene names such as "A3GALT2" or "A4GNT" are given here as gene symbols (HGNC nomenclature).
 
 Sometimes, it's easier to work with a "normal" matrix and if you want to you can simply convert
 the sparse matrix into a normal matrix using the `as.matrix` function:
 
-```{r, eval=FALSE}
+```{r check_dims_sparse_vs_normal}
 exprMat <- as.matrix(sparse.exprMat)
 
 # Check class of object 
@@ -220,6 +247,10 @@ class(exprMat)
 
 # Extract top left corner
 exprMat[1:5, 1:5]
+
+# Print object size
+sprintf("Size of sparse matrix: %s", utils:::format.object_size(object.size(sparse.exprMat), "auto"))
+sprintf("Size of 'normal' matrix: %s", utils:::format.object_size(object.size(exprMat), "auto"))
 ```
 
 ____
@@ -227,26 +258,29 @@ ____
 ____
 
 Now, some cells in your expression matrix might be too "bad" to include in your analysis. 
-Cells with very few detected RNA molecules are sometimes too sparse to extract meaningful 
-information from and if these cells are kept they could have a negative impact on our
-analysis. It's usually a good idea to explore the data visually to make sense of various
-quality aspects and then apply some filters to decide what cells to keep.
+For example, cells with very few detected RNA molecules could actually represent damaged 
+or dying cells and they could have a negative impact on our analysis. It's usually a good idea to explore 
+the data visually to make sense of various quality aspects and then filter the data to remove outliers.
+Below we'll go through a couple of examples where we look at the distribution of unique genes
+using a histogram.
 
 ### Number of unique genes per cell
 
-To visualize the distribution of number of unique genes per cell, we can use a histogram. 
-Take a look at the histogram of some synthetic data representing unique genes detected per cell:
+To visualize the distribution of number of unique genes per cell as a histogram, we can the function `hist`.
+The values defined as `nGenes` below have randomly generated from a normal distribution, but in reality 
+the distribution can be a bit skewed.
 
-```{r, eval=FALSE, echo=TRUE}
-# Plot histogram
+```{r plot_histogram}
+# generate random numbers
 nGenes <- rnorm(n = 1e4, mean = 4e3, sd = 500)
+# Plot histogram
 hist(nGenes, breaks = 50)
 ```
 
 We can add additional things to our histogram, e.g. a vertical line highlighting a cut-off point.
 Here we'll highlight the `mean` values, and the 1st and 2nd standard deviations (`sd`) from the `mean`.
 
-```{r, eval=FALSE, echo=TRUE}
+```{r plot_histogram_sd}
 # plot histogram
 hist(nGenes, breaks = 50)
 
@@ -267,20 +301,22 @@ from the mean as vertical lines.
 
 Hint: you can access meta data using the `$` symbol. 
 
-```{r, eval=FALSE, echo=TRUE}
+```{r plot_histogram_answer}
 # Write your code / answer here
 ```
 
-Sometimes it can be useful set filtering thresholds using statistical measures such as
+Sometimes it can be useful to set filtering thresholds using statistical measures such as
 mean +/- standard deviation, but in real data you typically set a threshold based on visual 
 inspection. Histograms are useful, but the `Seurat` package contains other neat methods to 
 plot quality measurements from your data. The `VlnPlot` method makes it easy to explore 
-quality metrics and also makes it very easy to examine batches separately. Each dot in the 
-violin plot represents a cell and the colored shape behind the dots reflects the density 
-distrubution (much like a tilted histogram). Here you can for example see that the cells 
+quality metrics and also makes it very easy to group the data by different columns in your 
+meta data slot. 
+
+Each dot in the violin plot represents a cell and the colored shape behind the dots reflects 
+the density distrubution (much like a tilted histogram). Here you can for example see that the cells 
 with the lowest number of unique genes are found in replicate 3. 
 
-```{r, eval=FALSE, echo=TRUE}
+```{r plot_violin}
 VlnPlot(se, features = "nFeature_RNA", group.by = "replicate")
 ```
 
@@ -289,7 +325,7 @@ genes. The `VlnPlot` method uses the `ggplot2` R package to draw the plots, so i
 add lines we cannot use the `abline` function like we did before. Instead we'll use a function
 called `geom_hline`. 
 
-```{r, eval=FALSE, echo=TRUE}
+```{r plot_violin_threshold}
 VlnPlot(se, features = "nFeature_RNA", group.by = "replicate") +
   geom_hline(aes(yintercept = 5000, color = "threshold"), linetype = "longdash") +
   labs(color = "") + # Remove title from color legend
@@ -301,7 +337,7 @@ number of unique genes per cell and number of molecules per cell.
 
 Hint: the features argument of `VlnPlot` can take a character vector with more than 1 feature.
 
-```{r, eval=FALSE, echo=TRUE}
+```{r plot_violin_2_features}
 # Write your code / answer here
 ```
 
@@ -322,7 +358,7 @@ code chunk below. Save the new "Seurat" object into a variable called `se.subset
 Hint: You can for example use the `subset`. Type ?subset.Seurat in the R console to 
 open up a documentation window for the `subset` function.
 
-```{r, eval=FALSE, echo=TRUE}
+```{r subset_seurat}
 
 # Select cell names with at least 1 million unique molecules
 set1 <- se$nCount_RNA >= 1e6
@@ -340,10 +376,12 @@ head(keep.cells)
 ```
 
 You will often find that some genes are lowly expressed across your dataset. It can be a 
-good idea to filter out such genes as these are not always informative. We can compute the 
-overall expression per gene by summing up the count for each row:
+good idea to filter out such genes as these are not always informative. Just like we don't want
+to keep low quality cells we don't want to keep low quality genes!
 
-```{r, eval=FALSE}
+We can compute the overall expression per gene by summing up the count for each row:
+
+```{r gene_counts}
 # First get the expression matrix
 sparse.exprMat <- GetAssayData(se, slot = "counts")
 
@@ -358,30 +396,35 @@ head(gene.counts)
 ```
 
 *Q5:* Compute a new vector (call it `keep.genes`) containing the genes with a total
-expression lower than 500 across the whole dataset. The `keep.genes` character vector 
+expression higher than 500 across the whole dataset. The `keep.genes` character vector 
 should consist of genes symbols.
 
 Hint: You can use the vector called `gene.counts` to determine what genes to keep. 
 Check the example above where we filtered out cells.
 
-```{r, eval=FALSE, echo=TRUE}
+```{r keep_genes}
 # Write your code / answer here
 ```
 
 Now that we have this vector we can subset the "Seurat" object we did previously,
 but this time we'll apply the filter to the genes instead.
 
-```{r, eval=FALSE, echo=TRUE}
+```{r subset_genes}
 se.subset <- subset(se.subset, features = keep.genes)
 ```
 
 Now that we have filtered our object (`se.subset`), we should have fewer cells
 and fewer genes. 
 
-*Q6:* How many cells do we have now? How many genes?
+*Q6:* How many cells/genes do we have after filtering?
 
-```{r, eval=FALSE, echo=TRUE}
+```{r print_dims_after_filter}
 # Write your code / answer here
+# Replace NA with the correct values
+nCells <- NA
+nGenes <- NA
+sprintf("Number of cells after filtering: %s", nCells)
+sprintf("Number of genes after filtering: %s", nGenes)
 ```
 
 _____
@@ -389,14 +432,14 @@ _____
 _____
 
 There are some specific challenges associated with single cell data. In particular, 
-the major challange is that the data is much sparser compared to bulk RNA-seq data. 
+the major challange is that the data is much sparser compared to "bulk" RNA-seq data. 
 A result of this is that the number of genes detected in a single cell is typically 
 only a fraction of the number of genes expressed across the genome. In other words, 
 a lot of genes have 0 expression in a cell.
 
 The missing genes are referred to as **gene "dropouts"** and these make it challenging to 
-compare expression levels across cells. Dropouts are less common in bulk sequencing data 
-because you measure expression levels from a large number of cells at the same time, thus 
+compare expression levels across cells. Dropouts are less common in "bulk" sequencing data 
+because you pool transcripts from a large number of cells at the same time, thus 
 increasing the change of measuring any one gene.
 
 The total amount of RNA molecules that are measured in a cell (referred to as "library size") 
@@ -408,27 +451,27 @@ and are commonly referred to as "confounding factors".
 To make the expression levels comparable across cells, we can adress confounding factors
 by applying a normalization method. A good normalization strategy can be used to transform a
 raw expression matrix into a new matrix where expression levels are comparable across cells 
-in a meaningful way. You can find a number of normalization strategies and more in depth theory
+in a more meaningful way. You can find a number of normalization strategies and more in depth theory
 [here](https://scrnaseq-course.cog.sanger.ac.uk/website/cleaning-the-expression-matrix.html#normalization-theory).
 
-In this course, we will use a method called variance stabilizing transformation, 
-[VST](https://www.biorxiv.org/content/10.1101/576827v2) method which is provided 
+In this course, we will use a method called variance stabilizing transformation (
+[VST](https://www.biorxiv.org/content/10.1101/576827v2)), a method which is provided 
 by the `SCTransform` function from the `Seurat` package:
 
-```{r, eval=FALSE}
+```{r sctransform, message=FALSE, warning=FALSE}
 se <- SCTransform(se)
 ```
 
-Now, you will have a new "assay" stored in the `Seurat` object called "SCT",
-which contains the normalized data. This assay will automatically become 
-the "active" assay for subsequent analyses. The "active" assay contains 
-data that it will be used as input to any method that you apply to your 
-`Seurat` object. In practice, this means that whatever method you apply 
-to you expression data from now will be applied to the normalized data. 
+When the normalization is finished, you will have a new "assay" stored in the `Seurat` 
+object called "SCT", which contains the normalized data. This assay will automatically 
+become the "active" assay for subsequent analyses. The "active" assay contains data 
+that will be used as input to any method that you apply to your `Seurat` object which 
+requires an expression matrix as inout. In practice, this means that whatever method 
+you apply to your `Seurat` object from now will be applied to the normalized data. 
 
 If you type `DefaultAssay(se)`, you should get "SCT".
 
-```{r}
+```{r default_assay}
 DefaultAssay(se)
 ```
 
@@ -443,7 +486,7 @@ you can use the `DefaultAssay <- ` method instead, like this:
 
 Check the output of pasting se + ENTER:
 
-```{r}
+```{r print_seurat}
 se
 ```
 
@@ -454,10 +497,11 @@ _____
 A single-cell dataset is composed of several cell types which are all characterized by the 
 expression of specific sets of genes. If we were to zoom in on a specific cell type, it is 
 reasonable to expect that there exists some set a co-expressed genes which defines this cell type. 
-For example, you might find that a cell type express genes related to neuronal activity, immune 
-respones or oxygen transport. 
+For example, you might find that a cell type express sets of genes related to neuronal activity, immune 
+respones or oxygen transport and based on these genes sets it should be relatively straightforward to figure
+out what function the cells have or where they originate from.
 
-In reality, an expression matrix represent many complex interactions between different genes and these 
+In reality, a scRNA-seq dataset represent many complex interactions between different genes and these 
 interactions can vary across different cell types and cell states. But there are typically some very clear
 patterns in the data and what we want to do is to make sense of these patterns. 
 One major benefit with scRNA-seq data is that we can fish out different patterns using machine learning 
@@ -466,17 +510,18 @@ particularly suitable for this task.
 
 As the name implies, a dimensionality reduction method can be used to reduce a high dimensional dataset into a 
 representation with fewer dimensions. These new dimensions can pick up sources of variability in the dataset, 
-such as signalling pathways, immune functions, metabolic activity, apoptotic activity and much more. The most 
-useful patterns are often the ones that represent some biological variability, but you can also find patterns 
+such as signalling pathways, immune functions, metabolic activity, apoptotic activity and much more. 
+
+The most useful patterns are often the ones that represent some biological variability, but you can also find patterns 
 that represent technical variability. An example of this could be if you have doublet cells in your data. We are 
 only interested in analyzing individual cells, but sometimes two or more "connected" cells slip through the 
-experimental procedure because of technical limitations. We can adress most of the technical variability using 
-normalization and filtering procedures, but you should always keep an eye things like this.
+experimental procedure because of technical limitations of the protocol. We can adress most of the technical 
+variability using normalization and filtering procedures, but you should always keep an eye out for technical 
+confounders!
 
-The interpretation of dimensionality reduction vectors can be confusing, so it can be helpful to think of them as 
-patterns representing some biological or technical variability.
-
-For scRNA-seq data, dimensionality reduction methods are also crucial to visualize the data! 
+The interpretation of dimensionality reduction vectors can be confusing, so it can be helpful to simply think of 
+them as patterns representing some biological or technical variability. Also, for scRNA-seq data, dimensionality 
+reduction methods have become crucial to visualize the data which we will see later in this lab! 
 
 First, let's have a look at the most widely used dimensionality reduction method called 
 Pincipal Component Analysis (PCA). This method can be applied to our Seurat object 
@@ -484,13 +529,13 @@ using the `RunPCA` function.
 
 Let's first compute a PCA representation of our data:
 
-```{r, eval=FALSE}
+```{r PCA}
 se <- RunPCA(se)
 ```
 
 We can then plot the transformed data by using the function `DimPlot()` and specify the reduction that we want to use:
 
-```{r, eval=FALSE}
+```{r pcaplot1, fig.width=7, fig.height=6}
 DimPlot(se, reduction = "pca", dims = c(1, 2))
 ```
 
@@ -502,7 +547,7 @@ form two groups in the plot.
 We can also color the cells using information from our meta data table. Let's color
 the cells based on replicate:
 
-```{r, fig.width=7, fig.height=6}
+```{r pcaplot2, fig.width=7, fig.height=6}
 DimPlot(se, reduction = "pca", dims = c(1, 2), group.by = "replicate")
 ```
 
@@ -511,28 +556,31 @@ attributed to previous knowledge about your data. Looking at PC_2 you can see th
 of cells from replicate "r1" differ from the other two replicates. The effect is not super clear, 
 but we can for example use the `VlnPlot` function as we did before:
 
-```{r, eval=TRUE}
+```{r vlnplot_pca}
 VlnPlot(se, features = "PC_2", group.by = "replicate")
 ```
 
-Here you can clearly see that r1 stands out. We actually know here that these are technical replicates, 
-meaning that the cells have been sampled from the same poulation, so we can draw the conclusion that 
-this effect is technical and should be removed. This type of technical effect found between groups 
-processed independently is commonly referred to as a "batch effect".
+Here you can clearly see that r1 stands out. We actually know here that the colors represent technical replicates, 
+meaning that the cells have been sampled from the same poulations. So from this we can draw the conclusion that 
+the separation along PC_2 represents a technical effect and should be removed. This type of technical effect 
+found between groups processed independently is commonly referred to as a "batch effect" because the cells
+have been procesed in three different batches. (A batch effect could for example be represented by different 
+sequencing dates, different labs, different experimentalists or even different experimetnal platforms but should always 
+refer to non-biological factors).
 
-Luckily, the `SCTransform` normalization method allows us to model and account for suc batch efffects.
+Luckily, the `SCTransform` normalization method allows us to model and account for minor batch efffects.
 What we have to do is to specify a batch variable so that the `SCTransform` function knows 
 how the cells are partitioned into different batches. We can do this using the `var.to.regress` 
 argument.
 
-```{r}
+```{r sctransform_batch}
 se <- SCTransform(se, vars.to.regress = "replicate")
 se <- RunPCA(se)
 ```
 
 Now we should see that the separation of replicates along PC_2 has been reduced.
 
-```{r}
+```{r vln_pot_after_batch_corr}
 VlnPlot(se, features = "PC_2", group.by = "replicate")
 ```
 
@@ -540,7 +588,7 @@ VlnPlot(se, features = "PC_2", group.by = "replicate")
 from our data. Re-run the normalization with SCTransform and include both "replicate" and
 "individual" as variable to regress out (`vars.to.regress`).
 
-```{r, eval=FALSE}
+```{r vln_plot_two_vars}
 # Write your code / answer here
 
 ```
@@ -548,15 +596,15 @@ from our data. Re-run the normalization with SCTransform and include both "repli
 In most larger studies on single-cell data, technical batch effects can be very hard to isolate and 
 account for. The batch correction method used here works well for small effects, but 
 more sophisticated methods are often required. But above all, it is crucial to think 
-carefully about the experimental design even before you start analyzing your cells in 
-the wetlab, so that you can actually isolate batch effects at all. 
+carefully about the experimental design even before you start processing your cells in 
+the wetlab, so that you can actually isolate batch effects at all.
 
 Take the Tung dataset that we just used as an example. If the individuals were 
-processed in three different batches, it would very difficult to distinguish technical 
+processed each in a separate batch, it would very difficult to distinguish technical 
 variability across batches from biological variability across individuals!
 
 _____
-## PBMC data
+## 7) PBMC data
 _____
 
 For the rest of this lab, we'll use a different dataset with peripheral
@@ -566,7 +614,7 @@ and contain mainly immune cells such as lymphocytes and monocytes.
 When you run `pbmc <- readRDS("data/pbmc")` you will get a `Seurat` object 
 that has already been normalized. 
 
-```{r}
+```{r pbmc}
 pbmc <- readRDS("data/pbmc")
 ```
 
@@ -574,22 +622,22 @@ Let's try another dimensionality reduction method called UMAP. This method
 is commonly used to "embed" the cells into a 2D map that can be very useful
 for visualization purposes. 
 
-```{r, eval=FALSE, warning=FALSE, message=FALSE}
+```{r UMAP, warning=FALSE, message=FALSE}
 pbmc <- RunUMAP(pbmc, dims = 1:30)
 DimPlot(pbmc, reduction = "umap")
 ```
 
-Here you can already see some interesting structures in the data; some bigger blobs, some
+Here you can already see some interesting(?) structures in the data; some bigger blobs, some
 smaller blobs, some are isolated and some are connected. In a UMAP plot, cells with similar 
-gene expression are put close to each other so you get something to point at when describing
-cell types or cell states.
+gene expression are put close to each other in space so the idea is that the 2D structures 
+reflect the cell type populations. You shouldn't overanalyze these plots, but at least you 
+get a nice 2D map to point at when discussing your results which can be very handy!
 
-We shouldn't draw too many conclusions from the map itself, but you'll hopefully see that the map actually
-represents a lot of interesting biology. Now the next question is, where do we draw the lines to separate 
-these blobs into meaningful groups?
+We already know that the PBMC isolates contain a diverse set of cell types so now the next 
+question is, where do we draw the lines to separate the blobs into cell type populations?
 
 _____
-## 7) Clustering 
+## 8) Clustering
 _____
 
 Clustering of scRNA-seq data refers to methods used to group samples (cells) based 
@@ -603,26 +651,25 @@ therefore producing a spectrum of cell states without clear cut border. We often
 compromise and sometimes even group the cells in different levels of detail. 
 
 For example, consider a rich scRNA-seq dataset with tens of thousands of cells collected from 
-an inflamed tissue sample. Here you have identified a_ memory B-cell_ in the dataset. In a broader 
-context when looking at whole tissue sample, the _memory B-cell_ would belong to _immune cells_ 
+a tissue with an ongoing inflammation, meaning lots of lymphocytes. Here you have identified 
+a _memory B-cell_ in the dataset. In a broader context when looking at whole tissue sample, 
+the _memory B-cell_ would belong to _immune cells_ 
 (together with _T-cells_, _macrophages_, _dendritic cells_, _granulocytes_ etc.). If you zoom in
 on the _immune cells_ you can further subdivide them into _lymphocytes_ and _myeloids_.
-Add another level of detail and you can divide the _lymphocytes_ into _B-cells_, _T-cells_ and
+Add another level of detail and you can divide the _lymphocytes_ into _B-cells_, _T-cells_, _ILCs_ and
 _natural killer cells_. Aaaaaand finally you might end up splitting the _B-cells_ into 
 _naive B-cells_, _memory B-cells_ and _plasma cells_. But it doesn't even have to stop here, 
 These _memory B-cells_ might exist in different sub types or states depending on where they are
-and how they developed. This may seem a bit messy, but the fact that you can create these
-lineages of cells is to a large extent what makes scRNA-seq methods so useful!!!
+and how they developed. This may seem a bit messy, but the fact that you can explore whole 
+lineages of cell types is to a large extent what makes scRNA-seq methods so useful!!!
 
-
-Anyways, in standard scRNA-seq analysis workflow, you are typically interested in defining 
-cell types so let's see how that works on our smaller dataset of about 3000 cells. 
+Anyways, in standard scRNA-seq analysis workflow you have to start somewhere, and running 
+a clustering algorithm with default settings is often a good place to start. 
 What people usually do is to cluster the cells and then define (annotate) the clusters as 
 different cell types based on their specific expression of "marker genes". Here, marker 
 genes can be thought of as genes known to be specifically expressed by a specific cell type, 
-e.g. CD19 is known to be expressed only by B-cells. However, you should know that most of the 
-time you can tweak parameters to obtain different clusters and it can be very difficult to 
-find the optimal parameter settings. 
+e.g. CD19 is known to be expressed only by B-cells. Exploring marker genes in your dataset 
+can also be a useful sanity check to see if your clusters make sense. 
 
 Let's try clustering our data using the default method provided by Seurat's 
 `FindNeighbors()` and `FindClusters()` functions. The parameter called `resolution` can
@@ -630,12 +677,12 @@ be tweaked to obtain a different number of clusters. Lowering this value will re
 and increasing this value will result in more clusters. Here we will use the default resolution of 0.8.
 
 *Q8:* Use `DimPlot` to color the cells by cluster on the "umap" graph. Write down how many 
-clusters you got using a resolution of 0.8.
+clusters do you get using a resolution of 0.8?
 
 Hint: Look at the meta.data of you Seurat object. Here you can find the clustering results
 which will be called something like "SCT_snn_res...".
 
-```{r, eval=FALSE}
+```{r clustering}
 
 pbmc <- FindNeighbors(pbmc, dims = 1:30, reduction = "pca")
 pbmc <- FindClusters(pbmc, resolution = 0.8)
@@ -647,7 +694,7 @@ pbmc <- FindClusters(pbmc, resolution = 0.8)
 *Q9:* Re-run the `FindClusters()` function using a resolution of 0.3 and 1.2. Use `DimPlot` 
 to visualize these clusters on the "umap" graph and write down how many clusters you get.
 
-```{r, eval=FALSE}
+```{r dimplot_clusters_res08}
 # Write your code / answer here
 ```
 
@@ -655,8 +702,7 @@ We have already provided a column in the meta data slot with celltype labels so 
 not need to do the dirty work of defining clusters, identifying markers and annotating 
 the clusters.
 
-```{r}
-pbmc <- SetIdent(pbmc, value = "celltype")
+```{r dimplot_celltypes}
 DimPlot(pbmc, group.by = "celltype", label = T)
 ```
 
@@ -664,36 +710,39 @@ These cluster annotation have been determined based on marker genes found in the
 For example, MS4A1 is expressed specifically by B-cells, PPBP on platelet cells and CD14 on 
 Monocytes. 
 
-*Q10:* Draw a new plot showing the expression of these three markers across in the UMAP embedding. 
+*Q10:* Draw a new plot showing the expression of these three markers c("MS4A1", "PPBP", "CD14") 
+in the UMAP embedding. 
 
-Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details) 
+Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console for details) 
 which is very similar to the function `DimPlot()`. Alternatively you can visualize the marker 
 expression using another function called `VlnPlot()` (type ?VlnPlot in the R console for details).
 
-```{r, eval=FALSE}
+```{r featureplot_markers}
 
 # Write your answer here
 ```
 
 _____
-## 7) Marker detection
+## 8) Marker detection
 _____
 
 In the clustering section above you got a Seurat object where the cells had already been assigned 
-a celltype label (annotated). But how would you go about if you needed to do this yourself?
+a cell type label (annotated). But how would you go about if you needed to do this yourself?
 
 What you typically want to know is what genes are specifically expressed in each cluster?
-Seurat offers a couple of functions to explore this, but what you typically do is to run a 
+`Seurat` offers a couple of functions to explore this, but the most common approach is to run a 
 differential expression (DE) test pairwise for each cluster against the background (all other cells).
 
 Let's run `FindAllMarkers()` to get a table of differentially expressed genes:
 
-```{r}
+```{r findallmarkers}
 pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
 
 # Select top markers
 library(dplyr)
 top2.markers <- group_by(pbmc.markers, cluster)
+
+# Here we will filter the data to keep only the top 2 genes based on avg_logFC
 top2.markers <- top_n(x = top2.markers, n = 2, wt = avg_logFC)
 top2.markers
 ```
@@ -708,7 +757,7 @@ background or p_val_adj (short for adjusted p-value) which gives you a significa
 Hint: Use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details). You can 
 adjust the size of the plot window by shanges the fig.width and fig.height options below.
 
-```{r, eval=FALSE, fig.width=10, fig.height=12}
+```{r marker_per_celltype, fig.width=10, fig.height=12}
 # Write your code/answer here
 ```
 
@@ -733,7 +782,7 @@ dividing cells go through a series of phases including the G1 phase (cell growth
 and G2M (cell growth and mitosis). `Seurat` provides a function to estimate an `S.Score` and `G2M.Score`, 
 using canonical markers which can be used to check if some cells are dividing in your data 
 
-```{r}
+```{r cellcycle}
 pbmc <- CellCycleScoring(pbmc, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 FeaturePlot(pbmc, features = "S.Score")
 ```
@@ -750,7 +799,7 @@ variable `p2`. Combine these plots to show them side by side.
 
 Hint: You can use the "patchwork" system by simply adding plots together with `+` (?patchwork)
 
-```{r, eval=FALSE, fig.width=10, fig.height=12}
+```{r phase_score, fig.width=10, fig.height=12}
 # Write your code/answer here
 ```
 
@@ -761,7 +810,7 @@ _______
 are 12 of those. You can your answer in this .Rmd file and submit your complete
 ''.Rmd'' as your ''report'' for Lab2.
 
-**Deadline**: Your report is due 23:59 December 13th 2020; if working in pairs -
+**Deadline**: Your report is due 23:59 October 11th 2020; if working in pairs -
 each of you should hand in (identical) reports where the names of both authors
 are clearly stated. For further information see the guidelines on the course
 web-page.
