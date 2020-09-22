@@ -59,7 +59,7 @@ you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip
 updating the rest of the packages for this lab (which can otherwise take some
 time).
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
 library(SummarizedExperiment)
 library(DESeq2)
 library(pheatmap)
@@ -72,7 +72,7 @@ library(viridis)
 The data for the second lab is available from the cloned GitHub repo, found in
 genetech/labs/ex2/data/.
 
-```{r, echo=T}
+```{r, eval= TRUE, echo=TRUE}
 
 counts <- as.matrix(read.table("data/RNAseq_mouse_ensembl_rawCounts.csv", 
                      sep="\t", 
@@ -98,7 +98,7 @@ Create a SummarizedExpermient object with the loaded counts, call this object `s
 `?SummarizedExperiment` to see how to add metadata as a parameter to the
 function call.
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 #Write code
 
@@ -119,7 +119,7 @@ anything in terms of evidence for differential expression.
 Perform filtering, exlude all genes that have a total count value across all
 samples of $<=10$. Use the skills you learned in Lab 1.
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 #Write code
 
@@ -127,7 +127,7 @@ samples of $<=10$. Use the skills you learned in Lab 1.
 
 Now print your SummarizedExperiment object. 
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 #Write code
 
@@ -152,7 +152,7 @@ samples: (is normalization needed?)
 Next we’ll use box plots to check the distribution of the read counts.
 For convenience, we apply a log2 transformation before visual inspection of the data because the distribution is skewed towards lower values. 
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 f <- assays(se)$counts
 colnames(f) <- se$replicate
@@ -172,7 +172,7 @@ object to store our data. (Similar to our SummarizedExperiment). The code to do
 this is given below:
 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
 
 #Create the DESeqDataSet (set design = ~1, which we change later)
 dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
@@ -188,7 +188,7 @@ design(dds) <- ~ group
 Now, we can use the DESeq2 function `DESeq`. This is a function that performs
 several steps, including normalization. The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
 
 dds <- DESeq(dds)
 
@@ -199,7 +199,7 @@ This might take a few minutes.
 If you now print the `dds` object, you will see that the structure is similar to
 the SummarizedExperiment, but with some new assays and colData.
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 dds
 ```
 
@@ -209,7 +209,7 @@ factor. This is stored in `counts(dds, normalized=T)`
 
 Make a similar boxplot as before, but with the normalized data.
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 #Write code
 ```
 
@@ -241,7 +241,7 @@ range. The following picture illustrate this:
 
 Let's transform our data via the VST method before looking at our samples:
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 #Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable called vst.data
 
@@ -252,7 +252,7 @@ Let's transform our data via the VST method before looking at our samples:
 
 Using the VST transformed counts, we can create a heatmap:
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 sampleDists <- dist(t(assay(vst.data)))
 sampleDistMatrix <- as.matrix(sampleDists)
@@ -282,7 +282,7 @@ against each other. As noted, we have several different conditions in this data
 set, each pairwise comparison is saved as separate results in our dds object. To
 view what we have:
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 resultsNames(dds)
 ```
 
@@ -293,7 +293,7 @@ A contrast is a linear combination of estimated log2 fold changes, which can be
 used to test if differences between groups are equal to zero. To extract the DE
 result for a specific drug, we may use results command:
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 
 res <- results(dds, contrast=c("group", "BR", "BNR"), tidy = TRUE)
 
@@ -313,7 +313,7 @@ responders vs non-responders. Do this for all drugs and create a list of the
 genes.
 
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 #Write code
 ```
 
@@ -324,7 +324,7 @@ with a specific set of genes?
 
 Hint: the function `intersect()` could be useful
 
-```{r}
+```{r, eval= TRUE, echo=TRUE}
 # Add answer
 ```
 
