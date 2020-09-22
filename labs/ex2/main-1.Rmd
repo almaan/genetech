@@ -155,7 +155,7 @@ For convenience, we apply a log2 transformation before visual inspection of the 
 ```{r, eval= TRUE, echo=TRUE}
 
 f <- assays(se)$counts
-colnames(f) <- se$replicate
+colnames(f) <- se@metadata$replicate
 boxplot(log2(f + 0.5), ylab = "log (base 2) read counts + 0.5")
 
 ```
@@ -252,7 +252,7 @@ Let's transform our data via the VST method before looking at our samples:
 
 Using the VST transformed counts, we can create a heatmap:
 
-```{r, eval= TRUE, echo=TRUE}
+```{r, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
 
 sampleDists <- dist(t(assay(vst.data)))
 sampleDistMatrix <- as.matrix(sampleDists)
