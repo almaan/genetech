@@ -1,13 +1,12 @@
 ---
 title: "Lab3 - Single Cell RNAseq"
-author: "Original : Joseph Bergenstråhle - Edit : Ludvig Larsson, Alma Andersson, Sailendra Pradhananga "
+author: "Original : Ludvig Larsson"
 date: "04 Oct 2020"
-output:
-  tufte::tufte_html: default 
+
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ____
@@ -213,7 +212,7 @@ just in a different format.
 It's important to know how to extract data from the Seurat object as well, for example when 
 you need to apply a method that is not available from the `Seurat` R package. 
 
-```{r sparse_matrix, eval=FALSE}
+```{r sparse_matrix}
 sparse.exprMat <- GetAssayData(se, slot = "counts")
 ```
 
@@ -295,7 +294,7 @@ abline(v = mean(nGenes) - 2*sd(nGenes), col = "red", lty = "longdash", lwd = 2)
 abline(v = mean(nGenes) + 2*sd(nGenes), col = "red", lty = "longdash", lwd = 2)
 ```
 
-*Q2:* Make a histogram of the total number of RNA molecules detected per cell 
+*Q2:* Make a histogram of the total number of unique genes detected per cell 
 (nFeature_RNA) using the `Seurat` object. Then, highlight the 2nd standard deviation
 from the mean as vertical lines.
 
@@ -326,6 +325,7 @@ add lines we cannot use the `abline` function like we did before. Instead we'll 
 called `geom_hline`. 
 
 ```{r plot_violin_threshold}
+library(ggplot2)
 VlnPlot(se, features = "nFeature_RNA", group.by = "replicate") +
   geom_hline(aes(yintercept = 5000, color = "threshold"), linetype = "longdash") +
   labs(color = "") + # Remove title from color legend
@@ -333,11 +333,11 @@ VlnPlot(se, features = "nFeature_RNA", group.by = "replicate") +
 ```
 
 *Q3:* Create a new violin plot using `VlnPlot`, but this time include two quality features; 
-number of unique genes per cell and number of molecules per cell.
+number of unique genes per cell and number of molecules per cell, then group the plots by replicate
 
 Hint: the features argument of `VlnPlot` can take a character vector with more than 1 feature.
 
-```{r plot_violin_2_features}
+```{r plot_violin_2_features, fig.width=10, fig.height=4}
 # Write your code / answer here
 ```
 
@@ -370,7 +370,6 @@ keep.cells <- colnames(se)[set1 & set2]
 head(keep.cells)
 
 # Now use these cell names to subset the "Seurat" object
-
 # Write your code / answer here
 
 ```
@@ -385,11 +384,8 @@ We can compute the overall expression per gene by summing up the count for each 
 # First get the expression matrix
 sparse.exprMat <- GetAssayData(se, slot = "counts")
 
-# Convert it into a regular matrix
-exprMat <- as.matrix(exprMat)
-
 # Calculate row sums
-gene.counts <- rowSums(exprMat)
+gene.counts <- Matrix::rowSums(sparse.exprMat)
 
 # Check the results 
 head(gene.counts)
@@ -406,7 +402,7 @@ Check the example above where we filtered out cells.
 # Write your code / answer here
 ```
 
-Now that we have this vector we can subset the "Seurat" object we did previously,
+Now that we have this vector we can subset the "Seurat" object that we just created (`se.subset`),
 but this time we'll apply the filter to the genes instead.
 
 ```{r subset_genes}
@@ -456,10 +452,10 @@ in a more meaningful way. You can find a number of normalization strategies and 
 
 In this course, we will use a method called variance stabilizing transformation (
 [VST](https://www.biorxiv.org/content/10.1101/576827v2)), a method which is provided 
-by the `SCTransform` function from the `Seurat` package:
+by the `SCTransform` function from the `Seurat` package (can take up to a minute):
 
-```{r sctransform, message=FALSE, warning=FALSE}
-se <- SCTransform(se)
+```{r sctransform, warning=FALSE, message=FALSE}
+se <- SCTransform(se, verbose=FALSE)
 ```
 
 When the normalization is finished, you will have a new "assay" stored in the `Seurat` 
@@ -573,8 +569,8 @@ What we have to do is to specify a batch variable so that the `SCTransform` func
 how the cells are partitioned into different batches. We can do this using the `var.to.regress` 
 argument.
 
-```{r sctransform_batch}
-se <- SCTransform(se, vars.to.regress = "replicate")
+```{r sctransform_batch, warning=FALSE, message=FALSE}
+se <- SCTransform(se, vars.to.regress = "replicate", verbose=FALSE)
 se <- RunPCA(se)
 ```
 
@@ -584,13 +580,12 @@ Now we should see that the separation of replicates along PC_2 has been reduced.
 VlnPlot(se, features = "PC_2", group.by = "replicate")
 ```
 
-*Q7:* Let's pretend that the individual represents a batch effect that we want to remove 
+*Q7:* Let's pretend that the "individual" column represents a batch effect that we want to remove 
 from our data. Re-run the normalization with SCTransform and include both "replicate" and
 "individual" as variable to regress out (`vars.to.regress`).
 
-```{r vln_plot_two_vars}
+```{r vln_plot_two_vars, warning=FALSE, message=FALSE}
 # Write your code / answer here
-
 ```
 
 In most larger studies on single-cell data, technical batch effects can be very hard to isolate and 
@@ -679,23 +674,34 @@ and increasing this value will result in more clusters. Here we will use the def
 *Q8:* Use `DimPlot` to color the cells by cluster on the "umap" graph. Write down how many 
 clusters do you get using a resolution of 0.8?
 
-Hint: Look at the meta.data of you Seurat object. Here you can find the clustering results
-which will be called something like "SCT_snn_res...".
+Hint: note that the first cluster is always called "0", not "1"
 
 ```{r clustering}
 
 pbmc <- FindNeighbors(pbmc, dims = 1:30, reduction = "pca")
 pbmc <- FindClusters(pbmc, resolution = 0.8)
 
-# Write code here
+# Write code for DimPlot here
+
+# Replace NA with the correct number of clusters 
+nClusters <- NA
+sprintf("Number of clusters detected at a resolution of 0.8: %s", nClusters)
 
 ```
 
 *Q9:* Re-run the `FindClusters()` function using a resolution of 0.3 and 1.2. Use `DimPlot` 
 to visualize these clusters on the "umap" graph and write down how many clusters you get.
 
-```{r dimplot_clusters_res08}
+```{r dimplot_clusters_res08, fig.width=12, fig.height=5, warning=FALSE, message=FALSE}
+
 # Write your code / answer here
+
+# Replace NA with the correct values
+nClusters.0.3 <- NA
+nClusters.1.2 <- NA
+sprintf("Number of clusters detected at a resolution of 0.3: %s", nClusters.0.3)
+sprintf("Number of clusters detected at a resolution of 1.2: %s", nClusters.1.2)
+
 ```
 
 We have already provided a column in the meta data slot with celltype labels so you do 
@@ -717,7 +723,7 @@ Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R con
 which is very similar to the function `DimPlot()`. Alternatively you can visualize the marker 
 expression using another function called `VlnPlot()` (type ?VlnPlot in the R console for details).
 
-```{r featureplot_markers}
+```{r featureplot_markers, fig.width=10, fig.height=8}
 
 # Write your answer here
 ```
@@ -736,6 +742,7 @@ differential expression (DE) test pairwise for each cluster against the backgrou
 Let's run `FindAllMarkers()` to get a table of differentially expressed genes:
 
 ```{r findallmarkers}
+pbmc <- SetIdent(pbmc, value = "SCT_snn_res.0.8")
 pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
 
 # Select top markers
@@ -757,7 +764,7 @@ background or p_val_adj (short for adjusted p-value) which gives you a significa
 Hint: Use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details). You can 
 adjust the size of the plot window by shanges the fig.width and fig.height options below.
 
-```{r marker_per_celltype, fig.width=10, fig.height=12}
+```{r marker_per_celltype, fig.width=14, fig.height=15}
 # Write your code/answer here
 ```
 
@@ -783,7 +790,7 @@ and G2M (cell growth and mitosis). `Seurat` provides a function to estimate an `
 using canonical markers which can be used to check if some cells are dividing in your data 
 
 ```{r cellcycle}
-pbmc <- CellCycleScoring(pbmc, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+pbmc <- CellCycleScoring(pbmc, s.features = cc.genes$s.genes, g2m.features = cc.genes$g2m.genes, set.ident = TRUE)
 FeaturePlot(pbmc, features = "S.Score")
 ```
 
@@ -797,9 +804,10 @@ in the cell cycle phase and simply remove these cells by setting a threshold.
 Draw a second plot showing the `celltype` labels in the UMAP embedding and save it to a 
 variable `p2`. Combine these plots to show them side by side.
 
-Hint: You can use the "patchwork" system by simply adding plots together with `+` (?patchwork)
+Hint: You can use the "patchwork" system by simply adding plots together with `+` (check 
+documentation `?patchwork` or github page [patchwork](https://github.com/thomasp85/patchwork))
 
-```{r phase_score, fig.width=10, fig.height=12}
+```{r phase_score, fig.width=12, fig.height=5}
 # Write your code/answer here
 ```
 
