@@ -256,7 +256,7 @@ Using the VST transformed counts, we can create a heatmap:
 
 sampleDists <- dist(t(assay(vst.data)))
 sampleDistMatrix <- as.matrix(sampleDists)
-rownames(sampleDistMatrix) <- paste(vst$treatment, vst$outcome, vst$replicate, sep="-")
+rownames(sampleDistMatrix) <- paste(vst.data$treatment, vst.data$outcome, vst.data$replicate, sep="-")
 colnames(sampleDistMatrix) <- NULL
 colors <- rev(viridis(12))
 pheatmap(sampleDistMatrix,
