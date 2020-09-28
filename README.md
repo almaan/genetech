@@ -156,7 +156,7 @@ Remember to change the author information before handing in the lab.
 
 ## Lab 3 | Single Cell RNA-seq analysis
 **Main Responsible TA:** Ludvig Larsson<br>
-**Lab Status:** <span style="color:red"> Under Construction</span><br>
+**Lab Status:** <span style="color:red"> Ready</span><br>
 
 In this lab you will be working on two different single-cell datasets. Single-cell 
 RNA sequencing (or scRNA-seq) have exploded in the last decade and has become one of 
