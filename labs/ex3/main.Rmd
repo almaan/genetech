@@ -13,10 +13,10 @@ ____
 ## Lab3 - Single cell RNA seq (scRNA-seq)
 ____
 
-In the previus computer lab session, you got to explore some tools to analyze 
-RNA sequencing data from "bulk" samples. However, nowadays it's possible to get genomic 
-information even from single cells (you should have heard about single cell 
-RNA-seq in the lectures!). 
+In the previus computer lab session, you got to explore some tools to analyze
+RNA sequencing data from "bulk" samples. However, nowadays it's possible to get
+genomic information even from single cells (you should have heard about single
+cell RNA-seq in the lectures!).
 
 The most obvious advantages with the new single cell technologies is the 
 fact that we're no longer measuring an average across a larger population and
@@ -25,12 +25,13 @@ This opens up for a number of possibilities to study tissues and organs at an
 unpresedented resolution. Today, reseearchers can collect even millions of 
 cells from a tissue to create atlases, a bit like a google earth for cell types. 
 
-It is also worth mentioning that historically, many of the methods developed 
-transcriptomic analysis were developed with "bulk" RNA-seq data in mind. 
-Many of the ideas used for things like quality control, normalization, DE analysis etc.
-can still be applied to single-cell datasets, but some of the underlying assumptions 
-for "bulk" RNA-seq data are no longer applicable. Nowadays there's an abundance of 
-single-cell specific strategies to solve the same tasks more efficiently! 
+It is also worth mentioning that historically, many of the methods developed
+transcriptomic analysis were developed with "bulk" RNA-seq data in mind. Many of
+the ideas used for things like quality control, normalization, DE analysis etc.
+can still be applied to single-cell datasets, but some of the underlying
+assumptions for "bulk" RNA-seq data are no longer applicable. Nowadays there's
+an abundance of single-cell specific strategies to solve the same tasks more
+efficiently!
 
 ____
 ## 1) Introduction
@@ -40,14 +41,18 @@ Short primer: what is scRNA-seq?
 
   * Experimental protocols that measure expression levels for thousands of genes 
   each gene across a population of cells
+  
   * Adresses biological questions in which cell-specific changes in transcriptome 
   are important, e.g. cell type identification and characterization, cell type 
   specific response to external stimuli, differentiation trajectories, cell-cell
   communications, regulatory networks etc.
+  
   * Currently there are several different protocols in use, e.g. SMART-seq2,
   CELL-seq and Drop-seq.
+  
   *  There are also commercial platforms available, including the Fluidigm C1, 10X
    Genomics Chromium etc.
+   
   *  In most cases computational analysis requires adaptation of the existing
    methods for "bulk" RNA-seq analyses or development of new ones.
    
