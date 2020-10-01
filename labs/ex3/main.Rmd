@@ -233,7 +233,10 @@ class(sparse.exprMat)
 sparse.exprMat[1:5, 1:5]
 ```
 
-The class of the matrix is called "dgCMatrix" which is a type of sparse matrix format. 
+The class of the matrix is called "dgCMatrix" which is a type of sparse matrix format. There are a number
+of different methods available to compress sparse data (you can have a look at the 
+[wiki](https://en.wikipedia.org/wiki/Sparse_matrix) for sparse matrices) and the "dgCMatrix" class is a
+column-oriented format and the standard class for sparse numeric matrices in the `Matrix`R package.
 This format is only useful when the data contains a lot of 0 values, which is the case for 
 scRNA-seq data. Using this format, the 0 values aren't actually stored in memory which saves a lot of space.
 
