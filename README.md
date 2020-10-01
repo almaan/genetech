@@ -196,7 +196,7 @@ that you read up a bit on the following concepts:
 
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
-* Clustering (Focus on Kmeans)
+* Clustering
 
 ## Guidelines
 
