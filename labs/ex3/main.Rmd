@@ -1,7 +1,7 @@
 ---
 title: "Lab3 - Single Cell RNAseq"
 author: "Original : Ludvig Larsson"
-date: "04 Oct 2020"
+date: "02 Oct 2020"
 
 ---
 
@@ -13,10 +13,10 @@ ____
 ## Lab3 - Single cell RNA seq (scRNA-seq)
 ____
 
-In the previus computer lab session, you got to explore some tools to analyze 
-RNA sequencing data from "bulk" samples. However, nowadays it's possible to get genomic 
-information even from single cells (you should have heard about single cell 
-RNA-seq in the lectures!). 
+In the previus computer lab session, you got to explore some tools to analyze
+RNA sequencing data from "bulk" samples. However, nowadays it's possible to get
+genomic information even from single cells (you should have heard about single
+cell RNA-seq in the lectures!).
 
 The most obvious advantages with the new single cell technologies is the 
 fact that we're no longer measuring an average across a larger population and
@@ -25,12 +25,13 @@ This opens up for a number of possibilities to study tissues and organs at an
 unpresedented resolution. Today, reseearchers can collect even millions of 
 cells from a tissue to create atlases, a bit like a google earth for cell types. 
 
-It is also worth mentioning that historically, many of the methods developed 
-transcriptomic analysis were developed with "bulk" RNA-seq data in mind. 
-Many of the ideas used for things like quality control, normalization, DE analysis etc.
-can still be applied to single-cell datasets, but some of the underlying assumptions 
-for "bulk" RNA-seq data are no longer applicable. Nowadays there's an abundance of 
-single-cell specific strategies to solve the same tasks more efficiently! 
+It is also worth mentioning that historically, many of the methods developed
+transcriptomic analysis were developed with "bulk" RNA-seq data in mind. Many of
+the ideas used for things like quality control, normalization, DE analysis etc.
+can still be applied to single-cell datasets, but some of the underlying
+assumptions for "bulk" RNA-seq data are no longer applicable. Nowadays there's
+an abundance of single-cell specific strategies to solve the same tasks more
+efficiently!
 
 ____
 ## 1) Introduction
@@ -40,14 +41,18 @@ Short primer: what is scRNA-seq?
 
   * Experimental protocols that measure expression levels for thousands of genes 
   each gene across a population of cells
+  
   * Adresses biological questions in which cell-specific changes in transcriptome 
   are important, e.g. cell type identification and characterization, cell type 
   specific response to external stimuli, differentiation trajectories, cell-cell
   communications, regulatory networks etc.
+  
   * Currently there are several different protocols in use, e.g. SMART-seq2,
   CELL-seq and Drop-seq.
+  
   *  There are also commercial platforms available, including the Fluidigm C1, 10X
    Genomics Chromium etc.
+   
   *  In most cases computational analysis requires adaptation of the existing
    methods for "bulk" RNA-seq analyses or development of new ones.
    
@@ -228,7 +233,10 @@ class(sparse.exprMat)
 sparse.exprMat[1:5, 1:5]
 ```
 
-The class of the matrix is called "dgCMatrix" which is a type of sparse matrix format. 
+The class of the matrix is called "dgCMatrix" which is a type of sparse matrix format. There are a number
+of different methods available to compress sparse data (you can have a look at the 
+[wiki](https://en.wikipedia.org/wiki/Sparse_matrix) for sparse matrices) and the "dgCMatrix" class is a
+column-oriented format and the standard class for sparse numeric matrices in the `Matrix`R package.
 This format is only useful when the data contains a lot of 0 values, which is the case for 
 scRNA-seq data. Using this format, the 0 values aren't actually stored in memory which saves a lot of space.
 
@@ -818,7 +826,7 @@ _______
 are 12 of those. You can your answer in this .Rmd file and submit your complete
 ''.Rmd'' as your ''report'' for Lab2.
 
-**Deadline**: Your report is due 23:59 October 11th 2020; if working in pairs -
+**Deadline**: Your report is due 23:59 October 9th 2020; if working in pairs -
 each of you should hand in (identical) reports where the names of both authors
 are clearly stated. For further information see the guidelines on the course
 web-page.
