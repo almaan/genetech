@@ -1,7 +1,7 @@
 ---
 title: "Lab3 - Single Cell RNAseq"
 author: "Original : Ludvig Larsson"
-date: "04 Oct 2020"
+date: "02 Oct 2020"
 
 ---
 
@@ -823,7 +823,7 @@ _______
 are 12 of those. You can your answer in this .Rmd file and submit your complete
 ''.Rmd'' as your ''report'' for Lab2.
 
-**Deadline**: Your report is due 23:59 October 11th 2020; if working in pairs -
+**Deadline**: Your report is due 23:59 October 9th 2020; if working in pairs -
 each of you should hand in (identical) reports where the names of both authors
 are clearly stated. For further information see the guidelines on the course
 web-page.
