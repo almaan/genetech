@@ -824,7 +824,7 @@ _______
 _______
 **How :** Complete the code chunks after the questions marked with a ''Q'' in this .Rmd file. There
 are 12 of those. When you have completed these code chunks, you should knit this report into an 
-html file and submit this in canvas under Computer Lab 3. Do not edit the top part of the code chunks (```{r ...}) 
+html file and submit this in canvas under Computer Lab 3. Do not edit the top part of the code chunks 
 except for adjusting the plot layout using fig.width and fig.height.
 
 **Deadline**: Your report is due 23:59 October 9th 2020; if working in pairs -
