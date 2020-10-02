@@ -3,7 +3,7 @@ title: "Lab2 - Bulk RNA-seq analysis and GWAS"
 author: "Sami Saarenpää"
 date: "22 Sep 20"
 output:
-  BiocStyle::html_document
+  tufte::tufte_html: default
 vignette: |
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
