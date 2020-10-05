@@ -14,7 +14,17 @@ n.pkgs <- c("BiocManager",
             "pheatmap",
             "Seurat",
             "rmarkdown",
-            "viridis"
+            "viridis",
+            "sctransform"
+            "ggplot2",
+            "png",
+            "grid",
+            "topicmodels",
+            "gridExtra",
+            "tm",
+            "gridExtra",
+            "dplyr",
+            "RColorBrewer"
           )
 
 # packages on Bioconductor
