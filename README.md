@@ -189,6 +189,13 @@ design of the method allows us to visualize the gene expression in the physical
 concepts introduced in the previous labs, in order to make sense of your spatial
 data, but also explore new ones like LDA and Single Cell Data Integration.
 
+### Packages
+We will use quite a lot of different packages in this lab, some which may take a
+while to install. Thus, it might be a good idea to install these before the lab
+starts, as to make sure that you don't waste valuable time waiting for something
+to compile. Open the script `prep/install-packages.R` in `Rstudio` and run the
+whole thing, just to make sure you have all the necessary components installed.
+
 ### Preparatory work
 You should more or less have all tools required to conduct this lab on your
 computer, meaning you won't have to install plenty of new packages. However, we
