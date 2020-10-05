@@ -179,7 +179,7 @@ parts of a scRNA-seq analysis workflow.
 ## Lab 4 | Spatial Transcriptomics analysis
 
 **Main Responsible TA:** Alma Andersson<br>
-**Lab Status:** <span style="color:red"> Under Construction | Final release @ 2020-10-05</span><br>
+**Lab Status:** <span style="color:red">Ready</span><br>
 
 In this lab you will work with Visium data, looking at parts of the mouse brain!
 While similar to single cell data in some ways, there are also some important
@@ -190,13 +190,15 @@ of the concepts introduced in the previous labs, in order to make sense of your
 spatial data.
 
 ### Preparatory work
-You should more or less have all tools required to conduct this lab on your computer, 
-meaning you won't have to install plenty of new packages. However, we recommended 
-that you read up a bit on the following concepts:
+You should more or less have all tools required to conduct this lab on your
+computer, meaning you won't have to install plenty of new packages. However, we
+recommended that you read up a bit on the following concepts:
 
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
 * Clustering
+* LDA (Latent Dirichlet Allocation)
+* Single Cell Integration : [link](https://www.biorxiv.org/content/10.1101/2019.12.13.874495v1)
 
 ## Guidelines
 
