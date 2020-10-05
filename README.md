@@ -185,9 +185,9 @@ In this lab you will work with Visium data, looking at parts of the mouse brain!
 While similar to single cell data in some ways, there are also some important
 differences. One thing that's extremely attractive with ST-data is that the very
 design of the method allows us to visualize the gene expression in the physical
-2D plane - which is one of the exercises in this lab. You will also apply some
-of the concepts introduced in the previous labs, in order to make sense of your
-spatial data.
+2D plane - which is one of the exercises in this lab. You will apply some of the
+concepts introduced in the previous labs, in order to make sense of your spatial
+data, but also explore new ones like LDA and Single Cell Data Integration.
 
 ### Preparatory work
 You should more or less have all tools required to conduct this lab on your
