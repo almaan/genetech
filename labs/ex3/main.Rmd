@@ -813,7 +813,7 @@ in the cell cycle phase and simply remove these cells by setting a threshold.
 Draw a second plot showing the `celltype` labels in the UMAP embedding and save it to a 
 variable `p2`. Combine these plots to show them side by side.
 
-Hint: You can use the "patchwork" system by simply adding plots together with `+` (check 
+Hint: You can use the "patchwork" system by simply combining plots with `+` or `-` (check 
 documentation `?patchwork` or github page [patchwork](https://github.com/thomasp85/patchwork))
 
 ```{r phase_score, fig.width=12, fig.height=5}
