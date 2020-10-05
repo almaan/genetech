@@ -728,7 +728,8 @@ Monocytes.
 in the UMAP embedding. 
 
 Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console for details) 
-which is very similar to the function `DimPlot()`. Alternatively you can visualize the marker 
+which is very similar to the function `DimPlot()`. 
+Alternatively you can visualize the marker 
 expression using another function called `VlnPlot()` (type ?VlnPlot in the R console for details).
 
 ```{r featureplot_markers, fig.width=10, fig.height=8}
@@ -812,7 +813,7 @@ in the cell cycle phase and simply remove these cells by setting a threshold.
 Draw a second plot showing the `celltype` labels in the UMAP embedding and save it to a 
 variable `p2`. Combine these plots to show them side by side.
 
-Hint: You can use the "patchwork" system by simply adding plots together with `+` (check 
+Hint: You can use the "patchwork" system by simply combining plots with `+` or `-` (check 
 documentation `?patchwork` or github page [patchwork](https://github.com/thomasp85/patchwork))
 
 ```{r phase_score, fig.width=12, fig.height=5}
