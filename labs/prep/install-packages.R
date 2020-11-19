@@ -15,7 +15,7 @@ n.pkgs <- c("BiocManager",
             "Seurat",
             "rmarkdown",
             "viridis",
-            "sctransform"
+            "sctransform",
             "ggplot2",
             "png",
             "grid",
