@@ -102,7 +102,9 @@ body {
   list-style-type: disc; }
 
 .reveal ul ul {
-  list-style-type: square; }
+    list-style-type: square;
+    font-size: 32px;
+}
 
 .reveal ul ul ul {
   list-style-type: circle; }

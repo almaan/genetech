@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>CB2040 Lab Prep</title>
+<title>BB2255 Lab Prep</title>
 <meta name="author" content="Alma Andersson"/>
 <style type="text/css">
 .underline { text-decoration: underline; }
@@ -29,19 +29,19 @@
 <div class="reveal">
 <div class="slides">
 <section id="sec-title-slide">
-<h1 class="title">CB2040 Lab Prep</h1><h2 class="author">Alma Andersson</h2><p class="date">Created: 2020-09-02 Wed 11:14</p>
+<h1 class="title">BB2255 Lab Prep</h1><h2 class="author">Alma Andersson</h2><p class="date">Created: 2020-11-19 Thu 09:47</p>
 </section>
 
 <section>
-<section id="slide-orgccaf537">
-<h2 id="orgccaf537">Lab course Introduction</h2>
+<section id="slide-org70c2311">
+<h2 id="org70c2311">Lab course Introduction</h2>
 <p>
 For these slides: <a href="https://almaan.github.io/genetech/">https://almaan.github.io/genetech/</a>
 </p>
 
 </section>
-<section id="slide-orgd0a9b09">
-<h3 id="orgd0a9b09">Teaching assistants</h3>
+<section id="slide-orgea6f070">
+<h3 id="orgea6f070">Teaching assistants</h3>
 <p>
 There are 3 of us, all working at the dept. of Gene Technology    
 </p>
@@ -65,21 +65,20 @@ sessions.
 </p>
 
 <p>
-<b><b>NOTE</b></b>: Tag emails with [CB2040] in the subject line.<br />
-For example: <i>"[CB2040] Question about lab 2"</i>
+<b><b>NOTE</b></b>: Tag emails with [BB2255] in the subject line.<br />
+For example: <i>"[BB2255] Question about lab 2"</i>
 </p>
 
 </section>
-<section id="slide-orgc2e7815">
-<h3 id="orgc2e7815">Setup</h3>
+<section id="slide-org9b7d50d">
+<h3 id="org9b7d50d">Setup</h3>
 <p>
-There are 4 labs in total, one "main TA" for each:
+In this course 3 labs in total, one "main TA" for each:
 </p>
 <ol>
 <li data-fragment-index="1" class="fragment fade-in">Introduction to R [Alma]</li>
-<li data-fragment-index="2" class="fragment fade-in">Bulk RNA-seq analysis [Sami]</li>
-<li data-fragment-index="3" class="fragment fade-in">Single Cell RNA-seq analysis [Ludvig]</li>
-<li data-fragment-index="4" class="fragment fade-in">Spatial Transcriptomics analysis [Alma]</li>
+<li data-fragment-index="2" class="fragment fade-in">Single Cell RNA-seq analysis [Ludvig]</li>
+<li data-fragment-index="3" class="fragment fade-in">Spatial Transcriptomics analysis [Sami]</li>
 
 </ol>
 
@@ -88,20 +87,21 @@ All labs are in R, we assume that you have:
 </p>
 <ul>
 <li class="fragment fade-in">access to a computer</li>
+<li class="fragment fade-in">zoom</li>
 <li class="fragment fade-in"><b><b>no prior</b></b> knowledge of R</li>
 <li class="fragment fade-in">some familiarity with the <font color="lightgreen">terminal</font></li>
 
 </ul>
 
 </section>
-<section id="slide-org6c0eef4">
-<h3 id="org6c0eef4">Formalities</h3>
+<section id="slide-org792fe23">
+<h3 id="org792fe23">Formalities</h3>
 <p>
 <b>Workflow:</b>
 </p>
 <ul>
-<li class="fragment fade-in">Labs are written in R markdown (more on this later)}}</li>
-<li class="fragment fade-in">Download exercises &#x2013;&gt; modify files in-place &#x2013;&gt; hand in modified file}</li>
+<li class="fragment fade-in">Labs are written in R markdown (more on this later)</li>
+<li class="fragment fade-in">Download exercises &#x2013;&gt; modify files in-place &#x2013;&gt; hand in modified file</li>
 <li class="fragment fade-in">You hand in the modified file via <b><b>Canvas</b></b></li>
 
 </ul>
@@ -117,26 +117,24 @@ All labs are in R, we assume that you have:
 </ul>
 
 <p class="fragment (fade-in) :frag_idx(3)">
-<i>NOTE:</i> Late reports will be corrected, but you will get a set of
-additional exercises to solve. An incomplete report
-is also considered late.
+<i>NOTE:</i> Late reports will be corrected, but you will get a set of additional
+exercises to solve. An incomplete report is also considered late.
 </p>
 
 <p>
 <b>Working in pairs:</b>
 </p>
 <ul>
-<li class="fragment fade-in">OK!</li>
+<li class="fragment fade-in">Encouraged!</li>
 <li class="fragment fade-in">Pair = 2 people</li>
 <li class="fragment fade-in">hand in <i>identical</i> copies</li>
-<li class="fragment fade-in">both names should be stated in file</li>
-<li class="fragment fade-in">state in comment who you worked together with</li>
+<li class="fragment fade-in">state <b><b>both</b></b> names in : file and comments</li>
 
 </ul>
 
 </section>
-<section id="slide-org1c2b25e">
-<h3 id="org1c2b25e">Finding Information</h3>
+<section id="slide-orge55c599">
+<h3 id="orge55c599">Finding Information</h3>
 <p>
 All information you need can be found at:<br />
 </p>
@@ -147,19 +145,35 @@ All information you need can be found at:<br />
 <ul>
 <li>I will refer to this as "the course repo".</li>
 <li>Bookmark or save the link, we will be using it today</li>
+<li>All information is here</li>
+
+</ul>
+
+</section>
+<section id="slide-org34df2a4">
+<h3 id="org34df2a4">A word about zoom</h3>
+<ul>
+<li>Make sure you have the latest version : <a href="https://zoom.us/download">download</a></li>
+<li>We will use same link as Stefania</li>
+<li>First online edition of this course
+<ul>
+<li>We will try our <b><b>utmost</b></b></li>
+<li>but just keep that in mind</li>
+
+</ul></li>
 
 </ul>
 
 </section>
 </section>
 <section>
-<section id="slide-org1b00a46">
-<h2 id="org1b00a46">R</h2>
-<div class="outline-text-2" id="text-org1b00a46">
+<section id="slide-orgd9fd159">
+<h2 id="orgd9fd159">R</h2>
+<div class="outline-text-2" id="text-orgd9fd159">
 </div>
 </section>
-<section id="slide-org54d9637">
-<h3 id="org54d9637">What?</h3>
+<section id="slide-org40d1f02">
+<h3 id="org40d1f02">What?</h3>
 <ul>
 <li class="fragment fade-in">Programming language for "statistical computing"</li>
 <li class="fragment fade-in">Released in 1993</li>
@@ -189,28 +203,29 @@ Example R : Interpreted language
 </p>
 <div class="org-src-container">
 
-<pre  class="src src-R">vec1 <span style="color: #447799;">&lt;-</span> c<span style="color: #8c8c8c;">(</span><span style="color: #447799;">1</span>,<span style="color: #447799;">2</span>,<span style="color: #447799;">3</span>,<span style="color: #447799;">4</span><span style="color: #8c8c8c;">)</span>
-vec2 <span style="color: #447799;">&lt;-</span> c<span style="color: #8c8c8c;">(</span><span style="color: #447799;">5</span>,<span style="color: #447799;">6</span>,<span style="color: #447799;">7</span>,<span style="color: #447799;">8</span><span style="color: #8c8c8c;">)</span>
-prod <span style="color: #447799;">&lt;-</span> vec1 <span style="color: #447799;">%*%</span>vec2
+<pre  class="src src-RR">
+vec1 &lt;- c(1,2,3,4)
+vec2 &lt;- c(5,6,7,8)
+prod &lt;- vec1 %*%vec2
 </pre>
 </div>
 </li></ul>
 
 </section>
-<section id="slide-orgf97f23d">
-<h3 id="orgf97f23d">Why?</h3>
+<section id="slide-orgd27fcfb">
+<h3 id="orgd27fcfb">Why?</h3>
 <ul>
 <li data-fragment-index="1" class="fragment fade-in">One the most popular languages within the bioinformatic community</li>
 <li data-fragment-index="2" class="fragment fade-in">Extremely well designed for "<i>data wrangling</i>"</li>
 <li data-fragment-index="3" class="fragment fade_in">Has a <b><b>huge</b></b> ecosystem of packages for bioinformatic analysis</li>
-<li data-fragment-index="4" class="fragment fade-in">Superior graphics system (ggplot) - don't underestimate this&#x2026;</li>
+<li data-fragment-index="4" class="fragment fade-in">Superior graphics system (<code>ggplot</code>) - don't underestimate this&#x2026;</li>
 <li data-fragment-index="5" class="fragment fade-in">We believe it will give you an attractive and useful set of skills</li>
 
 </ul>
 
 </section>
-<section id="slide-org147c02b">
-<h3 id="org147c02b">Installation</h3>
+<section id="slide-org2364ad5">
+<h3 id="org2364ad5">Installation</h3>
 <p>
 We will start by installing R, to do this:
 </p>
@@ -255,25 +270,34 @@ Type 'q()' to quit R.
 </section>
 </section>
 <section>
-<section id="slide-orgc17b4cd">
-<h2 id="orgc17b4cd">Rstudio</h2>
-<div class="outline-text-2" id="text-orgc17b4cd">
+<section id="slide-org1cff1d5">
+<h2 id="org1cff1d5">Rstudio</h2>
+<div class="outline-text-2" id="text-org1cff1d5">
 </div>
 </section>
-<section id="slide-org24f5b2c">
-<h3 id="org24f5b2c">What is it?</h3>
+<section id="slide-orge4e902c">
+<h3 id="orge4e902c">What is it?</h3>
 <ul>
-<li class="fragment fade-in">When editing code it's common to use an IDE (<i>Integrated Development Environment</i>)</li>
+<li class="fragment fade-in">When editing code it's common to use an IDE (<i>Integrated Development Environment</i>)
+<ul>
+<li>Similar to MATLAB Studio</li>
+
+</ul></li>
 <li class="fragment fade-in">IDEs are designed to facilitate programming; there are plenty of them</li>
 <li class="fragment fade-in">Personal favorite is Emacs (first release 1976)</li>
-<li class="fragment fade-in">We will be using <font color="orange">Rstudio</font>, an IDE specifically designed for R; also very user friendly</li>
+<li class="fragment fade-in">We will be using <font color="orange">Rstudio</font>
+<ul>
+<li>an IDE specifically designed for R</li>
+<li>also very user friendly</li>
+
+</ul></li>
 <li class="fragment fade-in">In short, Rstudio is the tool you will be using to <i>edit</i> your code.</li>
 
 </ul>
 
 </section>
-<section id="slide-orga4bd3bc">
-<h3 id="orga4bd3bc">Installation</h3>
+<section id="slide-org75ddeba">
+<h3 id="org75ddeba">Installation</h3>
 <p>
 To install Rstudio, follow the steps below:
 </p>
@@ -296,8 +320,8 @@ If you don't have a GUI - from the terminal, type in <code>rstudio</code> and th
 </p>
 
 </section>
-<section id="slide-org2a86309">
-<h3 id="org2a86309">Exploring Rstudio</h3>
+<section id="slide-orgef60319">
+<h3 id="orgef60319">Exploring Rstudio</h3>
 <p>
 To get an idea of how Rstudio works, we'll have a quick look at it.<br />
 <br />
@@ -309,8 +333,8 @@ To change any of these : <i>Tools&#x2013;&gt;Global Options</i>
 </p>
 
 </section>
-<section id="slide-orgcdfbbe1">
-<h4 id="orgcdfbbe1">Pane Layout</h4>
+<section id="slide-org322966b">
+<h4 id="org322966b">Pane Layout</h4>
 <p>
 You may use whatever settings you want, but I recommend - to make things
 easy - that you use the same pane layout as me:
@@ -322,8 +346,8 @@ easy - that you use the same pane layout as me:
 </div>
 
 </section>
-<section id="slide-org1b0a817">
-<h3 id="org1b0a817">Features of Rstudio</h3>
+<section id="slide-org79ce43b">
+<h3 id="org79ce43b">Features of Rstudio</h3>
 <ul>
 <li>Create a new file by: <i>File &#x2013;&gt; New File &#x2013;&gt; R Script</i></li>
 <li>You should see something like this:</li>
@@ -343,13 +367,13 @@ easy - that you use the same pane layout as me:
 </section>
 </section>
 <section>
-<section id="slide-org5cfb7c8">
-<h2 id="org5cfb7c8">The Labs</h2>
-<div class="outline-text-2" id="text-org5cfb7c8">
+<section id="slide-org82eb4e8">
+<h2 id="org82eb4e8">The Labs</h2>
+<div class="outline-text-2" id="text-org82eb4e8">
 </div>
 </section>
-<section id="slide-org8e05d97">
-<h3 id="org8e05d97">Accessing the material</h3>
+<section id="slide-orgea891ca">
+<h3 id="orgea891ca">Accessing the material</h3>
 <p>
 <b><b>Git and GitHub</b></b><br />
 </p>
@@ -381,8 +405,8 @@ You should now have a folder called <b><b>genetech</b></b> in your directory. Ma
 </p>
 
 </section>
-<section id="slide-org4f7a26f">
-<h3 id="org4f7a26f">Installing packages</h3>
+<section id="slide-orgb407405">
+<h3 id="orgb407405">Installing packages</h3>
 <p>
 <br />
 </p>
@@ -397,19 +421,20 @@ You should now have a folder called <b><b>genetech</b></b> in your directory. Ma
 <br />
 </p>
 <ol>
-<li>In a terminal, go to <i>"<code>genetech/labs/prep</code>"</i></li>
-<li>Execute the following command:</li>
+<li>Open <code>rstudio</code></li>
+<li>load the file <i>"<code>genetech/labs/prep/install-packages.R</code>"</i></li>
+<li>Run the script, by for example doing:
+<ol>
+<li>Ctrl + A</li>
+<li>Ctrl + Enter</li>
+
+</ol></li>
 
 </ol>
-<div class="org-src-container">
-
-<pre  class="src src-R">Rscript --vanilla ./install-packages.R
-</pre>
-</div>
 
 </section>
-<section id="slide-org5e8bce1">
-<h3 id="org5e8bce1">Working with the code</h3>
+<section id="slide-org0d68f56">
+<h3 id="org0d68f56">Working with the code</h3>
 <p>
 To get an idea of how you work with the code, we will have a look at Lab 1
 </p>
@@ -421,8 +446,8 @@ To get an idea of how you work with the code, we will have a look at Lab 1
 </ul>
 
 </section>
-<section id="slide-org4a4c858">
-<h4 id="org4a4c858">Changing author name</h4>
+<section id="slide-orgfda964e">
+<h4 id="orgfda964e">Changing author name</h4>
 <p>
 At the top of the file you will see:
 </p>
@@ -432,7 +457,7 @@ At the top of the file you will see:
 <pre  class="src src-yaml"><span style="color: #888888; font-style: italic;">---</span>
 <span style="color: #cf6a4c;">title</span>: <span style="color: #99ad6a;">"Lab 1 - Introduction to R"</span>
 <span style="color: #cf6a4c;">author</span>: <span style="color: #99ad6a;">"Alma Andersson"</span>
-<span style="color: #cf6a4c;">date</span>: <span style="color: #99ad6a;">"11-09-2020"</span>
+<span style="color: #cf6a4c;">date</span>: <span style="color: #99ad6a;">"26-11-2020"</span>
 <span style="color: #cf6a4c;">output</span>:
   <span style="color: #cf6a4c;">tufte::tufte_html</span>: default 
 <span style="color: #888888; font-style: italic;">---</span>
@@ -444,8 +469,8 @@ Change the author field to your name(s)
 </p>
 
 </section>
-<section id="slide-orgc6d7051">
-<h4 id="orgc6d7051">Code chunks</h4>
+<section id="slide-org012ba2b">
+<h4 id="org012ba2b">Code chunks</h4>
 <p>
 <br />
 </p>
@@ -468,8 +493,8 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 
 
 </section>
-<section id="slide-orgebba0d0">
-<h4 id="orgebba0d0">Knitting</h4>
+<section id="slide-org0366259">
+<h4 id="org0366259">Knitting</h4>
 <ul>
 <li class="fragment fade-in">R markdown &#x2013;&gt; html and pdf documents.</li>
 <li class="fragment fade-in">This process is called <i>knitting</i></li>
@@ -481,8 +506,8 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 </ul>
 
 </section>
-<section id="slide-orgb401800">
-<h4 id="orgb401800">A demo</h4>
+<section id="slide-org139e14b">
+<h4 id="org139e14b">A demo</h4>
 <p>
 <video controls src="./vids/knit.mp4"></video>
 </p>
@@ -490,10 +515,10 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 </section>
 </section>
 <section>
-<section id="slide-org7a87742">
-<h2 id="org7a87742">Wrap up</h2>
+<section id="slide-orgae9914d">
+<h2 id="orgae9914d">Wrap up</h2>
 <ul>
-<li>First lab session: 13:00-17:00, 9/11/2020 @ B3 <code>(59°21'05.7"N 18°04'06.8"E)</code></li>
+<li>First lab session: 13:00-17:00, 26/11/2020</li>
 <li>Questions are welcome!</li>
 <li>We will hang around a bit after this session.</li>
 
@@ -502,11 +527,11 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
 <p>
 <h2> Thanks for the attention!</h2> 
 </p>
-
-<div class="figure">
-<p><img src="https://img2.pngio.com/download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png" alt="download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png" width="25%" />
+<p width="25%">
+<img src="https://img2.pngio.com/download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png" alt="download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png" width="25%" />
+<br />
+(Burrow owls - check'em out!)
 </p>
-</div>
 </section>
 </section>
 </div>

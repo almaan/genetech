@@ -75,7 +75,7 @@ Before Lab 1 starts make sure that you:
 1. Install R
 2. Clone this repo (see below)
 3. Install R packages for Lab 1 (see below)
-4. Install Rsdtudio or an IDE that can process R Markdown files
+4. Install `rstudio` or an IDE that can process R Markdown files
 
 execute the above steps in the order that they are given.
 
