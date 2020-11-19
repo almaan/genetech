@@ -6,7 +6,7 @@
 #+MACRO: color @@html:<font color="$1">$2</font>@@
 #+HTML_HEAD: <base target="_blank">
 
-#+Title: CB2040 Lab Prep
+#+Title: BB2255 Lab Prep
 #+Author: Alma Andersson
 #+Email: almaan@kth.se
 
@@ -27,21 +27,21 @@ There are 3 of us, all working at the dept. of Gene Technology
 Emails are welcome, but hands-on help with the exercises will be limited to the lab
 sessions.
 
-**NOTE**: Tag emails with [CB2040] in the subject line.\\
-For example: /"[CB2040] Question about lab 2"/
+**NOTE**: Tag emails with [BB2255] in the subject line.\\
+For example: /"[BB2255] Question about lab 2"/
 
 ** Setup
 
-There are 4 labs in total, one "main TA" for each:
-#+ATTR_REVEAL: :frag (fade-in fade-in fade-in fade-in) :frag_idx (1 2 3 4 )
+In this course 3 labs in total, one "main TA" for each:
+#+ATTR_REVEAL: :frag (fade-in fade-in fade-in) :frag_idx (1 2 3 )
    1. Introduction to R [Alma]
-   2. Bulk RNA-seq analysis [Sami]
-   3. Single Cell RNA-seq analysis [Ludvig]
-   4. Spatial Transcriptomics analysis [Alma]
+   2. Single Cell RNA-seq analysis [Ludvig]
+   3. Spatial Transcriptomics analysis [Sami]
 
 All labs are in R, we assume that you have:
 #+ATTR_REVEAL: :frag (fade-in) : frag_idx(5 6 )
 - access to a computer
+- zoom
 - **no prior** knowledge of R
 - some familiarity with the {{{color(lightgreen,terminal)}}}
  
@@ -49,8 +49,8 @@ All labs are in R, we assume that you have:
  
 *Workflow:*
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(1 1 1)
-  * Labs are written in R markdown (more on this later)}}
-  * Download exercises --> modify files in-place --> hand in modified file}
+  * Labs are written in R markdown (more on this later)
+  * Download exercises --> modify files in-place --> hand in modified file
   * You hand in the modified file via **Canvas**
 
 *Deadlines:*
@@ -60,17 +60,15 @@ All labs are in R, we assume that you have:
     - Revision : 1 week after grading deadline
  
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(3)
-/NOTE:/ Late reports will be corrected, but you will get a set of
-additional exercises to solve. An incomplete report
-is also considered late.
+/NOTE:/ Late reports will be corrected, but you will get a set of additional
+exercises to solve. An incomplete report is also considered late.
  
 *Working in pairs:*
 #+ATTR_REVEAL: :frag (fade-in) :frag_idx(3 3 3 3)
-    - OK!
+    - Encouraged!
     - Pair = 2 people
     - hand in /identical/ copies
-    - both names should be stated in file
-    - state in comment who you worked together with
+    - state **both** names in : file and comments
 
 ** Finding Information
    All information you need can be found at:\\
@@ -79,6 +77,14 @@ is also considered late.
 
 - I will refer to this as "the course repo".
 - Bookmark or save the link, we will be using it today
+- All information is here
+
+** A word about zoom
+   - Make sure you have the latest version : [[https://zoom.us/download][download]]
+   - We will use same link as Stefania
+   - First online edition of this course
+     - We will try our **utmost**
+     - but just keep that in mind
 
 * R
   
@@ -115,7 +121,7 @@ Example R : Interpreted language
    - One the most popular languages within the bioinformatic community
    - Extremely well designed for "/data wrangling/"
    - Has a **huge** ecosystem of packages for bioinformatic analysis
-   - Superior graphics system (ggplot) - don't underestimate this...
+   - Superior graphics system (=ggplot=) - don't underestimate this...
    - We believe it will give you an attractive and useful set of skills
   
 ** Installation
@@ -159,9 +165,12 @@ Type 'q()' to quit R.
  
 #+ATTR_REVEAL: :frag (fade-in) 
 - When editing code it's common to use an IDE (/Integrated Development Environment/)
+  - Similar to MATLAB Studio
 - IDEs are designed to facilitate programming; there are plenty of them
 - Personal favorite is Emacs (first release 1976)
-- We will be using {{{color(orange,Rstudio)}}}, an IDE specifically designed for R; also very user friendly
+- We will be using {{{color(orange,Rstudio)}}}
+  - an IDE specifically designed for R
+  - also very user friendly
 - In short, Rstudio is the tool you will be using to /edit/ your code.
 
 ** Installation
@@ -229,11 +238,11 @@ You should now have a folder called **genetech** in your directory. Make sure su
    - I have written an installation script that should take care of this for you (fingers crossed..)
 
 \\
-  1. In a terminal, go to /"=genetech/labs/prep="/
-  2. Execute the following command:
-#+BEGIN_SRC R
-Rscript --vanilla ./install-packages.R
-#+END_SRC
+  1. Open =rstudio= 
+  2. load the file /"=genetech/labs/prep/install-packages.R="/
+  3. Run the script, by for example doing:
+     1. Ctrl + A
+     2. Ctrl + Enter
 
 ** Working with the code
 
@@ -250,7 +259,7 @@ To get an idea of how you work with the code, we will have a look at Lab 1
   ---
   title: "Lab 1 - Introduction to R"
   author: "Alma Andersson"
-  date: "11-09-2020"
+  date: "26-11-2020"
   output:
     tufte::tufte_html: default 
   ---
@@ -286,10 +295,12 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
     @@html:<video controls src="./vids/knit.mp4"></video>@@
       
 * Wrap up
-  - First lab session: 13:00-17:00, 9/11/2020 @ B3 ~(59°21'05.7"N 18°04'06.8"E)~
+  - First lab session: 13:00-17:00, 26/11/2020 
   - Questions are welcome!
   - We will hang around a bit after this session.
    
   @@html:<h2> Thanks for the attention!</h2> @@
 #+ATTR_HTML: :width 25%
 [[https://img2.pngio.com/download-hd-owl-burrowing-owl-transparent-png-image-nicepngcom-burrowing-owl-png-386_345.png]]
+\\
+(Burrow owls - check'em out!)

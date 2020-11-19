@@ -26,7 +26,7 @@ body {
 
 .reveal {
   font-family: "Calibri","inconsolata","Open Sans", sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: normal;
   color: #eee; }
 
@@ -135,13 +135,16 @@ body {
 .reveal  ul > li > ul >li {
     display: list-item;
     list-style-type: square;
-    font-size: 12px;
+    /* font-size: 12px; */
+    font-size: 18px;
 }
 
 
 .reveal ul ul {
     display: inline-block;
-    list-style-type: square; }
+    list-style-type: square;
+    font-size: 32px;
+}
 
 .reveal ul ul ul {
   list-style-type: circle; }
