@@ -1,7 +1,7 @@
 ---
 title: "Lab3 - Single Cell RNAseq"
 author: "Original : Ludvig Larsson"
-date: "02 Oct 2020"
+date: "03 Dec 2020"
 
 ---
 
@@ -828,7 +828,7 @@ are 12 of those. When you have completed these code chunks, you should knit this
 html file and submit this in canvas under Computer Lab 3. Do not edit the top part of the code chunks 
 except for adjusting the plot layout using fig.width and fig.height.
 
-**Deadline**: Your report is due 23:59 October 9th 2020; if working in pairs -
+**Deadline**: Your report is due 23:59 December 15th 2020; if working in pairs -
 each of you should hand in (identical) reports where the names of both authors
 are clearly stated. For further information see the guidelines on the course
 web-page.
