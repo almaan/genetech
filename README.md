@@ -178,7 +178,7 @@ parts of a scRNA-seq analysis workflow.
 
 ## Lab 4 | Spatial Transcriptomics analysis
 
-**Main Responsible TA:** Alma Andersson<br>
+**Main Responsible TA:** Alma Andersson (CB2040) and Sami Saarenpää (BB2255)<br>
 **Lab Status:** <span style="color:red">Ready</span><br>
 
 In this lab you will work with Visium data, looking at parts of the mouse brain!
