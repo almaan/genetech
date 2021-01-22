@@ -728,12 +728,11 @@ One good way to explore the inherent structure of our data is to cluster it,
 this allows us to assess how our spots relate to each other and whether there
 are any natural groupings contained within this data.
 
-Clustering on the high dimensional data like ours, where each data point (spot)
-has more than $18000$ features, is usually a bad idea. Most clustering
-algorithms use distances between data points to find the clusters, but as the
-number of dimensions grow, objects more or less become equidistant from each
-other. Thus the algorithms render poor results. This phenomena is known as the
-"curse of dimensionality".
+Clustering on the high dimensional data like ours is usually a bad idea. Most
+clustering algorithms use distances between data points to find the clusters,
+but as the number of dimensions grow, objects more or less become equidistant
+from each other. Thus the algorithms render poor results. This phenomena is
+known as the "curse of dimensionality".
 
 In an attempt to avoid this curse we usually apply some form om _dimensionality
 reduction_ to our data, before clustering it. Here the choice of method in PCA
@@ -1260,7 +1259,7 @@ From this we can see that the celltypes "Neurons-10" and "Neurons-15" seem to
 have a high degree of co-localization, among many other pairs. To assess whether
 this makes sense we can plot their spatial distribution using `spatial.plot`.
 
-*Q10*: Plo_ th_ spatial distribution of the two cell types "Neurons-10" and
+*Q10*: Plot the spatial distribution of the two cell types "Neurons-10" and
 "Neurons-15", like we did for the cell types "Ependymal-47", "Neurons-27" and
 "Neurons-59"; you are welcome to take inspiration from the code used before.
 
@@ -1268,9 +1267,10 @@ this makes sense we can plot their spatial distribution using `spatial.plot`.
 
 # Write the code to plot the spatial distribution of
 # the cell types Neurons-10 and Neurons-15 here
-
 plot.types
-and In Guidelines
+
+```
+Hand In Guidelines
 
 **How :**  First, go to the top of this document and set
 `GRADE_MODE = TRUE`. Next, knit this document, and hand in the resulting html-file
