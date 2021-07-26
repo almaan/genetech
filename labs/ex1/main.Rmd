@@ -20,11 +20,9 @@ GRADE_MODE <- FALSE
 
 # Lab 1
 
-Welcome to the first lab! Here the objective is to get _you_ familiar with the
-programming language `R`, and some of the commands that we will be using
-throughout the remaining labs. For things to run smoothly in the more advanced
-labs, please work through these examples and make sure you understand what is
-going on - i.e, do not just click through the exercises.
+Welcome to the first lab! The objective here is to get you _familiar_ with the
+programming language `R` and thus prepare you for the more advanced labs. If you
+work through these exercises, things will be much easier later on.
 
 With that being said, let's get started!
 
@@ -53,10 +51,14 @@ of `R`, including:
 
 ## Looking for help
 
-Stack overflow and Google are your friends, but they will not always be there for
-you (sad but true). However, for most R functions, you will be able to get a
-good overview of how to use them and how to apply them by typing:
-`?function_name` or `help(function_name)`, e.g. `?sum` in your R console.
+Stack Overflow and Google are your friends, and you should use them vigorously.
+
+![google-so](imgs/google-stack-overflow.png)
+
+However, sometimes you don't have to leave your R session to get the answers you
+are looking for. You can get tons of information and examples of usage for most
+functions in `R` by typing: `?function_name` or `help(function_name)`, e.g.
+`?sum` in your R console.
 
 ## Objects and variables
 
@@ -95,14 +97,14 @@ print(sprintf("fancy_name_2 is : %d",fancy_name_2))
 
 Computation with and manipulations of numbers are integral parts of any
 programming language, hence it's essential to know how to call for these kind of
-actions. Below you will see some examples of the more common mathetmatical
+actions. Below you will see some examples of the more common mathemathical
 operations that you will use.
 
 ```{r, eval=FALSE}
 7 + 4  # => 11 (addition)
 7 - 4  # => 3 (subtraction)
 7 / 2  # => 3.5 (division)
-7 * 2  # => 14 (mulitplication)
+7 * 2  # => 14 (multiplication)
 2 ^ 3  # => 8 (exponents)
 7 %% 3 # => 1 (modulo)
 ```
@@ -123,7 +125,7 @@ print(sprintf("ex_3 : %f",ex_3))
 
 ### Mathematical operators
 
-There is a plethora of different mathematical functions in R, usually their
+There's a plethora of different mathematical functions in 'R', usually their
 names resemble those of the mathematical operations they execute, for
 example:
 
@@ -138,7 +140,7 @@ sqrt(4) # => 2
 
 Once calculations have been performed using different arithmetic operations,
 we usually want to assess and _compare_ our results; that's when logical
-operators come in handy; when used, they return a value that is either `TRUE` or
+operators come in handy; when used, they return a value that says either `TRUE` or
 `FALSE` depending on the expression you wrote down. Some of the most useful
 logical operators are:
 
@@ -214,10 +216,10 @@ expr_1 <- (4 < 2) | (2 < 1 ) # good practice
 
 ### Data Classes
 
-Every (programming) language has it's own classes of objects, you have actually
-already worked with several different ones in this lab! Just to get you
-familiar with the terminology, some of the _atomic classes_ (that build up every
-other class in R) are:
+Every (programming) language has it's own classes of objects, and you have
+already encountered some of them in this lab! Just to get you familiar with the
+terminology, some of the _atomic classes_ (that build up every other class in R)
+are:
 
 * numerics : real numbers - e.g, `3.0`, `3.14` and `-1000`. More precisely $x \in \mathbb{R}$
 * complex : complex numbers - e.g, `1 + 0i`, `-4 + 3i` and `0 + -1i` 
@@ -244,7 +246,7 @@ a_complex <- 4 - 2i
 print(paste("a_numeric + a_complex = ",a_numeric + a_complex))
 ```
 *WARNING* : while the programming becomes easier (e.g., compared to C/C++ or
-Java) with this automatic coercion, you should also be cautiuos - sometimes unexpected
+Java) with this automatic coercion, you should also be cautious - sometimes unexpected
 results and errors may be introduced. Take a look at what happens when
 you compare a character with a numeric:
 
@@ -253,15 +255,17 @@ result_1 <- "a" > 3
 print(paste("a > 3 is : ",result_1))
 ```
 
-Say What? This makes no sense at all, how can we even compare a character with a number? Shouldn't this, if something, raise an error?
+Eh what...? This makes no sense at all, how can we even compare a character with
+a number? Shouldn't this, if something, raise an error? It should indeed, but
+this is an example of `R` trying to help us a little too much.
 
-What's happening here is that the numeric `3` gets coerced into a character
+What's happening here is that the numeric `3` gets _coerced_ into the character
 `"3"` which _can_ be compared to another character (if you, like in R, have
 assigned an order to the characters).
 
 ## Arrays
 
-The next elements to introduce are _arrays_, these are fundamental structures
+The next element to introduce is the _array_, this is another fundamental structures
 that you will use *a lot*. In a nutshell, arrays let us associate multiple
 values to a single object. We'll be focusing on 1 and 2 dimensional arrays, let
 us start with 1d arrays first.
@@ -272,10 +276,12 @@ us start with 1d arrays first.
 create accordingly:
 
 ```{r,eval=TRUE, echo=TRUE}
-a_list <- list(20200504,
-               "X AE A-Xii",
+a_list <- list(19660206,
+               "Rick Astley",
+               "never",
                0,
-               "cat")
+               "no",
+               "you")
 
 a_vector <- c("wind",
               "A1",
@@ -324,12 +330,12 @@ a_vector <- c(element_1 = "wind",
               shape_2 ="round")
 ```
 
-Now, we can still access our elements by specifying their position, but now also by
-their names; sometimes, this allows you to write more **readable code** and keep
-better track of what elements you access. 
+We can still access our elements by specifying their position, but also by their
+names; sometimes, this allows you to write more **readable code** and makes it
+easier to access elements of your arrays.
 
 To access an element by name, for _lists_ use the `$` symbol or `[['name']]`;
-for vectors only the second option is valid. To illustrate:
+for vectors only the second option (`[[name]]`) is valid. To illustrate:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -355,15 +361,15 @@ print(paste("We all know that the",
       )
 ```
 
-There's a nifty command called `names` that we can use
-to check the names of our list and vector elements respectively:
+There's a nice command called `names` that we can use to check the names of our
+list and vector elements respectively:
 
 ```{r, echo = TRUE, eval = TRUE}
 
 print("The names of our list elements are:")
-print(names(a_list))
+print(names(a_list)) # here we use the names function to access the names of a_list
 print("The names of our vector elements are:")
-print(names(a_vector))
+print(names(a_vector)) # here we use the names function to access the names of a_vector
 ```
 
 If we want to subset our lists and vectors we could either do:
@@ -385,7 +391,8 @@ print('The subsetted vector "a_vector_subset" is:')
 print(a_vector_subset)
 ```
 
-Lists and vectors seem pretty similar, but there is one - very important - feature that differs between them:
+Lists and vectors seem pretty similar, but there is one - very important -
+feature that differs between them:
 
 Vectors are *homogeneous* while lists can be *heterogeneous*.
 
@@ -425,7 +432,8 @@ print(paste("The type of the first element of mixed_list is :",
 
 ### Lists of Lists and so forth
 
-The elements of our lists are not restricted to singular values, but could also be another list or vector. For example:
+The elements of our lists are not restricted to singular values, but could also
+be another list or vector. For example:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -435,9 +443,11 @@ a_list_of_mixed <- list(list_1 = list("crystals","heals",FALSE),
                         )
 ```
 
-*NOTE* : This functionality **does not** exist for vectors
+*NOTE* : This functionality **does not** exist for vectors. If you try to put
+vectors into a vector, they will be "flattened" and just appended to the vector.
 
-If we want to access the second element in the vector that makes up the third element of `a_list_of_mixed` we would do:
+If we want to access the second element in the vector that makes up the third
+element of `a_list_of_mixed` we would do:
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -515,9 +525,9 @@ print("this is a data frame")
 print(a_df)
 ```
 
-Just as we could check the names of the elements in our lists and vectors, we
-can do the same for the columns and rows in our 2D arrays, but now we use the
-functions `colnames` and `rownames` instead.
+Analogously to lists and vectors, we can also extract the names of the the
+columns and rows in our 2D arrays, but now we use the functions `colnames` and
+`rownames` instead.
 
 ```{r, echo = TRUE, eval = TRUE}
 
@@ -557,10 +567,10 @@ a_matrix[,1]
 a_matrix[2,c(1,4)]
 ```
 
-The same conventions can be used to access elements in a data frame, but you can
+The same conventions can be used for data frames to access elements, but you can
 also use the `$` operator to access columns in data frames. However, if you do
 `a_df[,"col_name"]` or `a_df$col_name` this will return a vector and not a data
-frame. To extract a column and preseve its row/colnames do `a_df["col_name"]`.
+frame. To extract a column and preserve its row/colnames do `a_df["col_name"]`.
 
 To exemplify:
 
@@ -599,11 +609,22 @@ print(paste("the min value of a_matrix is :", a_matrix_min))
 that is convenient, but what if we wanted the max value in each column and
 minimum value in respective row, how do we do this?
 
-One possibility would be to: isolate each row/column, compute the max/min value
-manually and finally store these values in a vector. However, that's a pretty messy and
-ugly solution, luckily we have the `apply` function to work with instead!
+One possible solution would be:
 
-Let's see how this function works:
+```{r,echo=TRUE,eval=TRUE}
+a_matrix_col_max <- c(max(a_matrix[,1]),max(a_matrix[,2]),max(a_matrix[,3]),max(a_matrix[,4]))
+a_matrix_row_min <- c(min(a_matrix[1,]),min(a_matrix[2,]),min(a_matrix[3,]))
+print("max in each column")
+print(a_matrix_col_max)
+print("min in each row")
+print(a_matrix_row_min)
+```
+Whatever you do, please do not do this. In programming this is what we call a
+"shitty ass solution". The main issue here is scaleability, this is not a
+feasible approach if you had a 1000x1000 matrix for example. Instead of this
+disaster of a solution, we will use a handy function called `apply`.
+
+Let's see how this `apply`function works:
 
 ```{r,echo = TRUE, eval = TRUE}
 ?apply
@@ -626,6 +647,7 @@ in action this becomes:
 
 ```{r, echo = TRUE, eval = TRUE}
 a_matrix_col_max <- apply(a_matrix,2,max) 
+print(a_matrix_col_max)
 ```
 
 *COMMENT*: For lists and vectors, similar functions to `apply` exist (check out `lapply` and `sapply`).
@@ -1100,7 +1122,7 @@ We begin by loading the required package, the `SummarizedExperiment` class is
 contained in - unsurprisingly - the package with the name
 `SummarizedExperiment`. Go ahead and load it:
 
-```{r, echor =TRUE, eval = TRUE, message=FALSE, warning=FALSE}
+```{r, echo =TRUE, eval = TRUE, message=FALSE, warning=FALSE}
 library(SummarizedExperiment)
 ```
 
