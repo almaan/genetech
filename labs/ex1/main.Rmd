@@ -323,7 +323,7 @@ a_vector <- c(element_1 = "wind",
               shape_2 ="round")
 ```
 
-Now, we can still access our elements by specifying their position, but now also by
+Now, we can still access our elements by specifying their position, but also by
 their names; sometimes, this allows you to write more **readable code** and keep
 better track of what elements you access. 
 
@@ -797,6 +797,7 @@ print(sprintf("The first %d numbers of the Fibonacci series are: [%s]",
               )
       )
 
+
 ```
 
 ## Conditionals 
@@ -946,7 +947,7 @@ from these files. If we have a comma or tab separated file (extensions `.csv`
 and `.tsv`) one way of doing this is by using the `read.table`
 function.
 
-If your fields are separated by commas (as in a `.csv`file ) use the argument
+If your fields are separated by commas (as in a `.csv` file ) use the argument
 `sep=','`, if they are tab separated use the argument `sep = '\t'`.
 
 We will read our data from the file "reads.tsv", it is a **count matrix** with
