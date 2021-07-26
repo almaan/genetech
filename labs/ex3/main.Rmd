@@ -25,7 +25,7 @@ This opens up for a number of possibilities to study tissues and organs at an
 unpresedented resolution. Today, reseearchers can collect even millions of 
 cells from a tissue to create atlases, a bit like a google earth for cell types. 
 
-It is also worth mentioning that historically, many of the methods developed
+It is also worth mentioning that historically, many of the methods designed for
 transcriptomic analysis were developed with "bulk" RNA-seq data in mind. Many of
 the ideas used for things like quality control, normalization, DE analysis etc.
 can still be applied to single-cell datasets, but some of the underlying
@@ -273,8 +273,8 @@ using a histogram.
 
 ### Number of unique genes per cell
 
-To visualize the distribution of number of unique genes per cell as a histogram, we can the function `hist`.
-The values defined as `nGenes` below have randomly generated from a normal distribution, but in reality 
+To visualize the distribution of number of unique genes per cell as a histogram, we can use the function `hist`.
+The values defined as `nGenes` below have been randomly generated from a normal distribution, but in reality 
 the distribution can be a bit skewed.
 
 ```{r plot_histogram}
