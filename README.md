@@ -88,9 +88,10 @@ to generate a container from it. To start a container from the downloaded image
 with access to the content from the cloned GitHub repository, run:
 
 ```sh
- sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --mount type=bind,source=GENETECH_PATH,target=/home/genetech/code -e ROOT=TRUE genetech:latest
+ sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --mount type=bind,source=GENETECH_PATH,target=/home/genetech/code -e ROOT=TRUE almaand/genetech:TAG
 ```
-Where `GENETECH_PATH` is the path to the folder you created in the previous step.
+Where `GENETECH_PATH` is the path to the folder you created in the previous step, and `TAG` (at the end) should be replaced with the latest tagname listed [here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated).
+
 To check that your container is running, enter:
 
 ```sh
