@@ -1,7 +1,7 @@
 ---
 title: "Lab4 - Spatial Transcriptomics"
 author: "Alma Andersson"
-date: 2020-10-07
+date: 2021-08-03
 output:
   tufte::tufte_html: default 
 
@@ -12,15 +12,16 @@ output:
 
 ## Introduction
 
-Welcome to lab 4, where we will explore the field of Spatial Transcriptomics.
-Many of the ideas that you encountered when working with single cell data will
-be revistied but now with the advantage that we can visualize our results in the
-real physical space (not just UMAP or tSNE space). 
+Welcome to Lab 4, where we will explore spatial transcriptomics data. While it
+is a different type of data from what we've worked with before, many of the
+ideas and concepts presented in our analysis of single cell RNA-seq data will be
+revisited in this lab.
+
 
 The field of spatial transcriptomics has grown rapidly, and multiple techniques
-to obtain information of spatial gene expression exists. Some examples are :
+to obtain information of spatial gene expression exists. Some examples are:
 MERFISH, ISS, osmFISH, seqFISH, HDST, baristaSeq, Slide-seq, and GeoMx. We will
-however be focusing on spatial data generated from the _Visium_ platform (sold
+however be focusing on spatial data generated from the _Visium_ platform (provided
 by 10x Genomics). Visium is the successor to the technique - somewhat
 confusingly - named Spatial Transcriptomics (commonly referred to as ST).
 
@@ -30,16 +31,20 @@ spatial transcriptomics_  was published in the journal Science. In December
 2018, 10x Genomics aquired the IP rights to the ST-technique, they then launched
 the Visium platform in late 2019.
 
+Links for more information: 
+* [Spatial Transcriptomics](https://science.sciencemag.org/content/353/6294/78)
+* [Visium](https://www.10xgenomics.com/products/spatial-gene-expression): 
+
 Both ST and Visium utilize a solid array onto which oligonucleotides with
 spatial barcodes have been printed at locations (spots) arranged in a regular
-grid. These oligonucleotides all have a poly-T sequence, making them apt to
-capture mRNA's by their poly-A tail. By reverse transcription, the barcodes of
-the oligonucleotides will be embedded in cDNA synthesized from the captured
-mRNA's; hence, we know at which mRNA that each transcript was captured. Once the
-cDNA molecules are sequenced, we can backmap them to their spatial position -
-using the barcodes - and by doing so obtain spatial gene expression information.
-The "old" ST arrays had 1000 spots printed on the array, while the newer Visium
-slides has 5000 spots.
+grid. These oligonucleotides all have a poly-T sequence, allowing them to
+capture mRNA's by their poly-A tails. By reverse transcription, the barcodes of
+the oligonucleotides will be embedded in a cDNA molecule synthesized from the
+captured mRNA's; hence, we know at which spatial location (spot) that each
+transcript was captured. Once the cDNA molecules are sequenced, we can backmap
+them to their spatial position - using the barcodes - and by doing so obtain
+spatial gene expression information. The "old" ST arrays had 1000 spots printed
+on the array, while the newer Visium slides has 5000 spots.
 
 One *key* fact that should be emphasized is how none of these methods (ST and
 Visium) operate on a single cell level yet. The gene expression data associated
@@ -107,41 +112,109 @@ for (pkg in names(load.pkgs) ) {
 
 ## Loading Data
 
-In this lab, we will be examining  _one_ tissue section from the mouse brain
-(coronal). 10x - the company behind Visium - kindly provides some "example"
-datasets on their webpage, which is where this sample is taken from. As you
-might remember, the expression data is only *one component* of the ST and Visium
-assays, we also have an *image* of the very same (stained by Hematoxylin and
-Eosin) tissue section to use as a reference or aid in our analysis. The HE-image
-for our data is shown below.
+In this lab, we will be examining  _one_ tissue section of human HER2-positive
+breast cancer, a disease claiming several thousand lives every year. 10x - the
+company behind Visium - kindly provide some "example" datasets on their
+webpage, which is where this sample is taken from.
 
-![HE-image of the Mouse Brain Section](data/image.png)
+Rather than storing the data in the GitHub repository, we'll download it on the
+fly. The `bash` code below takes care of this, all you need to do is to execute
+it.
+
+```{bash,echo=F,eval=F}
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.tar.gz -O /home/genetech/code/labs/ex4/data/bc-data.tar.gz -nv
+tar -xf data/bc-data.tar.gz -C data/
+rm data/bc-data.tar.gz
+
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz -O /home/genetech/code/labs/ex4/data/spatial.tar.gz -nv
+tar -xf data/spatial.tar.gz -C data/
+rm data/spatial.tar.gz
+```
+As you might remember, the expression data is only *one component* of the ST and
+Visium assays, we also have an *image* of the very same (stained with
+Hematoxylin and Eosin) tissue section to use as a reference and aid in our
+analysis. The HE-image for our data is shown below.
+
+![HE-image of the Mouse Brain Section](data/spatial/tissue_hires_image.png)
 
 Now when we know what our tissue looks like, let us continue with the expression
-data. When downloaded from 10x's website, the data is stored in either a `.mtx`
-or `.h5` format, but to make things a bit easier for you these have been cast
-into the good old `.tsv` format, which you should be familiar with by now . Just
-as in the single cell lab, the data is represented by a _count matrix_ with genes
-along one dimension and (important) *spots* along the other dimension. Run the
-next code chunk to load the aforementioned count matrix, and also inspect it.
+data. Just as for most data generated from sequencing experiments, the raw data
+is stored as `FASTQ` files. However, the `FASTQ` files are about as useful to us
+as a concrete parachute would be to a skydiver. Just as for the single cell
+data, a bioinformatics pipeline is applied to the `FASTQ` files generated from a
+Visium experiement, this time called `spaceranger`. The `spaceranger` pipeline
+will output an expression matrix and meta-data with information regarding how
+the spot coordinates, relate to the pixel coordinates in the HE-image (i.e.,
+pairing expression data and image data).
+
+Below we will load the expression data, from the `.mtx` files that we just
+downloaded.
 
 ```{r}
+# code adapted from: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/matrices
+library(Matrix)
+matrix_dir = "data/filtered_feature_bc_matrix/"
+barcode.path <- paste0(matrix_dir, "barcodes.tsv.gz")
+features.path <- paste0(matrix_dir, "features.tsv.gz")
+matrix.path <- paste0(matrix_dir, "matrix.mtx.gz")
+raw.data <- readMM(file = matrix.path)
+feature.names = read.delim(features.path,
+                           header = FALSE,
+                           stringsAsFactors = FALSE)
 
-# set path to data
-DATA.PATH <- "data/mouse-brain.tsv.gz"
-# read data
-raw.data <- read.table(DATA.PATH,
-                       header = T,
-                       sep = '\t',
-                       row.names = 1)
-# inspect data
+barcode.names = read.delim(barcode.path,
+                           header = FALSE,
+                           stringsAsFactors = FALSE)
+
+colnames(raw.data) = barcode.names$V1
+rownames(raw.data) = feature.names$V2
+raw.data <- t(raw.data)
+
 raw.data[1:5,1:5]
 ```
-So what do we have here? Well, obviously the columns represent genes and thus
-the rows must represent our spots. Now, if you have a look at the rownames, you
-will see how there are a lot of numbers in there. The rownames actually follow
-a given pattern, being: `[x-coordinate]x[y-coordinate]`. For example, for the
-first spot the x-coordinate is `545.377` and the y-coordinate is `1766.777`.
+
+**IMPORTANT**: The data is loaded in a sparse format, to not eat all of your
+memory. Remember this when trying to manipulate your data later on.
+
+
+As you can see in from the small excerpt above, we have `spots` along one
+dimension (columns), and `genes` along the other dimension (rows). But, we note
+one important thing: _There's no spatial information yet in this matrix!_. 
+
+Lucky for us, the data we just downloaded provides a _mapping_ between the spot
+_barcodes_ (the colnames) and their spatial location. This mapping is found in a
+file located at `data/spatial/tissue_positions_list.csv`. Let us briefly inspect
+this file:
+
+```{bash}
+head data/spatial/tissue_positions_list.csv -n 10
+```
+
+Excellent! As you can see, the rownames of this file are similar to the colnames of our expression data. Having inspected the file, you are now ready for the first task!
+
+*Q0*: Load the file containing the spatial information, and create a
+`data.frame` object called `spatial.data` with the two columns `x`and `y` holding the _x_ and _y_ coordinates of your data. Some tips to help you with this quest are:
+
+1. The second-to-last and las columns in `tissue_positions_list.csv` represent the _x_ and _y_ coordinates respectively. You can ignore all other columns except the barcodes of course.
+
+2. There are **more entries in the file than there are spots in the expression data**, the entries are also **differently sorted**, make sure to adjust for this. 
+
+
+```{r,eval=T,echo=T}
+# Insert code to create the "spatial.data" data frame here
+spatial.data <- read.table("data/spatial/tissue_positions_list.csv",
+                           sep =",",
+                           header = F,
+                           row.names = 1,
+                           )
+
+spatial.data <- spatial.data[c("V5","V6")]
+colnames(spatial.data) <- c("x","y")
+inter <- colnames
+
+```
+
+
 
 The next thing we want to do is to extract each spot's coordinates, and store
 them in a new dataframe (`spatial.data`). For this we will use the function
