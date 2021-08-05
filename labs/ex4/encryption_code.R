@@ -10,7 +10,7 @@ rsa_encrypt <- function(raw.data,public.key){
   if (length(mod.data) > 1){
     enc.data <- sapply(mod.data,powerfun,p=e,n = n)
   } else{
-    enc.data <- rsa_helper(mod.data,n,e)
+    enc.data <- powerfun(mod.data,n = n,p=e)
   }
   return(enc.data)
 }
