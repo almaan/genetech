@@ -5,4 +5,4 @@ keys/private_key
 keys/gpg.*
 *html
 *pdf
-teachers-main.Rmd
+main-teachers.Rmd
