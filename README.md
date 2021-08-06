@@ -3,7 +3,7 @@
 ## For Whom?
 
 This repo contains all the material for the computer labs associated with the
-course CB2040.
+course X.
 
 You will find the all the essential information regarding these labs within this
 repo, such as guidelines regarding the execution of the labs, contact
@@ -87,35 +87,7 @@ exercises correctly.
 **Main Responsible TA:** Sami Saarenpää<br>
 **Lab Status:** <span style="color:green">Ready</span><br>
 
-This lab is divided into two parts.
-
-In the first part of the lab we will explore RNA-seq data analysis. After the
-first publication in 2009 (Wang et.al) this method has allowed researchers to
-study gene expression in RNA level introducing a baseline for methods developed
-after like single cell RNA-seq and spatial transcriptomics.
-
-In this part we will identify differentially expressed genes of different kinase
-inhibitors in treated mice tumors. We will use DESeq2 for differential gene
-expression analysis, visualise the results with heatmap and identify some of
-these genes.
-
-In the second part we will explore variant calling and GWAS which are commonly
-used to analyse different traits on genomic level.
-
-Variant calling identifies single nucleotide polymorphisms (SNPs) and small
-insertions and deletions (indels) from NGS data. There are available plenty of
-tools to search for variants from genomes and they have become a standard in
-population based studies. In this lab we will analyse variants using genome wide
-association study (GWAS). In GWAS the genetic variants in different individuals
-are analysed to see if any variant is associated with a trait like major
-diseases in humans or flowering time in plants. Basically, GWAS tries to find
-correlation between phenotype and changes in genomic areas on a population
-level.
-
-Because this part takes a long time to compute, the output of the code is
-already available. Instead the focus is to understand what type of data one
-could get out of variant analysis and GWAS analysis. If you want later to use
-the code, you will be able to run it.
+Lorem Ipsum
 
 ### Hand-in 
 
@@ -139,24 +111,25 @@ parts of a scRNA-seq analysis workflow.
 ## Lab 4 | Spatial Transcriptomics analysis
 
 **Main Responsible TA:** Alma Andersson<br>
-**Lab Status:** <span style="color:red"> Under Construction | Final release @ 2020-10-05</span><br>
+**Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2021-10-05</span><br>
 
-In this lab you will work with Visium data, looking at parts of the mouse brain!
-While similar to single cell data in some ways, there are also some important
-differences. One thing that's extremely attractive with ST-data is that the very
-design of the method allows us to visualize the gene expression in the physical
-2D plane - which is one of the exercises in this lab. You will also apply some
-of the concepts introduced in the previous labs, in order to make sense of your
-spatial data.
+In this lab you will work with Visium data, the spatial gene expression of human
+breast cancer data! While similar to single cell data in some ways, there are
+also some important differences. One thing that's extremely attractive with
+spatial transcriptomics data is that the very design of the method allows us to
+visualize the gene expression in the physical 2D plane - which is one of the
+exercises in this lab. You will also apply some of the concepts introduced in
+the previous labs, in order to make sense of your spatial data.
 
 ### Preparatory work
-You should more or less have all tools required to conduct this lab on your computer, 
-meaning you won't have to install plenty of new packages. However, we recommended 
-that you read up a bit on the following concepts:
+For the best experience we recommended that you read up a bit on the following
+concepts, still these concepts will be briefly explained in the lab:
 
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
 * Clustering
+* Latent Dirichlet Allocation (LDA)
+* Single cell and spatial transcriptomics data integration (The method we are using is presented [here](https://www.nature.com/articles/s42003-020-01247-y))
 
 ## Guidelines
 
