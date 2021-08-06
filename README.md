@@ -14,19 +14,18 @@ systems; in short, it will make everyone's lives a lot easier.
 
 **Note** : If you choose to _not_ use the Docker system, we will assume that you
 are an experienced user both when it comes to GitHub and software management
-(installation etc.), meaning that any issues that relates to these sort of
-things will be given lower priority (since they could have been avoided by using
-the Docker image). 
+(installation etc.), meaning that even though we _will_ help you if you have 
+any problems relating to GitHub and the installation, you will be given lower
+priority than those who chose the "Docker-way".
 
-On this landing page, you'll find instruction regarding how to setup Docker on
-your system and start hosting a container. For information about the computer
-exercises, you need to switch from the _master branch_ of this repository to
-your course specific branch. To do this, simply find the tab on this page that
-says "master", click it and select the branch that corresponds to your course
-code (see image below):
+For information about the computer exercises, you need to switch from the
+_master branch_ of this repository to your course specific branch. To do this,
+simply find the tab on this page that says "master", click it and select the
+branch that corresponds to your course code (see image below):
 
 ![switch-branch](imgs/switch-branch.png)
 
+**Note**: read through this page before switching to your course specific page.
 
 ## Getting started with Docker and GitHub
 
@@ -40,15 +39,19 @@ Click on the link below that best corresponds to your OS:
 - Windows OS Download [LINK](https://docs.docker.com/docker-for-windows/install/)
 - Linux OS Download [LINK](https://docs.docker.com/engine/install/)
 
-and follow the instructions at respective page.
+and follow the instructions at respective page. If you find those instructions
+to technical, you'll find plenty of guides by simply googling "Install docker on
+X" where X equals to your OS.
 
 To make sure that the installation was successful, open up a terminal window and enter:
+
 ```sh
 docker ps 
 ```
-if everything went as expected, you should be able to execute this command without any
+
+If everything went as expected, you should be able to execute this command without any
 issues. If there are issues, try to troubleshoot them yourselves or ask one of
-us TAs. Note, that sometimes (especially on Linux) you might have to run Docker
+us TAs. Please note that sometimes (especially on Linux) you might have to run Docker
 with `sudo` for it to work.
 
 ### Download Image
@@ -75,6 +78,7 @@ creation date, and size.
 ### Cloning the GitHub Repository
 The next thing to do is to clone this GitHub repository into a folder of your
 choice. To do this, we *strongly* recommend is that you:
+
 1. somewhere (easy accessible) on your computer create a new folder named
 _genetech_.
 2. Open a terminal window (or use an already opened one) an orient yourself to
@@ -88,15 +92,21 @@ to generate a container from it. To start a container from the downloaded image
 with access to the content from the cloned GitHub repository, run:
 
 ```sh
- sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --mount type=bind,source=GENETECH_PATH,target=/home/genetech/code -e ROOT=TRUE almaand/genetech:TAG
+ sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --memory=6g --mount type=bind,source=GENETECH_PATH,target=/home/genetech/code -e ROOT=TRUE almaand/genetech:TAG
 ```
-Where `GENETECH_PATH` is the path to the folder you created in the previous step, and `TAG` (at the end) should be replaced with the latest tagname listed [here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated).
+
+Where `GENETECH_PATH` is the path to the folder you created in the previous
+step, and `TAG` (at the end) should be replaced with the latest tagname listed
+[here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated).
+We will allocate 6GB of memory to this lab, if your RAM memory is really small
+you could change this to 4GB.
 
 To check that your container is running, enter:
 
 ```sh
 docker container ls -a
 ```
+
 this will list all your containers, stopped as well as running ones, listed
 there you should see something similar to (but with different ID's):
 
@@ -105,18 +115,19 @@ there you should see something similar to (but with different ID's):
 If you find a container based on the `genetech` images, you are now good to go.
 Essentially what we have done is to setup a virtual operative system that you
 can access via your browser; we have also customized this to run `Rstudio`
-immediately for you. 
+immediately for you, with all the necessary packages installed.
 
 Now go to your favorit browser (e.g. Firefox, Safari, or Chrome) and enter:
 `localhost:1337` in the address bar. This will take you to a login-page where
 you should use the credentials:
+
 - Username : genetech
 - Password : genetech
 
 ### Start and Stop container
 When you're not using the container, it could be a good idea to _stop_ it, so
 it's not occupying resources on your computer. Likewise, if you have stopped a
-container, you might also want to start it again, instead of initiating it again
+container, you might also want to start it again, instead of initiating it de novo 
 from the image. Commands for both these actions are given below:
 
 - stop : `docker stop CONTAINER_ID`
