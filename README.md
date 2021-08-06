@@ -139,24 +139,25 @@ parts of a scRNA-seq analysis workflow.
 ## Lab 4 | Spatial Transcriptomics analysis
 
 **Main Responsible TA:** Alma Andersson<br>
-**Lab Status:** <span style="color:red"> Under Construction | Final release @ 2020-10-05</span><br>
+**Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2021-10-05</span><br>
 
-In this lab you will work with Visium data, looking at parts of the mouse brain!
-While similar to single cell data in some ways, there are also some important
-differences. One thing that's extremely attractive with ST-data is that the very
-design of the method allows us to visualize the gene expression in the physical
-2D plane - which is one of the exercises in this lab. You will also apply some
-of the concepts introduced in the previous labs, in order to make sense of your
-spatial data.
+In this lab you will work with Visium data, the spatial gene expression of human
+breast cancer data! While similar to single cell data in some ways, there are
+also some important differences. One thing that's extremely attractive with
+spatial transcriptomics data is that the very design of the method allows us to
+visualize the gene expression in the physical 2D plane - which is one of the
+exercises in this lab. You will also apply some of the concepts introduced in
+the previous labs, in order to make sense of your spatial data.
 
 ### Preparatory work
-You should more or less have all tools required to conduct this lab on your computer, 
-meaning you won't have to install plenty of new packages. However, we recommended 
-that you read up a bit on the following concepts:
+For the best experience we recommended that you read up a bit on the following
+concepts, still these concepts will be briefly explained in the lab:
 
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
 * Clustering
+* Latent Dirichlet Allocation (LDA)
+* Single cell and spatial transcriptomics data integration (The method we are using is presented [here](https://www.nature.com/articles/s42003-020-01247-y))
 
 ## Guidelines
 
