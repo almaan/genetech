@@ -263,26 +263,34 @@ vst.data <- vst(dds, blind = FALSE)
 
 #### Heatmap
 
-Using the VST transformed counts, we can create a correlation heatmap to visualize relationships between samples at the gene expression level:
+Heatmaps can sometimes be useful to obtain an overview of pairwise relationships between many samples at the same time. Here we have 50 samples which is a decent amount of samples and it could be useful to understand if these are correlated with each other at the gene expression level.
 
-```{r, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
+Using our normalized counts (VST transformed), we can compute correlation scores between each pair of samples and visualize these correlationns using the code below:
+
+(Don't freak out if the code doesn't make any sense right now, let's just focus on the heatmap)
+
+```{r heatmap1, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
 
 pc <- prcomp(t(assay(vst.data)))
 sampleDistMatrix <- cor(t(pc$x))
-rownames(sampleDistMatrix) <- vst.data$Subtype_mRNA
-colnames(sampleDistMatrix) <- NULL
 diag(sampleDistMatrix) <- NA
 colors <- viridis(12)
 pheatmap(sampleDistMatrix, col = colors)
+
 ```
 
+From the heatmap we can see that samples are ordered into a hierarchical structure based on pairwise correlations. Cells (tiny squares) with a yellow color represents a pair of samples with high correlation whereas cells with a blue color represents a pair of samples with low correlation. We can see that there are at least two larger blocks of samples with higher similarity, but right now we can only guess why this is the case.
 
-#Q2 - Is there any sample that stands out? What would you do with it?
+Let's add a new component to this heatmap to show some of our sample metadata using the `annotation_col` argument in `pheatmap`. What we want to do here is to add a bar on top of the heatmap to show the cancer subtype for each sample. You can check the documentation for the `annotation_col` argument by typing `?pheatmap` in the console. 
 
+# Q2 - Replace `...` in the code chunk below with the correct answer. Based on the characteristics of the different subtypes, can you speculate why some of them are more difficult to distinguish?
 
-```{r}
+```{r heatmap2, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
 
-#Write code
+# // Replace ... with the correct code
+#ann <- data.frame(subtype = vst.data$Subtype_mRNA, row.names = colnames(sampleDistMatrix))
+ann <- data.frame(...)
+pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
 ```
 
