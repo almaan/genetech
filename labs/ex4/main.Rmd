@@ -93,7 +93,8 @@ load.pkgs <- c("Seurat" = "cran",
                "tm" = "cran",
                "gridExtra" = "cran",
                "dplyr" = "cran",
-               "RColorBrewer"="cran"
+               "RColorBrewer"="cran",
+               "rjson"="cran"
                )
 
 installed.pkgs <- installed.packages()[,1]
