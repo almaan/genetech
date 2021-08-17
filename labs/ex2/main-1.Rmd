@@ -17,11 +17,17 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 
 ## Introduction
 
-For this part of the lab we are exploring RNA-seq data from mice tumors which
-are treated with different kinase inhibitors. Each drug (A-F) is tested on
-several mice and the tumor response is recorded (i.e. did the tumor continue to
-grow above a certain threshold or not). The responses are binary classified as
-"responder" and "Non_responder".
+For this part of the lab we are exploring RNA-seq data from breast cancer samples 
+obtained from The Cancer Genome ATlas (TCGA) which have been classified into five 
+different "mRNA subtypes"; Her2, Basal, LumA, LumB and Normal. The full dataset consists 
+of 1217 patient samples but for the purpose of this exercise, we have reduced this 
+dataset to 10 patients per subtype.
+
+In literature, you will most likely come across different classifications depending on
+histopathology, clinical grade, receptor status and genomic alterations. Here we will 
+use the "mRNA subtypes" as defined by the TCGA. 
+
+LumA (Luminal A) : 
 
 
 ## General workflow
@@ -131,7 +137,7 @@ samples of $<=10$. Use the skills you learned in Lab 1.
 ```{r, eval= TRUE, echo=TRUE}
 
 #Write code
-se <- se[rowSums(assays(se)$counts) > 10, ]
+se <- se[rowSums(assays(se)$counts) > 100, ]
 
 ```
 
@@ -166,7 +172,7 @@ For convenience, we apply a log2 transformation before visual inspection of the 
 ```{r, eval= TRUE, echo=TRUE}
 
 exprMat <- assays(se)$counts
-colnames(exprMat) <- colData(se)$Subtype_mRNA
+colnames(exprMat) <- colData(se)$subtype
 boxplot(log2(exprMat + 0.5), ylab = "log (base 2) read counts + 0.5")
 
 ```
@@ -186,11 +192,11 @@ this is given below:
 ```{r, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
 
 #Create the DESeqDataSet (set design = ~1, which we change later)
-dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
+dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata, design = ~ 1)
 
 #Combine factors of interest into a single factor with all combinations of the original factors
-dds$group <- factor(paste0(dds$Subtype_mRNA))
+dds$group <- factor(paste0(dds$subtype))
 design(dds) <- ~ group
 
 ```
@@ -222,7 +228,7 @@ Make a similar boxplot as before, but with the normalized data.
 ```{r, eval= TRUE, echo=TRUE}
 #Write code
 normMat <- counts(dds, normalized = TRUE)
-colnames(normMat) <- colData(dds)$Subtype_mRNA
+colnames(normMat) <- colData(dds)$subtype
 boxplot(log2(normMat + 0.5), ylab = "log (base 2) read counts + 0.5")
 ```
 
@@ -263,19 +269,21 @@ vst.data <- vst(dds, blind = FALSE)
 
 #### Heatmap
 
-Heatmaps can sometimes be useful to obtain an overview of pairwise relationships between many samples at the same time. Here we have 50 samples which is a decent amount of samples and it could be useful to understand if these are correlated with each other at the gene expression level.
+Heatmaps can sometimes be useful to obtain an overview of pairwise relationships between many samples at the same time. Here we have 60 samples which is a decent amount of samples and it could be useful to understand if these are correlated with each other at the gene expression level.
 
 Using our normalized counts (VST transformed), we can compute correlation scores between each pair of samples and visualize these correlationns using the code below:
 
 (Don't freak out if the code doesn't make any sense right now, let's just focus on the heatmap)
 
-```{r heatmap1, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
+```{r heatmap1, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
 
-pc <- prcomp(t(assay(vst.data)))
-sampleDistMatrix <- cor(t(pc$x))
+rv <- rowVars(assay(vst.data))
+select <- order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
+pca <- prcomp(t(assay(vst.data)[select, ]))
+sampleDistMatrix <- cor(t(pca$x))
 diag(sampleDistMatrix) <- NA
-colors <- viridis(12)
-pheatmap(sampleDistMatrix, col = colors)
+colors <- viridis::magma(50)
+pheatmap(sampleDistMatrix, col = colors, border_color = NA)
 
 ```
 
@@ -285,11 +293,11 @@ Let's add a new component to this heatmap to show some of our sample metadata us
 
 # Q2 - Replace `...` in the code chunk below with the correct answer. Based on the characteristics of the different subtypes, can you speculate why some of them are more difficult to distinguish?
 
-```{r heatmap2, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
+```{r heatmap2, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
 
 # // Replace ... with the correct code
-#ann <- data.frame(subtype = vst.data$Subtype_mRNA, row.names = colnames(sampleDistMatrix))
-ann <- data.frame(...)
+ann <- data.frame(subtype = vst.data$subtype, row.names = colnames(sampleDistMatrix))
+#ann <- data.frame(...)
 pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
 ```
@@ -314,7 +322,14 @@ result for a specific drug, we may use results command:
 
 ```{r, eval= TRUE, echo=TRUE}
 
-res <- results(dds, contrast = c("group", "Basal", "Normal"), tidy = TRUE)
+res <- results(dds, contrast = c("group", "Her2_TP", "Normal_NT"), tidy = TRUE)
+res <- res %>% 
+  arrange(padj) %>%
+  filter(log2FoldChange > 2, padj < 0.01)
+
+gg <- data.frame(subtype = colData(dds)$subtype, val = dds@assays@data$counts["NNMT", ])
+ggplot(gg, aes(subtype, val)) +
+  geom_boxplot()
 
 ```
 
