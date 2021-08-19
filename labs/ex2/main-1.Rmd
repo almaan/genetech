@@ -299,7 +299,9 @@ ggplot(counts_long, aes(...)) +
 
 ```
 
-Q3 - Now make a similar plot but with facets instead of colors.
+Q3 - Now make the same plot but with facets instead of colors.
+
+Hint: The boxplots should be put into 6 separate facets, one for each cancer subtype.
 
 ```{r histogram_all_counts_facets, fig.width=12, fig.height=5}
 
@@ -316,163 +318,170 @@ ggplot(counts_long, aes(...)) +
 
 ## General workflow
 
-This is a general pipeline for a bulk RNA-seq analysis workflow:
+Below is a suggested workflow for bulk RNA-seq data processing and analysis.
 
-pre-processing (yellow):
+pre-processing of raw fastq data:
   * Check quality of raw reads and filter out reads with poor quality
+  * Filter raw reads to remove artifacts (e.g. Illumina primer sequences)
   * Align reads to a reference genome (or construct a _de novo_ genome assembly if a reference is unavailable)
   * Annotate aligned reads to gene loci
-  * Filter out aligned reads with poor mapping stats and remove PCR duplicates (if applicable)
+  * Quantify mRNA counts per gene loci
+  
+These steps are typically done using command line tools and will not be covered in this
+lab. The data that we will be working on in this lab is an expression matrix with genes 
+in rows and samples in columns. We have essentially just collected files with mRNA counts 
+per gene for a number of samples and merged them into a matrix.
 
-quality control and normalization (orange):
-  * Check quality of gene expression vectors and remove poor quality samples
-  * Normalization is needed to adjust for technical variability across samples, e.g. differences in the amount of reads 
+quality control:
+  * Check quality of samples and filter out outliers
+  * Filter out low abundant genes or other potentially confounding genes
   * Adjust for other confounding factors, e.g. gender specific expression, experimental date and age 
   
-analysis (blue):
-  * Differential gene expression analysis, clustering and network analysis 
+analysis:
+  * Differential gene expression analysis
+  * Data transformations for visualization and clustering
+  * Clustering
+  * Gene regulatory networks
+  
 
-![](flowchart_rnaSeq.png)
-
-In this lab, we once again omit several steps and start with a count matrix of
-transcripts, after alignment and mapping has been carried out. We will explore
-different tools that can be used for quality control, differential gene
-expression and clustering.
+In this lab, we will only explore a few of these steps with a focus on quality control and differential 
+expression analysis.
 
 ## Analysis pipeline
+
+In this second part of the lab we will use the DESeq2 R package to demonstrate an analysis workflow
+of bulk RNA-seq data.
 
 ### Loading packages
 
 The following packages should be loaded. Remember, if you haven't installed a
-specific package, use `BiocManager::install("packageName")`. When running this,
-you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip
-updating the rest of the packages for this lab (which can otherwise take some
-time).
+specific package, use `BiocManager::install("packageName")` if the package is 
+hosted on bioconductor or `install.packages("packageName")`if the package is
+hosted on CRAN. When running this, you often get asked "Update all/some/none? [a/s/n]:" 
+In general, it's ok to skip updating the rest of the packages for this lab (which can 
+otherwise take some time).
 
 ```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+
 library(DESeq2)
 library(pheatmap)
 library(ggplot2)
 library(viridis)
+
 ```
 
 ### Pre-processing 
 
-We are testing several samples for differential expression of many genes
-simultaneously. This adds to the multiple testing issue, reducing the power to
-detect DE (differentially expressed) genes.
+Filtering out low abundant genes is not a requirement to run DESeq2 functions but can be useful for 
+two reasons: we can reduce the memory size of our DESeq2 data object and increase the speed of 
+transformation and testing functions within our analysis workflow. Note that when your run a DE test
+using DESeq2, a more strict filtering is automatically applied before running the test that you can 
+read more about [here](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#indfilt).
 
-Therefore, we filter out genes with all zero or low counts that does not add
-anything in terms of evidence for differential expression.
-
-Perform filtering, exlude all genes that have a total count value across all
-samples of $<=10$. Use the skills you learned in Lab 1.
+Q4. Exclude all genes that have a total count value across all samples of $<=10$. Use the skills you learned in Lab 1.
 
 ```{r, eval= TRUE, echo=TRUE}
 
-#Write code
-counts <- counts[rowSums(counts) > 100, ]
+# Write code
+counts <- counts[rowSums(counts) > 10, ]
 
 ```
 
 ### DESeq2
 
-We will use DESeq2 for DE analysis. 
+Now, in order to use DESeq2, we first need to create a DESeq2 object to store our data in. 
+DESeq2 takes many different data types as inut, but since we have a count matrix we'll use 
+the `DESeqDataSetFromMatrix()` function to create our DESeq2 object.
 
-To study DE genes we *don't need* to take into an account gene length because
-the tools for DE analysis are comparing the counts between sample groups for the
-same gene. However, sequencing depth and RNA composition *do need* to be taken
-into account.
+When we create our object we will add the count data and metadata, but we will also specify 
+a design formula. This formula expresses how the counts for each gene depend on the variables 
+in colData. This can be changed later into more complex designs, but here we will 
+simply tells DESeq2 that the counts are grouped by breast cancer subtype.
 
-To normalize for sequencing depth and RNA composition, DESeq2 uses
-the median of ratios method. On the user-end there is only one step, but on the
-back-end there are multiple steps involved, as described below.
+The code to do this is given below:
 
-Let's start by looking at the variability of sequencing depth across our
-samples: (is normalization needed?)
+```{r create_deseq2_object, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
 
-Next we’ll use box plots to check the distribution of the read counts.
-For convenience, we apply a log2 transformation before visual inspection of the data because the distribution is skewed towards lower values. 
-
-```{r, eval= TRUE, echo=TRUE}
-exprMat <- counts
-colnames(exprMat) <- metadata$subtype
-boxplot(log2(exprMat + 0.5), ylab = "log (base 2) read counts + 0.5")
-
-```
-
-
-Q1 - What is your interpretation from the plot?
-
-```{r}
-# Add an answer
-```
-
-Now, in order to use the DESeq2 workflow, we first need to create a DESeq2
-object to store our data. (Similar to our SummarizedExperiment). The code to do
-this is given below:
-
-
-```{r, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
-
-#Create the DESeqDataSet (set design = ~1, which we change later)
+# Create the DESeqDataSet (set design = ~1, which we change later)
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata, 
-                              design = ~ 1)
+                              design = ~ subtype)
 
-#Combine factors of interest into a single factor with all combinations of the original factors
-dds$group <- factor(paste0(dds$subtype))
-design(dds) <- ~ group
+# We will just relevel the subtype factor to make sure that Normal_NT is used as the reference
+dds$subtype <- relevel(dds$subtype, ref = "Normal_NT")
 
 ```
 
-Now, we can use the DESeq2 function `DESeq`. This is a function that performs
-several steps, including normalization. The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
+Now, we can run the `DESeq()` function which will perform a set of default analysis steps: 
 
-```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+  1. estimation of size factors (see `?estimateSizeFactors`)
+  2. estimation of dispersion (see `?estimateDispersions`)
+  3. Negative Binomial GLM fitting and Wald statistics (see `?nbinomWaldTest`)
+
+The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
+
+This next code chunk might take a few minutes to run.
+
+```{r run_deseq2, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
 
 dds <- DESeq(dds)
 
 ```
 
-This might take a few minutes.
-
-If you now print the `dds` object, you will see that the structure is similar to
-the SummarizedExperiment, but with some new assays and colData.
+If you now print the `dds` object, you will obtain information about the contents of the 
+object. We can for example see that there are 30107 genes and 60 samples and we also get 
+a few example names for each type.
 
 ```{r, eval= TRUE, echo=TRUE}
+
 dds
+
 ```
 
-For each sample, we now have a sizefactor (stored in colData). We can use this
-sizefactor to normalize our samples by dividing the raw count with the size
-factor. This is stored in `counts(dds, normalized=T)`
+After running `DESeq()`, we now have so called sizefactors stored in colData (1 size factor per column/sample). 
+We can use these sizefactors to normalize our samples by dividing the raw count with the size factor. This will
+adjust for differencies in library sizes between the samples. 
 
-Make a similar boxplot as before, but with the normalized data.
+To obtain the normalized data you can run `counts(dds, normalized = T)`.
 
-```{r, eval= TRUE, echo=TRUE}
-#Write code
-normMat <- counts(dds, normalized = TRUE)
-colnames(normMat) <- colData(dds)$subtype
-boxplot(log2(normMat + 0.5), ylab = "log (base 2) read counts + 0.5")
+Q5. Make a boxplot for each sample showing the distribution of normalized counts.
+
+Hint: You already have the code to do this from the first part of the lab. Look at Q2 and Q3 as well as the code 
+used to prepare the `counts_long` data.frame. Here you will need to replace the `counts` matrix with the 
+normalized counts.
+
+```{r boxplot_normalized, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5}
+
+counts_long <- setNames(reshape2::melt(log10(counts(dds, normalized = TRUE) + 1)), nm = c("gene", "sample_id", "log10_count"))
+counts_long$subtype <- metadata[counts_long$sample_id, ]$subtype
+
+ggplot(counts_long, aes(sample_id, log10_count)) +
+  geom_boxplot() +
+  facet_wrap(vars(subtype), scales = "free", ncol = 6) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
 ```
-
 
 Do you spot the difference?
+
+If you managed to do this correctly you should be able to see that the distributions are more
+comparable across samples.
 
 
 ### Exploratory analysis
 
-When exploring RNAseq data, you usually want to perform some kind of
-transformation before visualization. Otherwise, highly expressed genes tend to
-dominate the result. A common method to deal with this is to simply take the
-log2 of the counts (with a pseudocount added). However, this can lead to the
-opposite situation - lowly expressed genes getting too much influence on the
-result.
+Exploratory data analysis (EDA) can sometimes be useful to better nderstand the data
+that you are working with. For example, it might be interesting to know whether 
+some groups exhibit greater within-group variability than other or to check how samples 
+are related to each other based on expression similarity. You might even want to use 
+a clustering approach based on similarities of gene expression profiles to define new 
+subtypes. This is actually how our subtypes were defined within the TCGA!
 
-Another frequently used method is the variance-stabilizing transformation (VST),
-this is used to disentangle the mean-variance relationship seen in count data.
-VST is included in the DESeq2 package.
+Before we move on to data exploration it is often beneficial to transform 
+the count data first. Otherwise, highly expressed genes tend to dominate the result. 
+
+One frequently used method is the variance-stabilizing transformation (VST),
+which is used to disentangle the mean-variance relationship seen in count data.
 
 In RNA-Seq data, genes with larger mean expression tend to have higher observed
 variances across samples. Random variables for which variance differ across
@@ -488,13 +497,18 @@ Let's transform our data using the VST method before looking at our samples:
 
 # Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable called vst.data
 vst.data <- vst(dds, blind = FALSE)
+
 ```
 
 #### Heatmap
 
-Heatmaps can sometimes be useful to obtain an overview of pairwise relationships between many samples at the same time. Here we have 60 samples which is a decent amount of samples and it could be useful to understand if these are correlated with each other at the gene expression level.
+A heatmaps is a type of plot that can be useful to obtain an overview of pairwise relationships 
+between many samples at the same time. Here we have 60 samples which is a decent amount of samples 
+and it could be useful to understand if these are correlated with each other at the gene 
+expression level.
 
-Using our normalized counts (VST transformed), we can compute correlation scores between each pair of samples and visualize these correlationns using the code below:
+Using our normalized counts (VST transformed), we can compute correlation scores between each pair
+of samples and visualize these correlationns using the code below:
 
 (Don't freak out if the code doesn't make any sense right now, let's just focus on the heatmap)
 
@@ -510,9 +524,14 @@ pheatmap(sampleDistMatrix, col = colors, border_color = NA)
 
 ```
 
-From the heatmap we can see that samples are ordered into a hierarchical structure based on pairwise correlations. Cells (tiny squares) with a yellow color represents a pair of samples with high correlation whereas cells with a blue color represents a pair of samples with low correlation. We can see that there are at least two larger blocks of samples with higher similarity, but right now we can only guess why this is the case.
+From the heatmap we can see that samples are ordered into a hierarchical structure based on pairwise correlations. 
+Cells (tiny squares) with a yellow color represents a pair of samples with high correlation whereas cells with a 
+purple color represents a pair of samples with low correlation. We can see that there are at least three larger blocks 
+of samples with higher similarity, but right now we can only make a guess for why this is the case.
 
-Let's add a new component to this heatmap to show some of our sample metadata using the `annotation_col` argument in `pheatmap`. What we want to do here is to add a bar on top of the heatmap to show the cancer subtype for each sample. You can check the documentation for the `annotation_col` argument by typing `?pheatmap` in the console. 
+Let's add a new component to this heatmap to show some of our sample metadata using the `annotation_col` argument 
+in `pheatmap`. What we want to do here is to add a bar on top of the heatmap to show the cancer subtype for each sample. 
+You can check the documentation for the `annotation_col` argument by typing `?pheatmap` in the console. 
 
 # Q2 - Replace `...` in the code chunk below with the correct answer. Based on the characteristics of the different subtypes, can you speculate why some of them are more difficult to distinguish?
 
@@ -525,6 +544,17 @@ pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
 ```
 
+Another plot that is related to the previous heatmap is the PCA plot. This type of plot
+can be particularly useful for visualizing the overall effect of both technical 
+and biological covariates as well as batch effects. Here we do not have access to 
+technical data, but we if we color the PCA by subtype we can see that the samples 
+group by breast cancer subtype as expected.
+
+```{r pca}
+
+plotPCA(vst.data, intgroup = "subtype")
+
+```
 
 ### Differential expression
 
@@ -533,24 +563,30 @@ against each other. As noted, we have several different subtypes in this data
 set, each pairwise comparison is saved as separate results in our dds object. To
 view what we have:
 
-```{r, eval= TRUE, echo=TRUE}
+```{r DE_test, eval=TRUE, echo=TRUE}
+
 resultsNames(dds)
+
 ```
 
-For example, "group_Normal_vs_Basal", contains the DE result comparing Normal against Basal.
+For example, "group_Basal_vs_Normal", contains the DE result comparing Normal against Basal.
 
 A contrast is a linear combination of estimated log2 fold changes, which can be
 used to test if differences between groups are equal to zero. To extract the DE
-result for a specific drug, we may use results command:
+results for a specific comparison, we can use results command:
 
 ```{r, eval= TRUE, echo=TRUE}
 
-res <- results(dds, contrast = c("group", "Her2_TP", "Normal_NT"), tidy = TRUE)
+res <- results(dds, contrast = c("subtype", "LumA_TP", "Normal_NT"), tidy = TRUE)
 res <- res %>% 
-  arrange(padj) %>%
-  filter(log2FoldChange > 2, padj < 0.01)
+  dplyr::arrange(padj) %>%
+  dplyr::filter(log2FoldChange > 2, padj < 0.01)
 
-gg <- data.frame(subtype = colData(dds)$subtype, val = dds@assays@data$counts["ERBB2", ])
+```
+
+```{r}
+
+gg <- data.frame(subtype = colData(dds)$subtype, val = dds@assays@data$counts["CDC25C", ])
 ggplot(gg, aes(subtype, val)) +
   geom_boxplot()
 
