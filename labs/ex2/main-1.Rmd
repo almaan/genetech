@@ -564,7 +564,9 @@ Next, we want to know what genes are driving this separation of subtypes at a tr
 
 When we conduct DE analysis with DESeq2, we are free to set up quite complex designs to adress 
 our question of interest. For example, we could be interested in differential expression
-between a subtype and our Normal control or one subtype against all other subtypes. 
+between a subtype and our Normal control or one subtype against all other subtypes. Or if we 
+have access to additional clinical data, we could for example design our test to adress 
+differences in gene expression due to genotype, age, gender, BMI, treatments etc.
 
 Our current design allows us to do pairwise comparisons between subtypes and we can
 check the coefficients of our model using `resultsNames`.
