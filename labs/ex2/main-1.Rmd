@@ -19,16 +19,20 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 
 For this second lab we will work with bulk RNA-seq data obtained from breast cancer samples 
 downloaded from The Cancer Genome Atlas (TCGA). Each sample reprents a patient from the BRCA-TCGA
-cohort and have been classified into six different "mRNA subtypes"; Her2, Basal-like, LumA, LumB, 
-Normal-like and Normal. The full cohort consists of 1217 patients but for the purpose of 
-this exercise, we have reduced this dataset to 10 patients per subtype, adding to a total of
-60 samples.
+cohort and have been classified into 5 different "mRNA subtypes"; Her2, Basal-like, LumA, LumB and 
+Normal-like. We have also included a sixth "subtype" which consists of normal tissue to be used as a control. 
+The full cohort consists of 1217 patients but for the purpose of this exercise, we have reduced this dataset 
+to 10 patients per subtype, adding up to a total of 60 samples.
 
 In literature, you will most likely come across different classifications depending on
 histopathology, clinical grade, receptor status and genomic alterations. Here we will 
 use the "mRNA subtypes" as defined by the TCGA. 
 
-LumA (Luminal A) : 
+You can find more information about each subtype on this [website](https://www.cancercenter.com/cancer-types/breast-cancer/types/breast-cancer-molecular-types). 
+We should also warn you that these subtypes are perhaps a bit outdated but were defined in the original TCGA [paper](https://www.nature.com/articles/nature11412) on breast tumors in 2012. Here for example, they use TNBC
+as a synonym for basal-like cancers and although these two types are similar, they are not biologically equivalent. 
+For this exercise we will just pretend that these 5 subtypes are well established.
+
 
 ## Loading packages
 
@@ -63,15 +67,6 @@ counts <- as.matrix(data.frame(data.table::fread(input = "~/genetech/labs/ex2/da
                      row.names = 1))
 
 metadata <- read.table(file = "~/genetech/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv")
-
-# conv <- c("Basal_TP" = "Basal-like", 
-#           "Her2_TP" = "Her2",
-#           "LumA_TP" = "LumA",
-#           "LumB_TP" = "LumB",
-#           "Normal_NT" = "Normal",
-#           "Normal_TP" = "Normal-like")
-# metadata$subtype <- conv[metadata$subtype]
-# write.table(x = metadata, file = "~/genetech/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv", sep = "\t", quote = FALSE, row.names = TRUE, # col.names = TRUE)
 
 # Check content of matrix
 counts[1:5, 1:5] # this will print the top left corner of the matrix
@@ -429,7 +424,7 @@ Now, we can run the `DESeq()` function which will perform a set of default analy
 
 The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
 
-This next code chunk might take a few minutes to run.
+Note: This next code chunk might take a few minutes to run.
 
 ```{r run_deseq2, message=FALSE, warning=FALSE, eval=TRUE, echo=TRUE}
 
@@ -664,17 +659,19 @@ pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, 
 
 ```
 
-We do find quite many subtype specific genes in our data, but we as you can see even the top most 
-differentially expressed genes have a quite high within group variability. Even subtypes of cancer 
+We do find quite many subtype specific genes in our data, but even the top most 
+differentially expressed genes have a quite high within group variability. Cancer subtypes 
 are heterogeneous and remember that these are bulk RNA-seq data which means that we are investigating 
-the averaged expression over a whole tissue piece. Cancer cells reside and proliferate within a 
-microenvironment made up of "normal" cells, for example cells that build up connective tissues and blood
-vessels or immune cells that are trying to fight and eliminate the tumor. Although cells in the tumor
+the averaged expression over a whole tissue piece. 
+
+Cancer cells reside and proliferate within a  microenvironment made up of "normal" cells. 
+This could for example be cells that build up connective tissues and blood vessels or immune cells 
+that are trying to fight and eliminate the tumor. Although cells in the tumor
 microenvironment are not malignant, they can be manipulated by the cancer cells to suppress the immune 
 response and promote disease progression. Understanding the intricate details of cell-cell crosstalk 
 and the architecture of the microenvironment is important in the quest to find new therapeutic strategies.
-This is to a large extent the reason why single-cell and spatial methods have taken over the field 
-of genomics and gained so much traction in the last decade.
+This limitation with bulk RNA-seq analysis is to a large extent the reason why single-cell and spatial 
+methods have taken over the field of genomics and gained so much traction in the last decade.
 
 
 
