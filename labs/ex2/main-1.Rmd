@@ -30,6 +30,24 @@ use the "mRNA subtypes" as defined by the TCGA.
 
 LumA (Luminal A) : 
 
+## Loading packages
+
+The following packages should be loaded. Remember, if you haven't installed a
+specific package, use `BiocManager::install("packageName")` if the package is 
+hosted on bioconductor or `install.packages("packageName")`if the package is
+hosted on CRAN. When running this, you often get asked "Update all/some/none? [a/s/n]:" 
+In general, it's ok to skip updating the rest of the packages for this lab (which can 
+otherwise take some time).
+
+```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+
+library(DESeq2)
+library(pheatmap)
+library(ggplot2)
+library(viridis)
+
+```
+
 ## Load the data
 
 The data for the second lab is available from the cloned GitHub repo, found in genetech/labs/ex2/data/.
@@ -45,6 +63,15 @@ counts <- as.matrix(data.frame(data.table::fread(input = "~/genetech/labs/ex2/da
                      row.names = 1))
 
 metadata <- read.table(file = "~/genetech/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv")
+
+# conv <- c("Basal_TP" = "Basal-like", 
+#           "Her2_TP" = "Her2",
+#           "LumA_TP" = "LumA",
+#           "LumB_TP" = "LumB",
+#           "Normal_NT" = "Normal",
+#           "Normal_TP" = "Normal-like")
+# metadata$subtype <- conv[metadata$subtype]
+# write.table(x = metadata, file = "~/genetech/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv", sep = "\t", quote = FALSE, row.names = TRUE, # col.names = TRUE)
 
 # Check content of matrix
 counts[1:5, 1:5] # this will print the top left corner of the matrix
@@ -352,24 +379,6 @@ expression analysis.
 In this second part of the lab we will use the DESeq2 R package to demonstrate an analysis workflow
 of bulk RNA-seq data.
 
-### Loading packages
-
-The following packages should be loaded. Remember, if you haven't installed a
-specific package, use `BiocManager::install("packageName")` if the package is 
-hosted on bioconductor or `install.packages("packageName")`if the package is
-hosted on CRAN. When running this, you often get asked "Update all/some/none? [a/s/n]:" 
-In general, it's ok to skip updating the rest of the packages for this lab (which can 
-otherwise take some time).
-
-```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
-
-library(DESeq2)
-library(pheatmap)
-library(ggplot2)
-library(viridis)
-
-```
-
 ### Pre-processing 
 
 Filtering out low abundant genes is not a requirement to run DESeq2 functions but can be useful for 
@@ -378,12 +387,12 @@ transformation and testing functions within our analysis workflow. Note that whe
 using DESeq2, a more strict filtering is automatically applied before running the test that you can 
 read more about [here](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#indfilt).
 
-Q4. Exclude all genes that have a total count value across all samples of $<=10$. Use the skills you learned in Lab 1.
+Q4. Exclude all genes that have a total count value across all samples of $<=100$. Use the skills you learned in Lab 1.
 
 ```{r, eval= TRUE, echo=TRUE}
 
 # Write code
-counts <- counts[rowSums(counts) > 10, ]
+counts <- counts[rowSums(counts) > 100, ]
 
 ```
 
@@ -405,10 +414,10 @@ The code to do this is given below:
 # Create the DESeqDataSet (set design = ~1, which we change later)
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata, 
-                              design = ~ subtype)
+                              design = ~0 + subtype)
 
 # We will just relevel the subtype factor to make sure that Normal_NT is used as the reference
-dds$subtype <- relevel(dds$subtype, ref = "Normal_NT")
+dds$subtype <- relevel(dds$subtype, ref = "Normal")
 
 ```
 
@@ -422,7 +431,7 @@ The theory behind the model is explained [here](http://bioconductor.org/packages
 
 This next code chunk might take a few minutes to run.
 
-```{r run_deseq2, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+```{r run_deseq2, message=FALSE, warning=FALSE, eval=TRUE, echo=TRUE}
 
 dds <- DESeq(dds)
 
@@ -452,10 +461,10 @@ normalized counts.
 
 ```{r boxplot_normalized, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5}
 
-counts_long <- setNames(reshape2::melt(log10(counts(dds, normalized = TRUE) + 1)), nm = c("gene", "sample_id", "log10_count"))
+counts_long <- setNames(reshape2::melt(log(counts(dds, normalized = TRUE) + 0.5)), nm = c("gene", "sample_id", "log_count"))
 counts_long$subtype <- metadata[counts_long$sample_id, ]$subtype
 
-ggplot(counts_long, aes(sample_id, log10_count)) +
+ggplot(counts_long, aes(sample_id, log_count)) +
   geom_boxplot() +
   facet_wrap(vars(subtype), scales = "free", ncol = 6) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -464,7 +473,7 @@ ggplot(counts_long, aes(sample_id, log10_count)) +
 
 Do you spot the difference?
 
-If you managed to do this correctly you should be able to see that the distributions are more
+If you managed to do this correctly you should be able to see that the distributions are now more
 comparable across samples.
 
 
@@ -510,16 +519,19 @@ expression level.
 Using our normalized counts (VST transformed), we can compute correlation scores between each pair
 of samples and visualize these correlationns using the code below:
 
-(Don't freak out if the code doesn't make any sense right now, let's just focus on the heatmap)
+(Don't freak out if the code doesn't make any sense, let's just focus on the heatmap)
 
 ```{r heatmap1, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
 
+# Below are a few lines of code to create a correlation matrix that we'll be using
 rv <- rowVars(assay(vst.data))
-select <- order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
+select <- order(rv, decreasing = TRUE)[seq_len(min(500, length(rv)))]
 pca <- prcomp(t(assay(vst.data)[select, ]))
 sampleDistMatrix <- cor(t(pca$x))
 diag(sampleDistMatrix) <- NA
 colors <- viridis::magma(50)
+
+# Draw heatmap
 pheatmap(sampleDistMatrix, col = colors, border_color = NA)
 
 ```
@@ -544,24 +556,18 @@ pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
 ```
 
-Another plot that is related to the previous heatmap is the PCA plot. This type of plot
-can be particularly useful for visualizing the overall effect of both technical 
-and biological covariates as well as batch effects. Here we do not have access to 
-technical data, but we if we color the PCA by subtype we can see that the samples 
-group by breast cancer subtype as expected.
-
-```{r pca}
-
-plotPCA(vst.data, intgroup = "subtype")
-
-```
+One thing that becomes quite clear after looking at this heatmap is that even though there is
+a lot of heterogeneity across samples, there are similarities within the respective subtypes as well. 
+Next, we want to know what genes are driving this separation of subtypes at a transcriptional level.
 
 ### Differential expression
 
-When we conduct DE analysis in this manner, we are comparing 2 conditions
-against each other. As noted, we have several different subtypes in this data
-set, each pairwise comparison is saved as separate results in our dds object. To
-view what we have:
+When we conduct DE analysis with DESeq2, we are free to set up quite complex designs to adress 
+our question of interest. For example, we could be interested in differential expression
+between a subtype and our Normal control or one subtype against all other subtypes. 
+
+Our current design allows us to do pairwise comparisons between subtypes and we can
+check the coefficients of our model using `resultsNames`.
 
 ```{r DE_test, eval=TRUE, echo=TRUE}
 
@@ -569,61 +575,104 @@ resultsNames(dds)
 
 ```
 
-For example, "group_Basal_vs_Normal", contains the DE result comparing Normal against Basal.
-
 A contrast is a linear combination of estimated log2 fold changes, which can be
 used to test if differences between groups are equal to zero. To extract the DE
-results for a specific comparison, we can use results command:
+results for a specific comparison, we can use `results` command. For this simple example
+we set the contrast using a vector of length 3 where the first element is the name of a 
+factor in the design formula, the second element is the numerator and the third element 
+is the denominator. We have also added a few filtering steps to remove genes with 
+an absolute log2 foldchange lower than 2, adjusted p-value higher than 0.01 and then
+we have arranged the results by increasing adjusted p-values to have the most significant 
+hits in the top of our table.
 
-```{r, eval= TRUE, echo=TRUE}
+```{r, eval=TRUE, echo=TRUE}
 
-res <- results(dds, contrast = c("subtype", "LumA_TP", "Normal_NT"), tidy = TRUE)
-res <- res %>% 
+# Run test Basal.like vs Normal
+res <- results(dds, 
+               contrast = c("subtype", "Basal.like", "Normal"),
+               tidy = TRUE)
+
+res_summarized <- res %>% 
   dplyr::arrange(padj) %>%
-  dplyr::filter(log2FoldChange > 2, padj < 0.01)
+  dplyr::filter(abs(log2FoldChange) >= 2, padj <= 0.01)
+res_summarized
 
 ```
 
-```{r}
+Q5. Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values from the `res_summarized` data.frame. You should be able to solve this problem programatically.
 
-gg <- data.frame(subtype = colData(dds)$subtype, val = dds@assays@data$counts["CDC25C", ])
-ggplot(gg, aes(subtype, val)) +
+```{r select_des}
+
+up <- #c("FOXM1", "CDCA8", "NDC80", "BUB1", "HJURP", "CKAP2L", "CCNE1", "CEP55", "CDCA3", "MELK")
+down <- #c("PAMR1", "LINC02720", "PDE2A", "HSPB6", "LINC01537", "CAVIN2", "SEMA3G", "FHL1", "CCDC178", "HSD17B13")
+degs <- c(up, down)
+
+```
+
+Now we can use the vst transformed values to compare the expression these genes in a heatmap. 
+Here we only look at the expression across two subtypes that were used in the test, i.e. Basal-like and Normal.
+
+```{r plot_degs, fig.width=10, fig.height=7}
+
+vst.vals <- vst.data[degs, vst.data$subtype %in% c("Basal-like", "Normal")]
+ann <- data.frame(subtype = vst.vals$subtype, row.names = colnames(vst.vals))
+pheatmap(t(scale(t(assay(vst.vals)))), annotation_col = ann, cluster_rows = FALSE, border_color = NA)
+
+```
+
+Perhaps a more interesting test would be to make pairwise comparisons between each
+subtypes against all other subtypes to obtain DEGs that are specific to each subtype.
+
+```{r DE_test_Basal-like}
+
+res_Her2_vs_all <- results(dds, 
+                           contrast = list("subtypeBasal.like", c("subtypeHer2", "subtypeLumA", "subtypeLumB", "subtypeNormal.like")), 
+                           listValues = c(1, -1/4),
+                           tidy = TRUE)
+
+g <- data.frame(subtype = dds$subtype, val = assay(vst.data)["AKR1D1", ])
+ggplot(g, aes(subtype, val)) +
   geom_boxplot()
 
 ```
 
-Note that the log2 fold change and Wald test p-values will be for the last
-variable. (See [this
-link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an
-explanation on the Wald test.)
+```{r fig.width=10, fig.height=7}
 
-NOTE: The genes with adjusted p-values of NA have less mean normalized counts
-than the optimal threshold.
+subtypes <- c("subtypeBasal.like", "subtypeHer2", "subtypeLumA", "subtypeLumB", "subtypeNormal.like")
+summarized_results <- do.call(rbind, lapply(subtypes, function(stype) {
+  res_Her2_vs_all <- results(dds, 
+                           contrast = list(stype, setdiff(subtypes, stype)), 
+                           listValues = c(1, -1/4),
+                           tidy = TRUE)
+  res_Her2_vs_all$subtype <- stype
+  return(res_Her2_vs_all)
+}))
 
-Now, use this method to find the top 50 upregulated and downregulated genes
-(based on adjusted p-value) for each specific drug, i.e. for drug A -> compare
-responders vs non-responders. Do this for all drugs and create a list of the
-genes.
+summarized_results_top10 <- summarized_results %>%
+  group_by(subtype) %>%
+  filter(padj < 0.01, log2FoldChange > 0) %>%
+  top_n(n = 20, wt = -padj)
 
+ann <- data.frame(subtype = vst.data$subtype, row.names = colnames(vst.data))
+tsf <- t(scale(t(assay(vst.data))))[summarized_results_top10$row, vst.data$subtype %in% c("Basal-like", "Her2", "LumA", "LumB", "Normal-like")]
+tsf[tsf > 2] <- 2
+tsf[tsf < -2] <- -2
+colors <- viridis::viridis(n = 51)
+pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, color = colors)
 
-```{r, eval= TRUE, echo=TRUE}
-#Write code
 ```
 
+We do find quite many subtype specific genes in our data, but we as you can see even the top most 
+differentially expressed genes have a quite high within group variability. Even subtypes of cancer 
+are heterogeneous and remember that these are bulk RNA-seq data which means that we are investigating 
+the averaged expression over a whole tissue piece. Cancer cells reside and proliferate within a 
+microenvironment made up of "normal" cells, for example cells that build up connective tissues and blood
+vessels or immune cells that are trying to fight and eliminate the tumor. Although cells in the tumor
+microenvironment are not malignant, they can be manipulated by the cancer cells to suppress the immune 
+response and promote disease progression. Understanding the intricate details of cell-cell crosstalk 
+and the architecture of the microenvironment is important in the quest to find new therapeutic strategies.
+This is to a large extent the reason why single-cell and spatial methods have taken over the field 
+of genomics and gained so much traction in the last decade.
 
-# Q3 - Is there any overlap between these genes across drugs? Are there some genes
-# that seem to correlate with all responders regardless of drug? Is there any drug
-# with a specific set of genes?
-# 
-# Hint: the function `intersect()` could be useful
-# 
-# ```{r, eval= TRUE, echo=TRUE}
-# # Add answer
-# ```
 
-Q4 - Take one or two genes and look it up. Can you make any conclusion? Motivate your finding!
-
-```{r}
-# Add answer
-```
 
