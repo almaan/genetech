@@ -617,8 +617,8 @@ pheatmap(t(scale(t(assay(vst.vals)))), annotation_col = ann, cluster_rows = FALS
 
 ```
 
-Perhaps a more interesting test would be to make pairwise comparisons between each
-subtypes against all other subtypes to obtain DEGs that are specific to each subtype.
+If we want to obtain DEGs that are specific to a subtype we could make pairwise comparisons between that specific
+subtype and all other subtypes.
 
 ```{r DE_test_Basal-like}
 
