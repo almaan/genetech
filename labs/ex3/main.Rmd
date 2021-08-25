@@ -14,19 +14,18 @@ ____
 ____
 
 In the previus computer lab session, you got to explore some tools to analyze
-RNA sequencing data from "bulk" samples. However, nowadays it's possible to get
-genomic information even from single cells (you should have heard about single
-cell RNA-seq in the lectures!).
+RNA sequencing data from "bulk" samples. However, nowadays there is a plethora 
+of single cell methods available to obtain genomic information at cellular resolution.
 
-The most obvious advantages with the new single cell technologies is the 
+The most obvious advantages with single cell technologies is the 
 fact that we're no longer measuring an average across a larger population and
 also the massive throughput (i.e. the number of cells that can be analyzed). 
 This opens up for a number of possibilities to study tissues and organs at an
-unpresedented resolution. Today, reseearchers can collect even millions of 
-cells from a tissue to create atlases, a bit like a google earth for cell types. 
+unpresedented resolution. Today, reseearchers can collect millions of 
+cells from a tissue to create whole atlases, a bit like a google earth for cell types. 
 
-It is also worth mentioning that historically, many of the methods developed
-transcriptomic analysis were developed with "bulk" RNA-seq data in mind. Many of
+It is also worth mentioning that historically, many of the comutational methods developed 
+for transcriptomic analysis were developed with "bulk" RNA-seq data in mind. Many of
 the ideas used for things like quality control, normalization, DE analysis etc.
 can still be applied to single-cell datasets, but some of the underlying
 assumptions for "bulk" RNA-seq data are no longer applicable. Nowadays there's
@@ -40,18 +39,17 @@ ____
 Short primer: what is scRNA-seq?
 
   * Experimental protocols that measure expression levels for thousands of genes 
-  each gene across a population of cells
+  across a population of cells
   
-  * Adresses biological questions in which cell-specific changes in transcriptome 
-  are important, e.g. cell type identification and characterization, cell type 
-  specific response to external stimuli, differentiation trajectories, cell-cell
-  communications, regulatory networks etc.
+  * Adresses biological questions in which cell-specific characteristics 
+  are important, e.g. cell type specific response to external stimuli, differentiation 
+  trajectories and cell-cell communication.
   
   * Currently there are several different protocols in use, e.g. SMART-seq2,
   CELL-seq and Drop-seq.
   
   *  There are also commercial platforms available, including the Fluidigm C1, 10X
-   Genomics Chromium etc.
+   Genomics Chromium.
    
   *  In most cases computational analysis requires adaptation of the existing
    methods for "bulk" RNA-seq analyses or development of new ones.
@@ -138,10 +136,8 @@ _methods_, but it's always a good idea to explore the package documentation to m
 If you have installed the Seurat package, the only thing you need to get going is an 
 expression matrix with cells in columns and genes in rows. 
 
-Load the Seurat R package (install via BiocManager::install() if not already installed)
-
 ```{r load_seurat, warning=FALSE, message=FALSE}
-#BiocManager::install('Seurat')
+
 library(Seurat)
 
 ```
@@ -488,8 +484,6 @@ you can use the `DefaultAssay <- ` method instead, like this:
 
 `DefaultAssay(se) <- "RNA"`
 
-Check the output of pasting se + ENTER:
-
 ```{r print_seurat}
 se
 ```
@@ -607,18 +601,22 @@ processed each in a separate batch, it would very difficult to distinguish techn
 variability across batches from biological variability across individuals!
 
 _____
-## 7) PBMC data
+## 7) Breast cancer scRNA-seq data
 _____
 
-For the rest of this lab, we'll use a different dataset with peripheral
-blood mononuclear cells (PBMCs). PBMCs are extracted from blood samples 
-and contain mainly immune cells such as lymphocytes and monocytes. 
+For the rest of this lab, we'll use a different dataset with single-cell RNA-seq data obtained 
+from breast cancer tissue. You can find the article [here](https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-021-00885-z).
+The total dataset consists of approximately 120k cells but here we have downsampled this
+to about 4% to speed up computations. We should also mention that the dataset have been 
+modified to simplify the analysis workflow and you will therefore find that some 
+cell types are missing compared to the results presented in the article. 
 
-When you run `pbmc <- readRDS("data/pbmc")` you will get a `Seurat` object 
-that has already been normalized. 
+When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object 
+that has already been normalized and subjected to dimensionality reduction by PCA.
 
 ```{r pbmc}
-pbmc <- readRDS("data/pbmc")
+#pbmc <- readRDS("data/pbmc")
+bc <- readRDS("data/bc")
 ```
 
 Let's try another dimensionality reduction method called UMAP. This method
@@ -626,17 +624,18 @@ is commonly used to "embed" the cells into a 2D map that can be very useful
 for visualization purposes. 
 
 ```{r UMAP, warning=FALSE, message=FALSE}
-pbmc <- RunUMAP(pbmc, dims = 1:30)
-DimPlot(pbmc, reduction = "umap")
+bc <- RunUMAP(bc, dims = 1:30)
+DimPlot(bc, reduction = "umap")
 ```
 
-Here you can already see some interesting(?) structures in the data; some bigger blobs, some
-smaller blobs, some are isolated and some are connected. In a UMAP plot, cells with similar 
-gene expression are put close to each other in space so the idea is that the 2D structures 
-reflect the cell type populations. You shouldn't overanalyze these plots, but at least you 
-get a nice 2D map to point at when discussing your results which can be very handy!
+Here you can already see some ptentially interesting structures in the data; some bigger blobs, 
+some smaller blobs, some are isolated and some are connected. In a UMAP plot, cells with similar 
+gene expression are put close to together in space and the idea is that the 2D structures 
+reflect the size and variability of cell type populations. You shouldn't overanalyze these 
+plots, but at least you get a nice 2D map to point at when discussing your results which 
+can be very handy!
 
-We already know that the PBMC isolates contain a diverse set of cell types so now the next 
+We already know that the cancer microenvironment contain a diverse set of cell types so now the next 
 question is, where do we draw the lines to separate the blobs into cell type populations?
 
 _____
@@ -656,7 +655,7 @@ compromise and sometimes even group the cells in different levels of detail.
 For example, consider a rich scRNA-seq dataset with tens of thousands of cells collected from 
 a tissue with an ongoing inflammation, meaning lots of lymphocytes. Here you have identified 
 a _memory B-cell_ in the dataset. In a broader context when looking at whole tissue sample, 
-the _memory B-cell_ would belong to _immune cells_ 
+the _memory B-cell_ would belong to the supergroup of _immune cells_ 
 (together with _T-cells_, _macrophages_, _dendritic cells_, _granulocytes_ etc.). If you zoom in
 on the _immune cells_ you can further subdivide them into _lymphocytes_ and _myeloids_.
 Add another level of detail and you can divide the _lymphocytes_ into _B-cells_, _T-cells_, _ILCs_ and
@@ -677,30 +676,30 @@ can also be a useful sanity check to see if your clusters make sense.
 Let's try clustering our data using the default method provided by Seurat's 
 `FindNeighbors()` and `FindClusters()` functions. The parameter called `resolution` can
 be tweaked to obtain a different number of clusters. Lowering this value will result in fewer clusters
-and increasing this value will result in more clusters. Here we will use the default resolution of 0.8.
+and increasing this value will result in more clusters. Here we will use a resolution of 0.6.
 
 *Q8:* Use `DimPlot` to color the cells by cluster on the "umap" graph. Write down how many 
-clusters do you get using a resolution of 0.8?
+clusters do you get using a resolution of 0.6?
 
 Hint: note that the first cluster is always called "0", not "1"
 
 ```{r clustering}
 
-pbmc <- FindNeighbors(pbmc, dims = 1:30, reduction = "pca")
-pbmc <- FindClusters(pbmc, resolution = 0.8)
+bc <- FindNeighbors(bc, dims = 1:30, reduction = "pca")
+bc <- FindClusters(bc, resolution = 0.6)
 
 # Write code for DimPlot here
 
 # Replace NA with the correct number of clusters 
 nClusters <- NA
-sprintf("Number of clusters detected at a resolution of 0.8: %s", nClusters)
+sprintf("Number of clusters detected at a resolution of 0.6: %s", nClusters)
 
 ```
 
 *Q9:* Re-run the `FindClusters()` function using a resolution of 0.3 and 1.2. Use `DimPlot` 
 to visualize these clusters on the "umap" graph and write down how many clusters you get.
 
-```{r dimplot_clusters_res08, fig.width=12, fig.height=5, warning=FALSE, message=FALSE}
+```{r clusters_q, fig.width=12, fig.height=5, warning=FALSE, message=FALSE}
 
 # Write your code / answer here
 
@@ -717,14 +716,14 @@ not need to do the dirty work of defining clusters, identifying markers and anno
 the clusters.
 
 ```{r dimplot_celltypes}
-DimPlot(pbmc, group.by = "celltype", label = T)
+DimPlot(bc, group.by = "CellType", label = T)
 ```
 
 These cluster annotation have been determined based on marker genes found in the literature.
-For example, MS4A1 is expressed specifically by B-cells, PPBP on platelet cells and CD14 on 
-Monocytes. 
+For example, MS4A1 is expressed specifically by B-cells, KIT by mast cells and CD14 by 
+Monocytes/Macrophages. 
 
-*Q10:* Draw a new plot showing the expression of these three markers c("MS4A1", "PPBP", "CD14") 
+*Q10:* Draw a new plot showing the expression of these three markers c("MS4A1", "KIT", "CD14") 
 in the UMAP embedding. 
 
 Hint: You can use the function `FeaturePlot()` (type `?FeaturePlot? in the R console for details) 
@@ -748,15 +747,15 @@ What you typically want to know is what genes are specifically expressed in each
 `Seurat` offers a couple of functions to explore this, but the most common approach is to run a 
 differential expression (DE) test pairwise for each cluster against the background (all other cells).
 
-Let's run `FindAllMarkers()` to get a table of differentially expressed genes:
+Let's run `FindAllMarkers()` to get a table of differentially expressed genes per cluster:
 
 ```{r findallmarkers}
-pbmc <- SetIdent(pbmc, value = "SCT_snn_res.0.8")
-pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+bc <- SetIdent(bc, value = "SCT_snn_res.0.6")
+bc.markers <- FindAllMarkers(bc, only.pos = TRUE)
 
 # Select top markers
 library(dplyr)
-top2.markers <- group_by(pbmc.markers, cluster)
+top2.markers <- group_by(bc.markers, cluster)
 
 # Here we will filter the data to keep only the top 2 genes based on avg_logFC
 top2.markers <- top_n(x = top2.markers, n = 2, wt = avg_logFC)
@@ -796,11 +795,11 @@ and remove doublets from your dataset but we will not go through them here.
 Another important source of variability that is actually biological is cell cycle phase. As you all know, 
 dividing cells go through a series of phases including the G1 phase (cell growth), the S phase (synthesis) 
 and G2M (cell growth and mitosis). `Seurat` provides a function to estimate an `S.Score` and `G2M.Score`, 
-using canonical markers which can be used to check if some cells are dividing in your data 
+using canonical markers which can be used to check if some cells are dividing in your data.
 
 ```{r cellcycle}
-pbmc <- CellCycleScoring(pbmc, s.features = cc.genes$s.genes, g2m.features = cc.genes$g2m.genes, set.ident = TRUE)
-FeaturePlot(pbmc, features = "S.Score")
+bc <- CellCycleScoring(bc, s.features = cc.genes.updated.2019$s.genes, g2m.features = cc.genes.updated.2019$g2m.genes, set.ident = TRUE)
+FeaturePlot(bc, features = "S.Score")
 ```
 
 As it turns out, there is a tiny cluster of cells with a high S.Score. In the UMAP
