@@ -95,7 +95,8 @@ to get familiarized with the material.
 
 ## ggplot2
 
-ggplot2 is a graphics framework which has became very popular among R users, mainly because its aesthetically pleasing nature. The syntax for ggplot2 can seem quite difficult for beginners, but can be extremely versatile once you get the hang of it. 
+ggplot2 is a graphics framework which has became very popular among R users, mainly because its aesthetically pleasing nature. 
+The syntax for ggplot2 can seem quite difficult for beginners, but can be extremely versatile once you get the hang of it. 
 
 To start with, a plot made with ggplot2 (let's call it a "ggplot") takes a `data.frame` as input that is typically supplied to the 
 function `ggplot()`. In addition, you need to specify _what column(s)_ of the `data.frame` that should be drawn in the plot and finally, 
@@ -474,7 +475,7 @@ comparable across samples.
 
 ### Exploratory analysis
 
-Exploratory data analysis (EDA) can sometimes be useful to better nderstand the data
+Exploratory data analysis (EDA) can sometimes be useful to better understand the data
 that you are working with. For example, it might be interesting to know whether 
 some groups exhibit greater within-group variability than other or to check how samples 
 are related to each other based on expression similarity. You might even want to use 
@@ -627,9 +628,9 @@ res_Her2_vs_all <- results(dds,
                            listValues = c(1, -1/4),
                            tidy = TRUE)
 
-g <- data.frame(subtype = dds$subtype, val = assay(vst.data)["AKR1D1", ])
-ggplot(g, aes(subtype, val)) +
-  geom_boxplot()
+# g <- data.frame(subtype = dds$subtype, val = assay(vst.data)["AKR1D1", ])
+# ggplot(g, aes(subtype, val)) +
+#   geom_boxplot()
 
 ```
 
@@ -664,7 +665,7 @@ differentially expressed genes have a quite high within group variability. Cance
 are heterogeneous and remember that these are bulk RNA-seq data which means that we are investigating 
 the averaged expression over a whole tissue piece. 
 
-Cancer cells reside and proliferate within a  microenvironment made up of "normal" cells. 
+Cancer cells reside and proliferate within a microenvironment made up of "normal" cells. 
 This could for example be cells that build up connective tissues and blood vessels or immune cells 
 that are trying to fight and eliminate the tumor. Although cells in the tumor
 microenvironment are not malignant, they can be manipulated by the cancer cells to suppress the immune 
