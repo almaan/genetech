@@ -134,12 +134,16 @@ and put in data into the `Seurat` object. We will familiarize ourselves with som
 _methods_, but it's always a good idea to explore the package documentation to make life easier.
 
 If you have installed the Seurat package, the only thing you need to get going is an 
-expression matrix with cells in columns and genes in rows. 
+expression matrix with cells in columns and genes in rows. We will need to load a few other 
+packages for this lab as well!
 
 ```{r load_seurat, warning=FALSE, message=FALSE}
-
 library(Seurat)
-
+library(gprofiler2)
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+library(gprofiler2)
 ```
 
 Before we create our `Seurat` object, it can be useful to include some meta data as well. 
@@ -329,7 +333,6 @@ add lines we cannot use the `abline` function like we did before. Instead we'll 
 called `geom_hline`. 
 
 ```{r plot_violin_threshold}
-library(ggplot2)
 VlnPlot(se, features = "nFeature_RNA", group.by = "replicate") +
   geom_hline(aes(yintercept = 5000, color = "threshold"), linetype = "longdash") +
   labs(color = "") + # Remove title from color legend
@@ -628,14 +631,14 @@ bc <- RunUMAP(bc, dims = 1:30)
 DimPlot(bc, reduction = "umap")
 ```
 
-Here you can already see some ptentially interesting structures in the data; some bigger blobs, 
+Here you can already see some potentially interesting patterns in the data; some bigger blobs, 
 some smaller blobs, some are isolated and some are connected. In a UMAP plot, cells with similar 
 gene expression are put close to together in space and the idea is that the 2D structures 
 reflect the size and variability of cell type populations. You shouldn't overanalyze these 
 plots, but at least you get a nice 2D map to point at when discussing your results which 
 can be very handy!
 
-We already know that the cancer microenvironment contain a diverse set of cell types so now the next 
+We know that the cancer microenvironment contain a diverse set of cell types so now the next 
 question is, where do we draw the lines to separate the blobs into cell type populations?
 
 _____
@@ -646,22 +649,23 @@ Clustering of scRNA-seq data refers to methods used to group samples (cells) bas
 on gene expression similarity (https://www.nature.com/articles/nmeth.4299). The methods 
 are typically unsupervised or semi-supervised, meaning that we can define group structures 
 in the data with little or no prior knowledge about the data beforehand. It's important to 
-understand that clustering methods will define structures in your data, but they don't tell
-you if the structures are truly representative of cell types or not. Cells can for example 
-be differentiating, proliferating or adapting to their surroundings (microenvironment), 
+understand that clustering methods will almost always be able to find structures in your data, 
+but they don't tell you if the structures are truly representative of cell types or not. 
+Cells can for example be differentiating, proliferating or adapting to their surroundings (microenvironment), 
 therefore producing a spectrum of cell states without clear cut border. We often have to 
-compromise and sometimes even group the cells in different levels of detail. 
+compromise and settle for a level of detail which is suitable for the vbiological questions 
+of interest. Sometimes we might even wan to present groups of cells at several levels of detail. 
 
-For example, consider a rich scRNA-seq dataset with tens of thousands of cells collected from 
-a tissue with an ongoing inflammation, meaning lots of lymphocytes. Here you have identified 
-a _memory B-cell_ in the dataset. In a broader context when looking at whole tissue sample, 
-the _memory B-cell_ would belong to the supergroup of _immune cells_ 
-(together with _T-cells_, _macrophages_, _dendritic cells_, _granulocytes_ etc.). If you zoom in
-on the _immune cells_ you can further subdivide them into _lymphocytes_ and _myeloids_.
-Add another level of detail and you can divide the _lymphocytes_ into _B-cells_, _T-cells_, _ILCs_ and
-_natural killer cells_. Aaaaaand finally you might end up splitting the _B-cells_ into 
-_naive B-cells_, _memory B-cells_ and _plasma cells_. But it doesn't even have to stop here, 
-These _memory B-cells_ might exist in different sub types or states depending on where they are
+For example, consider a scRNA-seq dataset with tens of thousands of cells collected from 
+a tissue with an ongoing inflammation, meaning a high infiltration of lymphocytes. In this dataset, 
+you have identified a group of cell with memory B-cell gene signature. In a broader context when 
+looking at whole tissue sample, the memory B-cell would belong to the supergroup of immune cells 
+(together with T-cells, macrophages, dendritic cells, granulocytes etc.). If you zoom in
+on the immune cells you can further subdivide them into lymphocytes and myeloids.
+Add another level of detail and you can divide the lymphocytes into B-cells, T-cells, ILCs and
+NK cells. Aaaaaand finally you might end up splitting the B-cells into 
+naive B-cells, memory B-cells and plasma cells. But it doesn't even have to stop here, 
+These memory B-cells might exist in different sub types or states depending on where they are
 and how they developed. This may seem a bit messy, but the fact that you can explore whole 
 lineages of cell types is to a large extent what makes scRNA-seq methods so useful!!!
 
@@ -669,9 +673,9 @@ Anyways, in standard scRNA-seq analysis workflow you have to start somewhere, an
 a clustering algorithm with default settings is often a good place to start. 
 What people usually do is to cluster the cells and then define (annotate) the clusters as 
 different cell types based on their specific expression of "marker genes". Here, marker 
-genes can be thought of as genes known to be specifically expressed by a specific cell type, 
-e.g. CD19 is known to be expressed only by B-cells. Exploring marker genes in your dataset 
-can also be a useful sanity check to see if your clusters make sense. 
+genes can be thought of as genes known to be highly expressed by a specific cell type compared 
+to all other cell types. For example, CD19 is known to be expressed only by B-cells. Exploring 
+marker genes in your dataset can also be a useful sanity check to see if your clusters make sense. 
 
 Let's try clustering our data using the default method provided by Seurat's 
 `FindNeighbors()` and `FindClusters()` functions. The parameter called `resolution` can
@@ -719,7 +723,7 @@ the clusters.
 DimPlot(bc, group.by = "CellType", label = T)
 ```
 
-These cluster annotation have been determined based on marker genes found in the literature.
+These cluster annotations have been determined based on marker genes found in the literature.
 For example, MS4A1 is expressed specifically by B-cells, KIT by mast cells and CD14 by 
 Monocytes/Macrophages. 
 
@@ -737,15 +741,19 @@ expression using another function called `VlnPlot()` (type ?VlnPlot in the R con
 ```
 
 _____
-## 8) Marker detection
+## 8) Marker detection 
 _____
 
 In the clustering section above you got a Seurat object where the cells had already been assigned 
-a cell type label (annotated). But how would you go about if you needed to do this yourself?
+a cell type label. But how would you go about if you needed to do this yourself?
 
 What you typically want to know is what genes are specifically expressed in each cluster?
 `Seurat` offers a couple of functions to explore this, but the most common approach is to run a 
 differential expression (DE) test pairwise for each cluster against the background (all other cells).
+
+`FindMarkers()` allows you to test for differential expression between two groups of cells
+whereas `FindAllMarkers()` does a pairwise test between each group and its background and
+returns differentially expressed genes for all groups.
 
 Let's run `FindAllMarkers()` to get a table of differentially expressed genes per cluster:
 
@@ -753,19 +761,18 @@ Let's run `FindAllMarkers()` to get a table of differentially expressed genes pe
 bc <- SetIdent(bc, value = "SCT_snn_res.0.6")
 bc.markers <- FindAllMarkers(bc, only.pos = TRUE)
 
-# Select top markers
-library(dplyr)
-top2.markers <- group_by(bc.markers, cluster)
-
 # Here we will filter the data to keep only the top 2 genes based on avg_logFC
-top2.markers <- top_n(x = top2.markers, n = 2, wt = avg_logFC)
+top2.markers <- bc.markers %>% 
+  group_by(cluster) %>% 
+  top_n(n = 2, wt = avg_logFC)
 top2.markers
 ```
 
 In the `top2.markers` table you can find the top 2 most distinct marker genes per celltype 
 based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_logFC
 (short for average log-foldchange) that measures the expression in a celltype relative to its 
-background or p_val_adj (short for adjusted p-value) which gives you a significance score for each gene.
+background or p_val_adj (short for adjusted p-value) which gives you a MH-corrected p-value 
+for each gene.
 
 *Q11:* Draw a new plot showing the expression of one marker per celltype on the UMAP embedding.
 
@@ -776,13 +783,100 @@ adjust the size of the plot window by shanges the fig.width and fig.height optio
 # Write your code/answer here
 ```
 
+One nice way to visualize DEGs is to present the scaled expression of the most significant
+genes in a heatmap. With this plot you can also appreciate the within and between group variability 
+of the marker genes.
+
+```{r de_heatmap, fig.width=12, fig.height=14}
+bc <- SetIdent(bc, value = "CellType")
+top6.markers <- bc.markers %>% 
+  group_by(cluster) %>% 
+  top_n(n = 6, wt = avg_logFC)
+DoHeatmap(bc, features = top6.markers$gene)
+```
+
 In some cases you might find that a gene is highly expressed in multiple clusters. This
-just means that the marker gene that you have chosen is not specific to only one cluster. 
+just means that the marker gene that you have chosen is not specific enough to single out 
+that particular cluster. A good example of this are the MHC class II genes HLA-D* which are 
+expressed by multiple antigen presenting cells including; macrophages, B-cells, pDCs and cDCs.
 It can be very time consuming to find good marker genes so it's usually a good idea to 
-read up on the literature to see what markers other people have found previously. 
+read up on the literature to see what markers other people have found previously. There is 
+not guarantee that you actually find genes that are specific to your cluster of interest, 
+but using a set of multiple markers might do the trick.
 
 _______
-### Other sources of variability
+## 9) Functional enrichment analysis (FEA)
+_______
+
+Once you have obtained a set of marker genes, it could be useful to perform FEA. 
+We do this by comparing the enrichment of any type of biologically relevant labels 
+(for example GO terms) in our set of marker genes to that in the background. 
+
+First of all, we need to define a set of marker genes to use as a query for the FEA. 
+In this example we will be a bit more stringent in the selection of marker genes 
+and select those with an adjusted p-value lower than 0.01 and an average log foldchange
+higher than 1. We will select a set of marker genes for Cancer/Epithelial cells and test
+against the GO:biological processes terms.
+
+```{r fea}
+
+cancer_epithelial_markers <- subset(bc.markers, cluster == "12") %>%
+  filter(p_val_adj < 0.01, avg_logFC > 1) %>%
+  pull(gene)
+
+# Run FEA
+res <- gost(query = cancer_epithelial_markers, 
+            organism = "hsapiens", 
+            significant = TRUE, 
+            sources = "GO:BP")
+
+# Check results
+head(res$result, 10)
+
+```
+
+In the result data.frame we can find quite a lot of information, but the most important 
+thing to look at are the term names and p-values.
+We find quite a few significant terms related to epithelial development and cell development which
+makes somewhat sense since we are looking at epithelial derived cancer cells.
+
+*Q12:* Now run another fea but this time on T-cell markers and set the avg_logFC to 0.5 when 
+selecting the marker genes. Use the same reference database as before (GO:BP). Then report the 
+term name and p-value for the most significant term.
+
+Hint: T-cells are the same as cluster 2.
+
+```{r fea_T_cells}
+
+t_cell_markers <- subset(bc.markers, cluster == "2") %>%
+  filter(p_val_adj < 0.01, avg_logFC > 0.5) %>%
+  pull(gene)
+
+# Run FEA
+res <- gost(query = t_cell_markers, 
+            organism = "hsapiens", 
+            significant = TRUE, 
+            sources = "GO:BP")
+
+# Check results
+head(res$result, 10)
+
+# Replace NA with the correct answers
+term_name <- NA
+p_value <- NA
+
+cat(sprintf("term name: %s\np-value: %s", term_name, p_value))
+
+```
+FEA can be useful to assign biological attributes to cells and can be particularly helpful 
+in the process of cell type annotation. If we didn't know what cell types we were looking at 
+in the examples above we could tell from the FEA that cluster 2 most likely is a type of T cell
+but it less clear from the FEA what cell type cluster 12 is. FEA can be good a complement
+to other types of analyses but they are not very robust as the results are largely dependent 
+on marker gene selection process. 
+
+_______
+## Other sources of variability
 _______
 
 It is worthwhile mentioning that there can exist other less evident sources of variability in the data. 
@@ -797,16 +891,35 @@ dividing cells go through a series of phases including the G1 phase (cell growth
 and G2M (cell growth and mitosis). `Seurat` provides a function to estimate an `S.Score` and `G2M.Score`, 
 using canonical markers which can be used to check if some cells are dividing in your data.
 
-```{r cellcycle}
+```{r cellcycle, fig.width=12, fig.height=5}
 bc <- CellCycleScoring(bc, s.features = cc.genes.updated.2019$s.genes, g2m.features = cc.genes.updated.2019$g2m.genes, set.ident = TRUE)
-FeaturePlot(bc, features = "S.Score")
+VlnPlot(bc, features = c("S.Score", "G2M.Score"), group.by = "CellType")
 ```
 
-As it turns out, there is a tiny cluster of cells with a high S.Score. In the UMAP
-plot it looks like these cells belong to the _NK_ cluster. However, the cell cycle 
-phase can sometimes be so determinant of the overall cell state so that cycling cells 
-from different cell types form their own cluster. Usually, people are not interested 
-in the cell cycle phase and simply remove these cells by setting a threshold.
+Obviously, the cycling T-cells have high S and G2M phase scores but we can see that 
+some cells in other clusters also appear to be dividing. We can also display this 
+in a `FeaturePlot`
+
+```{r ftrplot_cellcycle, fig.width=12, fig.height=5}
+
+p1 <- FeaturePlot(bc, features = "S.Score", order = TRUE, cols = rev(RColorBrewer::brewer.pal(n = 11, name = "RdYlBu")))
+p2 <- FeaturePlot(bc, features = "G2M.Score", order = TRUE, cols = rev(RColorBrewer::brewer.pal(n = 11, name = "RdYlBu")))
+
+p1 - p2
+
+```
+
+
+In the UMAP plot you can see that the cell cycle scores actually reflect the organization of 
+cells within some of the clusters. For example, if we look at the macrophage and cDCs populations,
+we can see a gradient of S phase, G2M phase and fully differentiated cells. The cycling macrophages are 
+still more similar to differentiated macrophages and therefore cluster together, but if we were to 
+increase the clustering resolution we might very well be able to distinguish cycling macrophages from
+differentiated macrophages.
+The cell cycle phase can sometimes be so determinant of the overall cell state so that cycling cells 
+from different cell types form their own cluster. If the cell cycle state is irrelevant for the 
+bioloigical question of interest, it is common practice either regress out the effects of cell 
+cycle phase in the normalization process or remove cycling cells from the analysis. 
 
 *Q12:* Draw a plot showing the `G2M.Score` in the UMAP embedding and save it to a variable `p1`. 
 Draw a second plot showing the `celltype` labels in the UMAP embedding and save it to a 
