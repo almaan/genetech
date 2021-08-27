@@ -64,11 +64,14 @@ github, but for Docker images), which you do by running the following snippet in
 your terminal window:
 
 ```sh
-docker pull almaand/genetech
+docker pull almaand/genetech:TAG
 ```
 
+Where `TAG` (at the end) should be replaced with the latest tagname listed
+[here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated).
 This might take a while, but once it completed you can check that the image
 download was successful by running:
+
 ```sh
 docker images
 ```
@@ -84,7 +87,7 @@ _genetech_.
 2. Open a terminal window (or use an already opened one) an orient yourself to
    the newly created _genetech_ folder. The path to this folder will be referred
    to as `GENETECH_PATH`.
-3. In the terminal, execute the following command `git clone git@github.com:almaan/genetech.git code`
+3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`
 
 ### Running a Container
 Now when you have a local copy of the image on your computer, the final step is
@@ -96,9 +99,7 @@ with access to the content from the cloned GitHub repository, run:
 ```
 
 Where `GENETECH_PATH` is the path to the folder you created in the previous
-step, and `TAG` (at the end) should be replaced with the latest tagname listed
-[here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated).
-We will allocate 6GB of memory to this lab, if your RAM memory is really small
+step. We will allocate 6GB of memory to this lab, if your RAM memory is really small
 you could change this to 4GB.
 
 To check that your container is running, enter:
