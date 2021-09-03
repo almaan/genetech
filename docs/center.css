@@ -1,1 +1,11 @@
 .reveal pre { width: 50%; margin: auto; background: #333333; padding: 10px;}
+.reveal ol,
+.reveal dl,
+.reveal li,
+.reveal ul {
+    display: list-item;
+    display: block;
+    text-align: left;
+    list-style-type: circle;
+    margin: 0 0 0 1em; }
+
