@@ -21,7 +21,7 @@ There are 4 of us:
   - Alma Andersson (almaan@kth.se)
   - Ludvig Larsson (ludvig.larsson@scilifelab.se)
   - Sami Saarenpää (sami.saarenpaa@scilifelab.se)
-  - Trang Lee (trang.lee@scilifelab.se)
+  - Trang Le (trangle@kth.se)
  
   [[./images/tas.png]]
 
