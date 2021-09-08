@@ -3,7 +3,7 @@
 ## For Whom?
 
 This repo contains all the material for the computer labs associated with the
-course X.
+course CB2040.
 
 You will find the all the essential information regarding these labs within this
 repo, such as guidelines regarding the execution of the labs, contact
@@ -89,16 +89,27 @@ exercises correctly.
 - Swirl, Learn R in R: [LINK](https://swirlstats.com/)
 
 
-## :dna: Lab 2 | TBA :dna:
+## :dna: Lab 2 | Data visualization and Bulk RNA-seq analysis :dna:
 **Main Responsible TA:** Sami Saarenpää<br>
-**Lab Status:** Being Proofread :hourglass_flowing_sand:<br> 
+**Lab Status:**  Ready :+1: <br> 
 
-Lorem Ipsum
+RNA sequencing (RNA-seq or bulk RNA-seq) has been a golden standard in life sciences for more than a decade. 
+It uses next-generation sequencing (NGS) to quantify the RNA molecules in a biological sample and it is able to find differentially expressed genes at a sample level.
+It is commonly used in case-control studies, eg. to study an effect of a new drug to a tissue.
+For a long period of time RNA-seq has been the only available high-throughput method to study gene expression and it has had a huge impact on molecular biology enabling researches to study genome-wide gene expression patterns in biological samples.
 
-### Hand-in 
+This lab consists of two parts. 
+First you will be introduced to ggplot2, a widely-used R package for visualisation. 
+This will be used in this lab, but also later on in the course and even later during your studies. 
+The second part will concentrate on RNA-seq.
+You will be introduced to a RNA-seq analysis pipeline including pre-processing, quality control,  normalisation and differential gene expression using DESeq2 to find differentially expressed genes.
 
-You will hand in one knitted html file in Canvas latest one week after the lab. 
-Remember to change the author information before handing in the lab. 
+### Preparatory work
+For the best experience we recommended that you read up a bit on the following
+concept, still it will be briefly explained in the lab:
+
+* DESeq2, DE-analysis tool presented [here](https://www.youtube.com/watch?v=UFB993xufUU&t=1s)) and [here](https://www.youtube.com/watch?v=Gi0JdrxRq5s))
+
 
 ## :dna: Lab 3 | Single Cell RNA-seq analysis :dna:
 **Main Responsible TA:** Ludvig Larsson<br>
