@@ -1,9 +1,9 @@
 ---
 title: "Lab2 - Basic data visualization and Bulk RNA-seq analysis"
-author: "Sami Saarenpää"
+author: "Ludvig Larsson & Sami Saarenpää"
 date: "22 Sep 20"
 output:
-  tufte::tufte_html: default
+  rmarkdown::html_vignette
 vignette: |
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,27 +14,61 @@ vignette: |
 knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
-# Introduction
+# Instructiuons
 ***
 
-For this second lab we will work with bulk RNA-seq data obtained from breast cancer samples 
-downloaded from The Cancer Genome Atlas (TCGA). Each sample reprents a patient from the BRCA-TCGA
-cohort and have been classified into six different "mRNA subtypes"; Her2, Basal-like, LumA, LumB, 
-Normal-like and Normal. The full cohort consists of 1217 patients but for the purpose of 
-this exercise, we have reduced this dataset to 10 patients per subtype, adding to a total of
-60 samples.
+Please answer **all** the questions in this markdown file and return the knitted .html file in Canvas by latest one week after the lab. 
 
-In literature, you will most likely come across different classifications depending on
-histopathology, clinical grade, receptor status and genomic alterations. Here we will 
-use the "mRNA subtypes" as defined by the TCGA. 
+# Introduction
+***
+For this second lab we will be working with RNA sequencing data, a method that became a gold-standard for transcriptomic research 
+that was published in the mid 00s. Although the method has been around for a while it is still widely used to by research labs due 
+to its robustness and simplicity.
 
-LumA (Luminal A) : 
+When you receive a dataset to analyze it is always a good idea to spend some time to try understand the its characteristics, and one way do this is using
+data visualization techniques. Data visualization is an important part of RNA-seq analysis and can also be extremely useful to present results. For this 
+reason, we will cover some of the basics of data visualization in the first part of this lab.
+
+For the second lab we will work with bulk RNA-seq data obtained from breast cancer samples downloaded from The Cancer Genome Atlas (TCGA). 
+Each sample represents a patient from the BRCA-TCGA cohort and have been classified into **5 different "mRNA  cancer subtypes"**; 
+Her2, Basal-like, LumA, LumB and Normal-like. 
+We have also included a sixth "subtype" which consists of normal tissue to be used as a control. The full cohort consists of 1217 patients 
+but for the purpose of this exercise, we have reduced this dataset to **10 patients** per subtype, adding up to a total of **60 samples**.
+
+In literature, you will most likely come across different classifications depending on histopathology, clinical grade, receptor status and genomic alterations. 
+Here we will use the "mRNA subtypes" as defined by the TCGA. 
+
+You can find more information about each subtype on this [website](https://www.cancercenter.com/cancer-types/breast-cancer/types/breast-cancer-molecular-types). 
+We should also warn you that these subtypes are perhaps a bit outdated but were defined in the original TCGA [paper](https://www.nature.com/articles/nature11412) on breast tumors in 2012. 
+Here for example, they use TNBC as a synonym for basal-like cancers and although these two types are similar, they are not biologically equivalent.
+For this exercise we will just pretend that these 5 subtypes are well established.
+
+# Data preprocessing
+***
+
+## Load packages
+***
+
+The following packages should be loaded. 
+Remember, if you haven't installed a specific package, use `BiocManager::install("packageName")` if the package ishosted on BioConductor or `install.packages("packageName")`if the package is hosted on CRAN. 
+When running this, you often get asked "Update all/some/none? [a/s/n]:". 
+In general, it's ok to skip updating the rest of the packages for this lab (which can otherwise take some time and require troubleshooting).
+
+```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+
+library(DESeq2)
+library(pheatmap)
+library(ggplot2)
+library(viridis)
+library(dplyr)
+
+```
 
 ## Load the data
 
 The data for the second lab is available from the cloned GitHub repo, found in genetech/labs/ex2/data/.
-You will need to adjust the file paths in the code chunk below to have the correct input. Replace 
-"__add path here__" with the path to genetech/labs/ex2/data/.
+You will need to adjust the file paths in the code chunk below to have the correct input. 
+Replace "__add path here__" with the path to genetech/labs/ex2/data/.
 
 ```{r, eval=TRUE, echo=TRUE}
 
@@ -59,44 +93,47 @@ all(colnames(counts) == rownames(metadata))
 
 ```
 
-Now, you have a `matrix` object called "exprMat" with mRNA counts for our 60 samples and `data.frame` called "metadata", 
-with some experimental information associated with each sample. 
+*Q1*: One of the most important aspect doing data analysis is to understand what kind of data formats you are using and the dimensions of these data modalities. What data types you have here? What dimensions the data has? Use commands from lab 1.
 
+```{r Q1, eval=FALSE,echo=TRUE}
+#Write the answer here!
+```
 
 # Data visualization
 ***
 
 In the first part of this lab we want to give a very basic introduction to data visualization in R using ggplot2. 
-Do not rush through this part as you will be asked to create your own plots later on in the second part of this lab.
-We encourage you to take your time and play around with the data at hand or other datasets for that matter 
-to get familiarized with the material.
+Do not rush through this part as you will be asked to create your own plots later on in the second part of the lab.
+We encourage you to take your time and play around with the data at hand or other datasets for that matter to get 
+familiarized with the material.
 
 ## ggplot2
 
-ggplot2 is a graphics framework which has became very popular among R users, mainly because its aesthetically pleasing nature. The syntax for ggplot2 can seem quite difficult for beginners, but can be extremely versatile once you get the hang of it. 
+[ggplot2](https://ggplot2.tidyverse.org/) is a graphics framework which has became very popular among R users, mainly 
+because its aesthetically pleasing nature. The syntax for ggplot2 can seem quite difficult for beginners, but can be 
+extremely versatile once you get the hang of it. 
 
-To start with, a plot made with ggplot2 (let's call it a "ggplot") takes a `data.frame` as input that is typically supplied to the 
-function `ggplot()`. In addition, you need to specify _what column(s)_ of the `data.frame` that should be drawn in the plot and finally, 
-add a "geom" to specify what _what type_ of plot that you want to draw. We can summarize these steps as follows:
+To start with, a plot made with ggplot2 (let's call it a "ggplot") takes a `data.frame` as input that is typically supplied to the function `ggplot()`. 
+In addition, you need to specify _what column(s)_ of the `data.frame` that should be drawn in the plot and finally, add a "geom" to specify what _what type_ of plot that you want to draw. 
+We can summarize these steps as follows:
 
-  1. Initialize a ggplot object with some input data (you can think of it as a creatoing an empty canvas)
+  1. Initialize a ggplot object with some input data (you can think of it as creating an empty canvas)
   2. Specify what columns (variables) to include in the plot
   3. Add a "geom" that defines the plot type (e.g. a bar chart or points)
 
-Let's try this using a basic example. We want to draw a bar chart summarizing the total number of 
-samples per breast cancer subtype:
+Let's try this using a basic example. We want to draw a bar chart summarizing the total number of samples per breast cancer subtype:
 
-```{r ggplot1, fig.width=7, fig.height=5}
+```{r ggplot1, fig.width=7, fig.height=5, , eval=TRUE, echo=TRUE}
 
-ggplot(metadata, aes(subtype)) +
+ggplot(metadata, aes(subtype)) + 
   geom_bar()
-  
+
 ```
 
 That was a pretty useles example since we already knew that we had 10 samples per subtype! A quicker way of
 doing this would be to simply use the `table()` function:
 
-```{r table}
+```{r table, eval=TRUE, echo=TRUE}
 
 table(metadata$subtype)
 
@@ -113,11 +150,11 @@ But let's go through the code for drawing the bar chart one step at the time:
   geom_bar()` : add a "geom" to draw a bar chart
   
   
-You have probably noticed that a function called `aes()` slipped into the code. `aes()` (short for
-"aesthetic mappings") is used to tell `ggplot()` how variables in the data are mapped to visual properties
-of geoms. In our example above, `geom_bar()` is a "geom" that takes some group variable,
-summarizes the count for each group and draws a bar chart. So by including `aes(subtype)` we told `ggplot()` 
-that out group variable "subtype" should be pulled from our metadata `data.frame`.
+You have probably noticed that a function called `aes()` slipped into the code. `aes()` (short for "aesthetic mappings") 
+is used to tell `ggplot()` how variables in the data are mapped to visual properties of geoms. 
+In our example above, `geom_bar()` is a "geom" that takes some group variable, summarizes the count for each group and 
+draws a bar chart. So by including `aes(subtype)` we told `ggplot()` that the group variable "subtype" should be pulled 
+out from our metadata `data.frame`.
 
 Geoms are functions used to draw specific types of plots, for example: 
 `geom_bar()` -> bar chart
@@ -127,14 +164,18 @@ Geoms are functions used to draw specific types of plots, for example:
 
 
 Geoms have quite intuitive names but you will often need to search the web for a geom that suits your needs. 
-The tidyverse [website](https://ggplot2.tidyverse.org/) is a great resource to start with. You should also note 
-that a geom takes different variables as input, for example `geom_histogram()` requires at least a numeric vector 
-to draw a histogram whereas `geom_point()` requires two vectors with x and y coordinates to draw points. It's always 
-a good idea to look at examples for how to use these geoms!
+The [tidyverse](https://ggplot2.tidyverse.org/) is a great resource to look into to get started with ggplot2 
+(and a bunch of other great R packages as well). 
+You should also note that a geom takes different variables as input, for example `geom_histogram()` requires at least 
+a numeric vector to draw a histogram whereas `geom_point()` requires two vectors with x and y coordinates to draw points. 
+It's always a good idea to look at examples for how to use these geoms! If you type `?geom_point()` in your console
+you will get the documentation for `geom_point()`. In the bottom part of this documentation (if it's a well dosumented 
+package) you will usually find examples. 
 
-Let's move on to a slightly more interesting example. We want to make histogram of the total mRNA counts for all samples:
+Let's move on to a slightly more interesting example. 
+We want to make histogram of the total mRNA counts for all samples:
 
-```{r histogram, fig.width=7, fig.height=5}
+```{r histogram, fig.width=7, fig.height=5, eval=TRUE, echo=TRUE}
 
 # Create a new data.frame with the total counts (= column sums of counts)
 gg <- data.frame(total_counts = colSums(counts))
@@ -144,27 +185,26 @@ ggplot(gg, aes(total_counts)) +
 
 ```
 
-Just like geom_bar, geom_histogram takes one variable as input but this time it needs to be a variable
-with _numeric_ values. 
+Just like geom_bar, geom_histogram takes one variable as input but this time it needs to be a variable with _numeric_ values. 
 
-Q1 - Now add a new column to the gg `data.frame` with gene log10-transformed expression values for COL1A1 and draw a new histogram with these values.
+*Q2* - Now add a new column to the gg `data.frame` with gene log10-transformed expression values for COL1A1 and draw a new histogram with these values.
 
-```{r COL1A1_histogram, fig.width=7, fig.height=5}
+```{r COL1A1_histogram, fig.width=7, fig.height=5, eval=TRUE, echo=TRUE}
 
 # Replace ... with the correct answer
 gg$COL1A1 <- log10(...)
+
+
 
 ggplot(gg, aes(COL1A1)) +
   geom_histogram(bins = 15)
 
 ```
 
+If we want to compare distributions for multiple groups at the same time, it could be useful to use a boxplot or a violin plot instead of a histogram. 
+Let's add a group variable to our `data.frame` with the breast cancer subtype.
 
-If we want to compare distributions for multiple groups at the same time, it could be useful to 
-use a boxplot or a violin plot instead of a histogram. Let's add a group variable to our `data.frame` 
-with the breast cancer subtype.
-
-```{r boxplot, fig.width=7, fig.height=4}
+```{r boxplot2, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
 
 # Add a new column with subtype information to our data.frame object
 gg$subtype <- metadata$subtype
@@ -176,13 +216,12 @@ ggplot(gg, aes(subtype, total_counts)) +
 
 ```
 
-Sometimes you might want to add the raw values to the plot as well and not just summarize the 
-values in a boxplot. This is quite easy to do by just adding another geom in a new layer to draw points. 
-Here we'll use the `geom_jitter()` geom to draw the points which will add a bit of random variation 
-along the x axis so that the points don't overlap. You can try to use `geom_point()` instead to see
-what happens if you draw the points without jitter.
+Sometimes you might want to add the raw values to the plot as well and not just summarize the values in a boxplot. 
+This is quite easy to do by just adding another geom in a new layer to draw points. 
+Here we'll use the `geom_jitter()` geom to draw the points which will add a bit of random variation along the x axis so that the points don't overlap. 
+You can try to use `geom_point()` instead to see what happens if you draw the points without jitter.
 
-```{r boxplot, fig.width=7, fig.height=4}
+```{r boxplot, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
 
 # Add a new layer with jittered points
 ggplot(gg, aes(subtype, total_counts)) +
@@ -193,7 +232,7 @@ ggplot(gg, aes(subtype, total_counts)) +
 
 Let's make this plot a bit more interesting by adding some color to the boxes:
 
-```{r boxplot_colored, fig.width=7, fig.height=4}
+```{r boxplot_colored, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
 
 # Add a new aesthetic variable which defines group to color boxes by
 ggplot(gg, aes(subtype, total_counts, fill = subtype)) +
@@ -202,14 +241,13 @@ ggplot(gg, aes(subtype, total_counts, fill = subtype)) +
 
 ```
 
-Here we just added a new aesthetic variable (i.e. "subtype") to `aes()`, telling `ggplot()` to map a unique color to 
-each subtype. This also gave us a nice legend to the right telling us what subtype each color corresponds to. 
-For some geoms the color can be defined using "fill" and sometimes by "color" which depends on the shape 
-of the geom. A boxplot for example, consists of a "body" which will be colored by "fill" and the outlines
-will be colored by the "color" aesthetic. We can try this out our boxplots to see what happens if we add the
-"color" aesthetic.
+Here we just added a new aesthetic variable (i.e. "subtype") to `aes()`, telling `ggplot()` to map a unique 
+color to each subtype. This also gave us a nice legend to the right telling us what subtype each color corresponds to. 
+For some geoms the color can be defined using "fill" and sometimes by "color" which depends on the shape of the geom. 
+A boxplot for example, consists of a "body" which will be colored by "fill" and the outlines will be colored by the 
+"color" aesthetic. We can try this out our boxplots to see what happens if we add the "color" aesthetic.
 
-```{r r boxplot_coloredx2, fig.width=7, fig.height=4}
+```{r r boxplot_coloredx2, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
 
 # Add a new aesthetic variable which defines group to color boxes by
 ggplot(gg, aes(subtype, total_counts, fill = subtype, color = subtype)) +
@@ -218,15 +256,15 @@ ggplot(gg, aes(subtype, total_counts, fill = subtype, color = subtype)) +
 
 ```
 
-Completely useless in this case, because now we can't read any statistical properties from the boxplots 
-or see the raw value points that blend with the boxes.
+Completely useless in this case, because now we can't read any statistical properties from the boxplots or see the raw 
+value points that blend with the boxes.
 
-Now let's move on to an example with two variables. We want to compare the expression of two selected genes; 
-ERBB2 and GRB7, using a "scatter plot". A scatter plot uses dots to represent values for two different 
-numerical variables. We'll also apply a log10 transformation to obtain a more normal-like distribution 
-of values.
+Now let's move on to an example with two variables. 
+We want to compare the expression of two selected genes; ERBB2 and GRB7, using a "scatter plot". 
+A scatter plot uses dots to represent values for two different numerical variables. 
+We'll also apply a log10 transformation to obtain a more normal-like distribution of values.
 
-```{r scatter_plot, fig.width=7, fig.height=6}
+```{r scatter_plot, fig.width=7, fig.height=6, eval=TRUE, echo=TRUE}
 
 gg$POTEKP<- log10(counts["POTEKP", ] + 1) # Here we add a so called "pseuocount" to avoid taking the log10 of 0 values
 gg$LINC01087 <- log10(counts["LINC01087", ] + 1)
@@ -236,10 +274,10 @@ ggplot(gg, aes(POTEKP, LINC01087)) +
 
 ```
 
-These two genes appear to be highly correlated across our dataset. To highlight this we can add 
-smoothed conditional means which will fit a trendline with error bars to out scatter plot:
+These two genes appear to be highly correlated across our dataset. 
+To highlight this we can add smoothed conditional means which will fit a trendline with error bars to out scatter plot:
 
-```{r scatter_plot_smooth, fig.width=7, fig.height=6}
+```{r scatter_plot_smooth, fig.width=7, fig.height=6, eval=TRUE, echo=TRUE}
 
 ggplot(gg, aes(POTEKP, LINC01087)) +
   geom_point() +
@@ -248,12 +286,14 @@ ggplot(gg, aes(POTEKP, LINC01087)) +
 ```
 
 But what if we don't want to make this comparison across all samples, but rather for each subtype separately?
-There is a very neat way of doing this using something called "facets". We could of course just color the points 
-by subtype (as we have already learned how to do), but facets are often a lot easier to interpret. By adding the 
-function `facet_grid()` or `facet_wrap()` we can split the entire plot into several subplots, one for each of
-our cancer subtypes. Let's take a look at how to do this:
+There is a very neat way of doing this using something called "facets". 
+We could of course just color the points by subtype (as we have already learned how to do), but facets are often a 
+lot easier to interpret. By adding the function `facet_grid()` or `facet_wrap()` we can split the entire plot into 
+several subplots, one for each of our cancer subtypes.
 
-```{r facets, fig.width=9, fig.height=6}
+Let's take a look at how to do this:
+
+```{r facets, fig.width=9, fig.height=6, eval=TRUE, echo=TRUE}
 
 ggplot(gg, aes(POTEKP, LINC01087)) +
   geom_point() +
@@ -267,13 +307,13 @@ ggplot(gg, aes(POTEKP, LINC01087)) +
 ```
 
 We can still see the same trend, i.e. a high correlation between the two genes, but there's substantial variation 
-across the different tumor subtypes. Also, for the basal subtype there is almost no expression of either of 
-these two genes which could not be concluded from the previous plot.
+across the different tumor subtypes. Also, for the basal subtype there is almost no expression of either of these 
+two genes which could not be concluded from the previous plot.
 
-This far we have looked at the distribution of total counts for each sample, but now we want to look at
-the distribution of counts across all genes within each sample. Essentially, what we want to do is to create 
-a boxplot for each column of our counts matrix. Below we have provided code to cast the counts matrix into
-something called "long format" which makes it possible to leverage into ggplot.
+This far we have looked at the distribution of total counts for each sample, but now we want to look at the distribution 
+of counts across all genes within each sample. Essentially, what we want to do is to create a boxplot for each column of 
+our counts matrix. Below we have provided code to cast the counts matrix into something called "long format" which makes 
+it possible to leverage into ggplot.
 
 ```{r long_format}
 
@@ -285,12 +325,12 @@ head(counts_long)
 
 In this long formatted `data.frame` we have a gene name, sample id, log10 mRNA count and the subtype label. 
 
-Q2 - Now we want you to create a histogram for each sample and color samples by cancer subtype. 
+*Q3* - Now we want you to create a histogram for each sample and color samples by cancer subtype. 
 
-Hint: `geom_boxplot()` requries a group variable and a numeric vector, then you can pass an additional 
+Hint: `geom_boxplot()` requires a group variable and a numeric vector, then you can pass an additional 
 variable to the "fill" aesthetic to add color to the boxplots.
 
-```{r histogram_all_counts, fig.width=12, fig.height=5}
+```{r histogram_all_counts, fig.width=12, fig.height=5, echo=TRUE}
 
 # Replace ... with your answer
 ggplot(counts_long, aes(...)) +
@@ -299,14 +339,14 @@ ggplot(counts_long, aes(...)) +
 
 ```
 
-Q3 - Now make the same plot but with facets instead of colors.
+*Q4* - Now make the same plot but with facets instead of colors.
 
 Hint: The boxplots should be put into 6 separate facets, one for each cancer subtype.
 
-```{r histogram_all_counts_facets, fig.width=12, fig.height=5}
+```{r histogram_all_counts_facets, fig.width=12, fig.height=5, echo=TRUE}
 
 # Replace ... with your answer
-ggplot(counts_long, aes(...)) +
+ggplot(counts_long, aes(sample_id, log10_count)) +
   geom_boxplot() +
   facet_wrap(vars(...), scales = "free", ncol = 6) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -320,83 +360,65 @@ ggplot(counts_long, aes(...)) +
 
 Below is a suggested workflow for bulk RNA-seq data processing and analysis.
 
-pre-processing of raw fastq data:
+Pre-processing of raw fastq data:
   * Check quality of raw reads and filter out reads with poor quality
-  * Filter raw reads to remove artifacts (e.g. Illumina primer sequences)
+  * Filter raw reads to remove artifacts (e.g. Illumina primer sequences and adapters)
   * Align reads to a reference genome (or construct a _de novo_ genome assembly if a reference is unavailable)
   * Annotate aligned reads to gene loci
   * Quantify mRNA counts per gene loci
   
-These steps are typically done using command line tools and will not be covered in this
-lab. The data that we will be working on in this lab is an expression matrix with genes 
-in rows and samples in columns. We have essentially just collected files with mRNA counts 
-per gene for a number of samples and merged them into a matrix.
+These steps are typically done using command line tools and will not be covered in this lab. 
+The data that we will be working on in this lab is an expression matrix with genes in rows and samples in columns. 
+We have essentially just collected files with mRNA counts per gene for a number of samples and merged them into a matrix.
 
-quality control:
+Quality control:
   * Check quality of samples and filter out outliers
   * Filter out low abundant genes or other potentially confounding genes
   * Adjust for other confounding factors, e.g. gender specific expression, experimental date and age 
   
-analysis:
+Analysis:
   * Differential gene expression analysis
   * Data transformations for visualization and clustering
   * Clustering
   * Gene regulatory networks
   
 
-In this lab, we will only explore a few of these steps with a focus on quality control and differential 
-expression analysis.
+In this lab, we will only explore a few of these steps with a focus on quality control and differential expression analysis.
 
 ## Analysis pipeline
 
-In this second part of the lab we will use the DESeq2 R package to demonstrate an analysis workflow
-of bulk RNA-seq data.
-
-### Loading packages
-
-The following packages should be loaded. Remember, if you haven't installed a
-specific package, use `BiocManager::install("packageName")` if the package is 
-hosted on bioconductor or `install.packages("packageName")`if the package is
-hosted on CRAN. When running this, you often get asked "Update all/some/none? [a/s/n]:" 
-In general, it's ok to skip updating the rest of the packages for this lab (which can 
-otherwise take some time).
-
-```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
-
-library(DESeq2)
-library(pheatmap)
-library(ggplot2)
-library(viridis)
-
-```
+In this second part of the lab we will use the DESeq2 R package to demonstrate an analysis workflow of bulk RNA-seq data.
 
 ### Pre-processing 
 
-Filtering out low abundant genes is not a requirement to run DESeq2 functions but can be useful for 
-two reasons: we can reduce the memory size of our DESeq2 data object and increase the speed of 
-transformation and testing functions within our analysis workflow. Note that when your run a DE test
-using DESeq2, a more strict filtering is automatically applied before running the test that you can 
-read more about [here](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#indfilt).
+Filtering out low abundant genes is not a requirement to run DESeq2 functions but can be useful for two reasons: 
+we can reduce the memory size of our DESeq2 data object and increase the speed of transformation and testing 
+functions within our analysis workflow. 
 
-Q4. Exclude all genes that have a total count value across all samples of $<=10$. Use the skills you learned in Lab 1.
+Note that when your run a DE test using DESeq2, a more strict filtering is automatically applied before running 
+the test that you can read more about [here](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#indfilt).
 
-```{r, eval= TRUE, echo=TRUE}
+*Q5*. Exclude all genes that have a total count value across all samples of $<=100$. Use the skills you learned in Lab 1.
 
-# Write code
-counts <- counts[rowSums(counts) > 10, ]
+Hint: You should apply the filter to the `counts` matrix.
+
+```{r, eval= TRUE, echo=TRUE, eval=TRUE, echo=TRUE}
+
+# Write code here!
+
 
 ```
 
 ### DESeq2
 
 Now, in order to use DESeq2, we first need to create a DESeq2 object to store our data in. 
-DESeq2 takes many different data types as inut, but since we have a count matrix we'll use 
-the `DESeqDataSetFromMatrix()` function to create our DESeq2 object.
+DESeq2 takes many different data types as an input, but since we have a count matrix we'll use the `DESeqDataSetFromMatrix()` 
+function to create our DESeq2 object.
 
-When we create our object we will add the count data and metadata, but we will also specify 
-a design formula. This formula expresses how the counts for each gene depend on the variables 
-in colData. This can be changed later into more complex designs, but here we will 
-simply tells DESeq2 that the counts are grouped by breast cancer subtype.
+When we create our object we will add the count data and metadata, but we will also specify a design formula. This formula 
+expresses how the counts for each gene depend on the variables in colData. This can be changed later into more complex designs 
+depending on your research setting and questions, but here we will simply tell DESeq2 that the counts are grouped by breast 
+cancer subtype.
 
 The code to do this is given below:
 
@@ -405,10 +427,10 @@ The code to do this is given below:
 # Create the DESeqDataSet (set design = ~1, which we change later)
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata, 
-                              design = ~ subtype)
+                              design = ~0 + subtype)
 
 # We will just relevel the subtype factor to make sure that Normal_NT is used as the reference
-dds$subtype <- relevel(dds$subtype, ref = "Normal_NT")
+dds$subtype <- relevel(dds$subtype, ref = "Normal")
 
 ```
 
@@ -420,17 +442,16 @@ Now, we can run the `DESeq()` function which will perform a set of default analy
 
 The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
 
-This next code chunk might take a few minutes to run.
+Note: This next code chunk might take a few minutes to run.
 
-```{r run_deseq2, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+```{r run_deseq2, message=FALSE, warning=FALSE, eval=TRUE, echo=TRUE}
 
 dds <- DESeq(dds)
 
 ```
 
-If you now print the `dds` object, you will obtain information about the contents of the 
-object. We can for example see that there are 30107 genes and 60 samples and we also get 
-a few example names for each type.
+If you now print the `dds` object, you will obtain information about the contents of the object. 
+We can for example see that there are 30107 genes and 60 samples and we also get a few example names for each type.
 
 ```{r, eval= TRUE, echo=TRUE}
 
@@ -439,55 +460,46 @@ dds
 ```
 
 After running `DESeq()`, we now have so called sizefactors stored in colData (1 size factor per column/sample). 
-We can use these sizefactors to normalize our samples by dividing the raw count with the size factor. This will
+We can use these sizefactors to normalize our samples by dividing the raw count with the size factor which will 
 adjust for differencies in library sizes between the samples. 
 
 To obtain the normalized data you can run `counts(dds, normalized = T)`.
 
-Q5. Make a boxplot for each sample showing the distribution of normalized counts.
+*Q6*. Make a boxplot for each sample showing the distribution of normalized counts.
 
-Hint: You already have the code to do this from the first part of the lab. Look at Q2 and Q3 as well as the code 
-used to prepare the `counts_long` data.frame. Here you will need to replace the `counts` matrix with the 
-normalized counts.
+Hint!: You already have the code to do this from the first part of the lab. Look at Q2 and Q3 as well as the code 
+used to prepare the `counts_long` dataframe. Here you will need to replace the `counts` matrix with the normalized counts.
 
 ```{r boxplot_normalized, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5}
 
-counts_long <- setNames(reshape2::melt(log10(counts(dds, normalized = TRUE) + 1)), nm = c("gene", "sample_id", "log10_count"))
-counts_long$subtype <- metadata[counts_long$sample_id, ]$subtype
+#Write your code here!
 
-ggplot(counts_long, aes(sample_id, log10_count)) +
-  geom_boxplot() +
-  facet_wrap(vars(subtype), scales = "free", ncol = 6) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
 
 Do you spot the difference?
 
-If you managed to do this correctly you should be able to see that the distributions are more
-comparable across samples.
+If you managed to do this correctly you should be able to see that the distributions are now more comparable across samples.
 
 
 ### Exploratory analysis
 
-Exploratory data analysis (EDA) can sometimes be useful to better nderstand the data
-that you are working with. For example, it might be interesting to know whether 
-some groups exhibit greater within-group variability than other or to check how samples 
-are related to each other based on expression similarity. You might even want to use 
-a clustering approach based on similarities of gene expression profiles to define new 
-subtypes. This is actually how our subtypes were defined within the TCGA!
+Exploratory data analysis (EDA) can sometimes be useful to better understand the data that you are working with. 
+For example, it might be interesting to know whether some groups exhibit greater within-group variability than other 
+or to check how samples are related to each other based on expression similarity. You might even want to use a 
+clustering approach based on similarities of gene expression profiles to define new subtypes. This is actually how 
+our subtypes were defined within the TCGA!
 
-Before we move on to data exploration it is often beneficial to transform 
-the count data first. Otherwise, highly expressed genes tend to dominate the result. 
+Before we move on to data exploration it is often beneficial to transform the count data first. If we don't do this, 
+highly expressed genes tend to dominate the result. 
 
-One frequently used method is the variance-stabilizing transformation (VST),
-which is used to disentangle the mean-variance relationship seen in count data.
+One frequently used method is the variance-stabilizing transformation (VST), which is used to disentangle the 
+mean-variance relationship seen in count data.
 
-In RNA-Seq data, genes with larger mean expression tend to have higher observed
-variances across samples. Random variables for which variance differ across
-certain ranges of values are called "heteroscedastic". If we VST transform
-the data, the standard deviation (sd) becomes more constant along the whole dynamic
-range. The following picture illustrate this:
+In RNA-Seq data, genes with larger mean expression tend to have higher observed variances across samples. 
+Random variables for which variance differ across certain ranges of values are called "heteroscedastic". 
+If we VST transform the data, the standard deviation (sd) becomes more constant along the whole dynamic range. 
+The following picture illustrate this:
 
 ![effect of vst transformation](lab2_vst.png)
 
@@ -502,66 +514,63 @@ vst.data <- vst(dds, blind = FALSE)
 
 #### Heatmap
 
-A heatmaps is a type of plot that can be useful to obtain an overview of pairwise relationships 
-between many samples at the same time. Here we have 60 samples which is a decent amount of samples 
-and it could be useful to understand if these are correlated with each other at the gene 
-expression level.
+A heatmap is a type of plot that can be useful to obtain an overview of pairwise relationships between many 
+samples at the same time. Here we have 60 samples which is a decent amount of samples and it could be useful 
+to understand if these are correlated with each other at the gene expression level.
 
-Using our normalized counts (VST transformed), we can compute correlation scores between each pair
-of samples and visualize these correlationns using the code below:
+Using our normalized counts (VST transformed), we can compute correlation scores between each pair of samples 
+and visualize these correlations using the code below:
 
-(Don't freak out if the code doesn't make any sense right now, let's just focus on the heatmap)
+(Don't freak out if the code doesn't make any sense, let's just focus on the heatmap)
 
 ```{r heatmap1, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
 
+# Below are a few lines of code to create a correlation matrix that we'll be using
 rv <- rowVars(assay(vst.data))
-select <- order(rv, decreasing=TRUE)[seq_len(min(500, length(rv)))]
+select <- order(rv, decreasing = TRUE)[seq_len(min(500, length(rv)))]
 pca <- prcomp(t(assay(vst.data)[select, ]))
 sampleDistMatrix <- cor(t(pca$x))
 diag(sampleDistMatrix) <- NA
 colors <- viridis::magma(50)
+
+# Draw heatmap
 pheatmap(sampleDistMatrix, col = colors, border_color = NA)
 
 ```
 
 From the heatmap we can see that samples are ordered into a hierarchical structure based on pairwise correlations. 
 Cells (tiny squares) with a yellow color represents a pair of samples with high correlation whereas cells with a 
-purple color represents a pair of samples with low correlation. We can see that there are at least three larger blocks 
-of samples with higher similarity, but right now we can only make a guess for why this is the case.
+purple color represents a pair of samples with low correlation. We can see that there are at least three larger 
+blocks of samples with higher similarity, but right now we can only make a guess for why this is the case.
 
 Let's add a new component to this heatmap to show some of our sample metadata using the `annotation_col` argument 
-in `pheatmap`. What we want to do here is to add a bar on top of the heatmap to show the cancer subtype for each sample. 
-You can check the documentation for the `annotation_col` argument by typing `?pheatmap` in the console. 
+in `pheatmap`. What we want to do here is to add a bar on top of the heatmap to show the cancer subtype for each 
+sample. You can check the documentation for the `annotation_col` argument by typing `?pheatmap` in the console. 
 
-# Q2 - Replace `...` in the code chunk below with the correct answer. Based on the characteristics of the different subtypes, can you speculate why some of them are more difficult to distinguish?
+*Q7* - Replace `...` in the code chunk below with the correct answer. Based on the characteristics of the different subtypes, can you speculate why some of them are more difficult to distinguish?
 
 ```{r heatmap2, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
 
 # // Replace ... with the correct code
-ann <- data.frame(subtype = vst.data$subtype, row.names = colnames(sampleDistMatrix))
-#ann <- data.frame(...)
+ann <- data.frame(...)
 pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
 ```
 
-Another plot that is related to the previous heatmap is the PCA plot. This type of plot
-can be particularly useful for visualizing the overall effect of both technical 
-and biological covariates as well as batch effects. Here we do not have access to 
-technical data, but we if we color the PCA by subtype we can see that the samples 
-group by breast cancer subtype as expected.
-
-```{r pca}
-
-plotPCA(vst.data, intgroup = "subtype")
-
-```
+One thing that becomes quite clear after looking at this heatmap is that even though there is a lot of 
+heterogeneity across samples, there are similarities within the respective subtypes as well. Next, we 
+want to know what genes are driving this separation of subtypes at a transcriptional level.
 
 ### Differential expression
 
-When we conduct DE analysis in this manner, we are comparing 2 conditions
-against each other. As noted, we have several different subtypes in this data
-set, each pairwise comparison is saved as separate results in our dds object. To
-view what we have:
+When we conduct DE analysis with DESeq2, we are free to set up quite complex designs to adress our question 
+of interest. For example, we could be interested in differential expression between a subtype and our Normal 
+control or one subtype against all other subtypes. Or if we have access to additional clinical data, we could 
+for example design our test to adress differences in gene expression due to genotype, age, gender, BMI, 
+treatments etc.
+
+Our current design allows us to do pairwise comparisons between subtypes and we can check the coefficients 
+of our model using `resultsNames`.
 
 ```{r DE_test, eval=TRUE, echo=TRUE}
 
@@ -569,61 +578,153 @@ resultsNames(dds)
 
 ```
 
-For example, "group_Basal_vs_Normal", contains the DE result comparing Normal against Basal.
+A contrast is a linear combination of estimated log2 fold changes, which can be used to test if differences 
+between groups are equal to zero. To extract the DE results for a specific comparison, we can use `results` 
+command. For this simple example we set the contrast using a vector of length 3 where the first element is 
+the name of a factor in the design formula, the second element is the numerator and the third element is the 
+denominator. We have also added a few filtering steps to remove genes with an absolute log2 foldchange lower 
+than 2, adjusted p-value higher than 0.01 and then we have arranged the results by increasing adjusted p-values 
+to have the most significant hits in the top of our table.
 
-A contrast is a linear combination of estimated log2 fold changes, which can be
-used to test if differences between groups are equal to zero. To extract the DE
-results for a specific comparison, we can use results command:
+```{r, eval=TRUE, echo=TRUE}
 
-```{r, eval= TRUE, echo=TRUE}
+# Run test Basal.like vs Normal
+res <- results(dds, 
+               contrast = c("subtype", "Basal.like", "Normal"),
+               tidy = TRUE)
 
-res <- results(dds, contrast = c("subtype", "LumA_TP", "Normal_NT"), tidy = TRUE)
-res <- res %>% 
+res_summarized <- res %>%
   dplyr::arrange(padj) %>%
-  dplyr::filter(log2FoldChange > 2, padj < 0.01)
+  dplyr::filter(abs(res$log2FoldChange) >= 2, res$padj <= 0.01)
+head(res_summarized)
+
+
 
 ```
 
-```{r}
+*Q8*. Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values 
+from the `res_summarized` data.frame. You should be able to solve this problem programatically.
 
-gg <- data.frame(subtype = colData(dds)$subtype, val = dds@assays@data$counts["CDC25C", ])
-ggplot(gg, aes(subtype, val)) +
-  geom_boxplot()
+```{r select_des, eval=TRUE, echo=TRUE}
+
+
+
+#up <- #c("FOXM1", "CDCA8", "NDC80", "BUB1", "HJURP", "CKAP2L", "CCNE1", "CEP55", "CDCA3", "MELK")
+#down <- #c("PAMR1", "LINC02720", "PDE2A", "HSPB6", "LINC01537", "CAVIN2", "SEMA3G", "FHL1", "CCDC178", "HSD17B13")
+degs <- c(up$row, down$row)
 
 ```
 
-Note that the log2 fold change and Wald test p-values will be for the last
-variable. (See [this
-link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an
-explanation on the Wald test.)
+Now we can use the vst transformed values to compare the expression these genes in a heatmap. 
+Here we only look at the expression across two subtypes that were used in the test, i.e. Basal-like and Normal.
 
-NOTE: The genes with adjusted p-values of NA have less mean normalized counts
-than the optimal threshold.
+```{r plot_degs, fig.width=10, fig.height=7, eval=TRUE, echo=TRUE}
 
-Now, use this method to find the top 50 upregulated and downregulated genes
-(based on adjusted p-value) for each specific drug, i.e. for drug A -> compare
-responders vs non-responders. Do this for all drugs and create a list of the
-genes.
+vst.vals <- vst.data[degs, vst.data$subtype %in% c("Basal-like", "Normal")]
+ann <- data.frame(subtype = vst.vals$subtype, row.names = colnames(vst.vals))
 
+# Here we have also added some code to scale the data: `t(scale(t(assay(vst.vals))))`
+# We will not go through how this works, but feel free to play around and see what 
+# happens if we don't scale the data
+pheatmap(t(scale(t(assay(vst.vals)))), annotation_col = ann, cluster_rows = FALSE, border_color = NA)
 
-```{r, eval= TRUE, echo=TRUE}
-#Write code
 ```
 
+If we want to obtain DEGs that are specific to a subtype we could make pairwise comparisons between that 
+specific subtype and all other subtypes. Once we have our DE results we can select a gene of interest
+(with low p-value) and compare its expression with the other subtypes.
 
-# Q3 - Is there any overlap between these genes across drugs? Are there some genes
-# that seem to correlate with all responders regardless of drug? Is there any drug
-# with a specific set of genes?
-# 
-# Hint: the function `intersect()` could be useful
-# 
-# ```{r, eval= TRUE, echo=TRUE}
-# # Add answer
-# ```
+This time we have to set the `contrast` argument differently. Now we need to provide a list instead of 
+a character vector where the first element of the list should be the name of the group of interest and 
+the second argument should be a cahcarter vector with the names of the remaining groups. Note that these 
+names need to be present in the output from `resultsNames(dds)`. Then we also need to add a `listValues` 
+argument to say that the subtype of interest should be weighted by 1 and the remaining groups should be 
+weighted by 1/4 because there are four groups that we want to weight equally.
 
-Q4 - Take one or two genes and look it up. Can you make any conclusion? Motivate your finding!
+```{r DE_test_Basal-like}
 
-```{r}
-# Add answer
+res_Her2_vs_all <- results(dds, 
+                           contrast = list("subtypeBasal.like", c("subtypeHer2", "subtypeLumA", "subtypeLumB", "subtypeNormal.like")), 
+                           listValues = c(1, -1/4),
+                           tidy = TRUE)
+
+# Print the top hits from our results data.frame and arrange the hits
+# based on p-value
+head(res_Her2_vs_all %>% arrange(pvalue))
+
+# Select a DE gene of interest
+g <- data.frame(subtype = dds$subtype, val = assay(vst.data)["HORMAD1", ])
+ggplot(g, aes(subtype, val)) +
+ geom_boxplot() +
+  ggtitle("expression of HORMAD1")
+
 ```
 
+The example gene displayed above, HORMAD1, is clearly overexpressed in the Basal-like subtype 
+compared to the other subtypes.
+
+
+We can also run apply the same test on all subtypes in a for loop like fashion (here we actually use a 
+function called `lapply()` which works similar to a for loop) to obtain a list of DEGs for each subtype.
+You don't need to understand every part of this next code block.
+
+```{r fig.width=15, fig.height=12, eval=TRUE, echo=TRUE}
+
+# Define a chacarter vector with the subtype ids
+subtypes <- c("subtypeBasal.like", "subtypeHer2", "subtypeLumA", "subtypeLumB", "subtypeNormal.like")
+
+# Here we apply the same text as before, but for one subtype at the time
+summarized_results <- do.call(rbind, lapply(subtypes, function(stype) {
+  res_Her2_vs_all <- results(dds, 
+                           contrast = list(stype, setdiff(subtypes, stype)), 
+                           listValues = c(1, -1/4),
+                           tidy = TRUE)
+  # We also add an additional column with the subtype 
+  # name to keep track of subtype the DE results belong to
+  res_Her2_vs_all$subtype <- stype 
+  return(res_Her2_vs_all)
+}))
+
+# Some data wrangling to filter out hits with a p-value > 0.01 and 
+# negative log foldchanges. We also select the top 20 hits based 
+# on adjusted p-value
+summarized_results_top10 <- summarized_results %>%
+  group_by(subtype) %>%
+  filter(padj < 0.01, log2FoldChange > 0) %>%
+  top_n(n = 20, wt = -padj)
+
+# Here we prep our results to build a heatmap
+ann <- data.frame(subtype = vst.data$subtype, row.names = colnames(vst.data))
+tsf <- t(scale(t(assay(vst.data))))[summarized_results_top10$row, vst.data$subtype %in% c("Basal-like", "Her2", "LumA", "LumB", "Normal-like")]
+tsf[tsf > 2] <- 2
+tsf[tsf < -2] <- -2
+colors <- viridis::viridis(n = 51)
+pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, color = colors, fontsize = 8, border_color = NA)
+
+```
+
+*Q9* What conclusions you can make from this plots based on the differences bewteen subtypes? Write max 2 sentences. 
+
+Hint!: Look how clear the subtype specific genes are and variability between groups.
+
+```{r, echo=TRUE}
+#Write the answer here!
+```
+
+Cancer subtypes are heterogeneous and remember that these are bulk RNA-seq data which means that we are 
+investigating the averaged expression over a whole tissue piece. 
+
+Cancer cells reside and proliferate within a microenvironment made up of "normal" cells. This could for 
+example be cells that build up connective tissues and blood vessels or immune cells that are trying to 
+fight and eliminate the tumor. Although cells in the tumor microenvironment are not malignant, they can 
+be manipulated by the cancer cells to suppress the immune response and promote disease progression. 
+
+Understanding the intricate details of cell-cell crosstalk and the architecture of the microenvironment 
+is important in the quest to find new therapeutic strategies. This limitation with bulk RNA-seq analysis 
+is to a large extent the reason why single-cell and spatial methods are starting to take over the field 
+of genomics and gained so much attention in the last decade.
+
+Still, the capture efficiency of bulk RNA-seq very high and the data contains much less technical noise 
+compared with scRNA-seq and spatial transcriptomics methods. It is also much easier and cheaper to run. 
+For these and many other reasons, bulk RNA-seq is still considered a gold standard for transcriptomic 
+research. 
