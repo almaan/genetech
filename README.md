@@ -48,10 +48,10 @@ there, there's plenty to choose from ("R programming tutorial" has `2 060 000
 000` hits on google... ), so at least one should be compatible with your
 preferred ways of learning.
 
-## Lab 1 | Basic R programming and markdown
+## :dna: Lab 1 | Basic R programming and markdown :dna:
 
 **Main Responsible TA:** Alma Andersson<br>
-**Lab Status:** <span style="color:green">Ready</span><br>
+**Lab Status:** Ready :+1: <br>
 
 Here you will familiarize yourself with some of the basic syntax and
 documentation in R. This lab will lay the foundation for the two next labs,
@@ -82,10 +82,16 @@ also change the variable `GRADE_MODE` from `FALSE` to `TRUE` before handing in
 the lab, if your lab knitts without any complications, you have solved all the
 exercises correctly.
 
+### Resources
 
-## Lab 2 | TBA
+- Rmarkdown cheat sheet: [LINK](https://raw.githubusercontent.com/rstudio/cheatsheets/master/rmarkdown-2.0.pdf)
+- Learn X in Y minutes (R): [LINK](https://learnxinyminutes.com/docs/r/)
+- Swirl, Learn R in R: [LINK](https://swirlstats.com/)
+
+
+## :dna: Lab 2 | TBA :dna:
 **Main Responsible TA:** Sami Saarenpää<br>
-**Lab Status:** <span style="color:green">Ready</span><br>
+**Lab Status:** Being Proofread<br> :hourglass_flowing_sand:
 
 Lorem Ipsum
 
@@ -94,9 +100,9 @@ Lorem Ipsum
 You will hand in one knitted html file in Canvas latest one week after the lab. 
 Remember to change the author information before handing in the lab. 
 
-## Lab 3 | Single Cell RNA-seq analysis
+## :dna: Lab 3 | Single Cell RNA-seq analysis :dna:
 **Main Responsible TA:** Ludvig Larsson<br>
-**Lab Status:** <span style="color:red"> Ready</span><br>
+**Lab Status:** Being Proofread :hourglass_flowing_sand: <br>
 
 In this lab you will be working on two different single-cell datasets. Single-cell 
 RNA sequencing (or scRNA-seq) have exploded in the last decade and has become one of 
@@ -108,10 +114,10 @@ learning more about new cell types and cell states every year.
 In this lab we will use the popular Seurat R package to explore some of the most essential 
 parts of a scRNA-seq analysis workflow. 
 
-## Lab 4 | Spatial Transcriptomics analysis
+## :dna: Lab 4 | Spatial Transcriptomics analysis :dna:
 
 **Main Responsible TA:** Alma Andersson<br>
-**Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2021-10-05</span><br>
+**Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2021-10-05</span>:hourglass_flowing_sand:<br> 
 
 In this lab you will work with Visium data, the spatial gene expression of human
 breast cancer data! While similar to single cell data in some ways, there are
