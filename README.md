@@ -91,7 +91,7 @@ exercises correctly.
 
 ## :dna: Lab 2 | TBA :dna:
 **Main Responsible TA:** Sami Saarenpää<br>
-**Lab Status:** Being Proofread<br> :hourglass_flowing_sand:
+**Lab Status:** Being Proofread :hourglass_flowing_sand:<br> 
 
 Lorem Ipsum
 
