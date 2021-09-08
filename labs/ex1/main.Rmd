@@ -1,7 +1,7 @@
 ---
 title: "Lab 1 - Introduction to R"
 author: "Alma Andersson"
-date: "26-11-2020"
+date: "17-09-2021"
 output:
   tufte::tufte_html: default 
 ---
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```{r,echo = FALSE, eval =TRUE}
 ## Change FALSE to TRUE
 ## as the last thing you do before
-## knitting and hanind in the report
+## knitting and hand in in the report
 
 GRADE_MODE <- FALSE
 ```
@@ -53,7 +53,7 @@ of `R`, including:
 
 ## Looking for help
 
-Stackoverflow and Google are your friends, but they will not always be there for
+Stack overflow and Google are your friends, but they will not always be there for
 you (sad but true). However, for most R functions, you will be able to get a
 good overview of how to use them and how to apply them by typing:
 `?function_name` or `help(function_name)`, e.g. `?sum` in your R console.
@@ -66,7 +66,7 @@ real-life variable, we use it whenever we want to indicate the value
 $3.14159265...$. Similarly, we can assign values or objects a specific name
 (e.g, `fancy_variable`), one huge benefit with this is that if we decide to
 change the value of `fancy_variable` from `3` to `4`, only the instance where we
-set the value of `fancy_variable` will have to be changed rather than all places
+define the value of `fancy_variable` will have to be changed rather than all places
 where it is used.
 
 In R, you have 2 options when you want to bind an object or value to a name
@@ -253,12 +253,11 @@ result_1 <- "a" > 3
 print(paste("a > 3 is : ",result_1))
 ```
 
-Say What? This makes no sense at all, how can we even compare a character with a
-number? Shouldn't this, if something, raise an error?
+Say What? This makes no sense at all, how can we even compare a character with a number? Shouldn't this, if something, raise an error?
 
 What's happening here is that the numeric `3` gets coerced into a character
 `"3"` which _can_ be compared to another character (if you, like in R, have
-assigned an order to the characters.
+assigned an order to the characters).
 
 ## Arrays
 
@@ -308,10 +307,12 @@ print(paste("The fourth element of our vector is : ",a_vector_4th_element))
 We could also assign "names" to our array elements (note how we are using `=` and not `<-`):
 
 ```{r,eval=TRUE, echo=TRUE}
-a_list <- list(birth_date = 20200504,
-               name = "X AE A-Xii",
+a_list <- list(birth_date = 19660206,
+               name = "Rick Astley",
+               occurance = "never",
                problems = 0,
-               favorite_animal = "cat")
+               beef = "no",
+               whom  = "you")
 
 a_vector <- c(element_1 = "wind",
               slot_1 = "A1",
@@ -334,9 +335,12 @@ for vectors only the second option is valid. To illustrate:
 
 # accessing the elements from our list
 print(paste("His name is",
-            a_list$name, 
-            "and his birth date is",
-            a_list[["birth_date"]]
+            a_list$name,
+            "and he will",
+            a_list[["occurance"]],
+            "give",
+            a_list[["whom"]],
+            "up"
             )
       )
 # accessing the elements from our vector
@@ -425,9 +429,9 @@ The elements of our lists are not restricted to singular values, but could also 
 
 ```{r, echo = TRUE, eval = TRUE}
 
-a_list_of_mixed <- list(list_1 = list("hello",13,TRUE),
-                        list_2 = list(45,"covfefe"),
-                        vector_1 = c("sheep","cow","dog")
+a_list_of_mixed <- list(list_1 = list("crystals","heals",FALSE),
+                        list_2 = list(6,"days",7,"hours","stuck",TRUE,"Ever Given"),
+                        vector_1 = c("Person", "Woman", "Man", "Camera", "TV")
                         )
 ```
 
@@ -486,7 +490,7 @@ As eluded to above, when we have structured or _tabular_ data there are two data
 structures that are particularly useful:
 
 * Matrices - for homogeneous data
-* Dataframes - for heterogeneous data
+* Data frames - for heterogeneous data
 
 As a reference:
 
@@ -498,10 +502,10 @@ a_matrix <- matrix(data = c(4,1,2,9,-11,-8,1,3,4,21,0,1),
                    nrow = 3
 )
 
-a_df <- data.frame(birth_date = c(20200504,19691294),
-                   first_name = c("X AE A-Xii","Jay"),
-                   problems = c(0,99),
-                   favorite_animal = c("cat","tiger"),
+a_df <- data.frame(birth_date = c(a_list$birth_date,19691294),
+                   first_name = c(a_list$name,"Jay"),
+                   problems = c(a_list$problems,99),
+                   beef = c(a_list$beef,"yes"),
                    row.names = c("ind1","ind2")
 )
 
