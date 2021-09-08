@@ -284,9 +284,9 @@ a_list <- list(19660206,
                "you")
 
 a_vector <- c("wind",
-              "A1",
+              "1A",
               "earth",
-              "B2",
+              "3B",
               "flat",
               "water",
               "5G",
