@@ -104,15 +104,18 @@ Remember to change the author information before handing in the lab.
 **Main Responsible TA:** Ludvig Larsson<br>
 **Lab Status:** Being Proofread :hourglass_flowing_sand: <br>
 
-In this lab you will be working on two different single-cell datasets. Single-cell 
-RNA sequencing (or scRNA-seq) have exploded in the last decade and has become one of 
-the most valuable tools in genomics to define celltypes, explore cell states, study 
-cell to cell interactions, track differentiation processes over time, study response 
-to drugs and much more. ScRNA-seq methods have also become important tools in ongoing 
-research efforts to create atlases of all the organs in the human body and we are still
-learning more about new cell types and cell states every year. 
-In this lab we will use the popular Seurat R package to explore some of the most essential 
-parts of a scRNA-seq analysis workflow. 
+Single-cell RNA sequencing (or scRNA-seq) has become one of the most valuable tools 
+in genomics to to answer questions about molecular processes at the cellular level. 
+For example, scRNA-seq has been used to define new celltypes and cell states, study 
+cell to cell interactions, track differentiation processes over time, study responses 
+to drugs and much more. scRNA-seq methods have also become important tools in ongoing 
+research efforts to create atlases of organs in the human body in efforts such as the 
+Human Cell Atlas (HCA). 
+
+In this lab we will explore the popular Seurat R package for single-cell genomics data 
+analysis. You will be introduced to some of the most basic steps in a scRNA-seq analysis
+workflow including quality control, normalization, batch correction, dimensionality 
+reduction, unsupervised clustering and differential expression analysis.
 
 ## :dna: Lab 4 | Spatial Transcriptomics analysis :dna:
 
