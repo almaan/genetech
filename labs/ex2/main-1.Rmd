@@ -194,8 +194,6 @@ Just like geom_bar, geom_histogram takes one variable as input but this time it 
 # Replace ... with the correct answer
 gg$COL1A1 <- log10(...)
 
-
-
 ggplot(gg, aes(COL1A1)) +
   geom_histogram(bins = 15)
 
@@ -260,7 +258,7 @@ Completely useless in this case, because now we can't read any statistical prope
 value points that blend with the boxes.
 
 Now let's move on to an example with two variables. 
-We want to compare the expression of two selected genes; ERBB2 and GRB7, using a "scatter plot". 
+We want to compare the expression of two selected genes; POTEKP and LINC01087, using a "scatter plot". 
 A scatter plot uses dots to represent values for two different numerical variables. 
 We'll also apply a log10 transformation to obtain a more normal-like distribution of values.
 
@@ -365,11 +363,11 @@ Pre-processing of raw fastq data:
   * Filter raw reads to remove artifacts (e.g. Illumina primer sequences and adapters)
   * Align reads to a reference genome (or construct a _de novo_ genome assembly if a reference is unavailable)
   * Annotate aligned reads to gene loci
-  * Quantify mRNA counts per gene loci
+  * Quantify read counts per gene loci
   
 These steps are typically done using command line tools and will not be covered in this lab. 
 The data that we will be working on in this lab is an expression matrix with genes in rows and samples in columns. 
-We have essentially just collected files with mRNA counts per gene for a number of samples and merged them into a matrix.
+We have essentially just collected files with read counts per gene for a number of samples and merged them into a matrix.
 
 Quality control:
   * Check quality of samples and filter out outliers
@@ -551,7 +549,7 @@ sample. You can check the documentation for the `annotation_col` argument by typ
 
 ```{r heatmap2, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
 
-# // Replace ... with the correct code
+# Replace ... with the correct code
 ann <- data.frame(...)
 pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
@@ -598,8 +596,6 @@ res_summarized <- res %>%
   dplyr::filter(abs(res$log2FoldChange) >= 2, res$padj <= 0.01)
 head(res_summarized)
 
-
-
 ```
 
 *Q8*. Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values 
@@ -607,10 +603,6 @@ from the `res_summarized` data.frame. You should be able to solve this problem p
 
 ```{r select_des, eval=TRUE, echo=TRUE}
 
-
-
-#up <- #c("FOXM1", "CDCA8", "NDC80", "BUB1", "HJURP", "CKAP2L", "CCNE1", "CEP55", "CDCA3", "MELK")
-#down <- #c("PAMR1", "LINC02720", "PDE2A", "HSPB6", "LINC01537", "CAVIN2", "SEMA3G", "FHL1", "CCDC178", "HSD17B13")
 degs <- c(up$row, down$row)
 
 ```
