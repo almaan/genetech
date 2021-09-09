@@ -217,7 +217,7 @@ Example R : Interpreted language
 ** How::Download Docker Image?
    * Download the docker image (we will create a container from this)
      * src_sh[:exports code]{docker pull almaand/genetech:TAG}
-   * Check if successful with
+   * Check if successful with the command:
      * src_sh[:exports code]{docker images}
 
 ** How::Build container and run Docker
@@ -248,7 +248,7 @@ Example R : Interpreted language
     * Subfolders named =exY=, =Y = {1,2,3,4}= indicating which lab
   * You work with the =labs/exY/main.Rmd= files
     * Contains instructions and chunks to insert answers into
-    * You hand in a /knitted/ version of these files
+    * You hand in a **knitted** version of these files
   * We've mounted this folder to the Docker container
   * We've also installed all of the necessary packages for you
    #+REVEAL_HTML: </div>
@@ -262,7 +262,7 @@ Example R : Interpreted language
 To get an idea of how you work with the code, we will have a look at Lab 1
    - Go to Rstudio (in browser --> =localhost:1337=)
    - Do: /File-->Open File/
-   - Choose the file =/home/genetech/code/labs/ex1/main.Rmd=
+   - Choose the file =/home/code/labs/ex1/main.Rmd=
 
 *** Changing author name
     
