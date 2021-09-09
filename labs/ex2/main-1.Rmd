@@ -72,13 +72,13 @@ Replace "__add path here__" with the path to genetech/labs/ex2/data/.
 
 ```{r, eval=TRUE, echo=TRUE}
 
-counts <- as.matrix(data.frame(data.table::fread(input = "~/genetech/labs/ex2/data/TCGA_breast_cancer_subtypes.tsv.gz", 
+counts <- as.matrix(data.frame(data.table::fread(input = "__add path here__/TCGA_breast_cancer_subtypes.tsv.gz", 
                                        sep = "\t",
                                        header = TRUE),
                      check.names = FALSE,
                      row.names = 1))
 
-metadata <- read.table(file = "~/genetech/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv")
+metadata <- read.table(file = "__add path here__/TCGA_breast_cancer_subtypes_metadata.tsv")
 
 # Check content of matrix
 counts[1:5, 1:5] # this will print the top left corner of the matrix
