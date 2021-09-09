@@ -1,3 +1,8 @@
 data_lab3/
 main-new-back.Rmd
 main-teacher.Rmd
+keys/private_key
+keys/gpg.*
+*html
+*pdf
+main-teachers.Rmd

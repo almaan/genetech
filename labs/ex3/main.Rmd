@@ -273,8 +273,8 @@ using a histogram.
 
 ### Number of unique genes per cell
 
-To visualize the distribution of number of unique genes per cell as a histogram, we can the function `hist`.
-The values defined as `nGenes` below have randomly generated from a normal distribution, but in reality 
+To visualize the distribution of number of unique genes per cell as a histogram, we can use the function `hist`.
+The values defined as `nGenes` below have been randomly generated from a normal distribution, but in reality 
 the distribution can be a bit skewed.
 
 ```{r plot_histogram}
