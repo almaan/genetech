@@ -119,7 +119,7 @@ exercises to solve. An incomplete report is also considered late.
     }
 #+END_SRC
 Example R : Interpreted language
-#+BEGIN_SRC RR
+#+BEGIN_SRC R
 
   vec1 <- c(1,2,3,4)
   vec2 <- c(5,6,7,8)
@@ -148,7 +148,7 @@ Example R : Interpreted language
   - an IDE specifically designed for R
   - also very user friendly
 - In short, Rstudio is the tool you will be using to /edit/ your code.
-  - Remember just as "Miscrosoft Word ≠ English", Rstudio ≠ R
+  - Remember, just as "Miscrosoft Word ≠ English", Rstudio ≠ R
 
 ** Features of Rstudio
    - Create a new file by: /File --> New File --> R Script/
@@ -246,7 +246,7 @@ Example R : Interpreted language
   * Information at course repo, select branch =CB2040=
   * All the labs are found in the repo we cloned before
     * Subfolders named =exY=, =Y = {1,2,3,4}= indicating which lab
-  * You work with the =exY/main.Rmd= files
+  * You work with the =labs/exY/main.Rmd= files
     * Contains instructions and chunks to insert answers into
     * You hand in a /knitted/ version of these files
   * We've mounted this folder to the Docker container
@@ -260,7 +260,7 @@ Example R : Interpreted language
 ** Working with the code
 
 To get an idea of how you work with the code, we will have a look at Lab 1
-   - Go to Rstudio
+   - Go to Rstudio (in browser --> =localhost:1337=)
    - Do: /File-->Open File/
    - Choose the file =/home/genetech/code/labs/ex1/main.Rmd=
 
@@ -299,12 +299,10 @@ print(sprintf("fancy_name_1 is : %d",fancy_name_1))
     - R markdown --> html and pdf documents.
     - This process is called /knitting/
     - To knit your document, press the **yarn symbol** that says "**Knit**"
+      #+REVEAL_HTML: <img src="./images/knit.png" width=90%>
     - Your rendered document should show up in the "/Viewer/" pane
     - You should **always** hand in a knitted report (html)
-    - If your document does not knit successfully, something is wrong.
-
-# ***  A demo
-#     @@html:<video controls src="./vids/knit.mp4"></video>@@
+    - If your document does not knit successfully, something is **wrong**.
       
 * Wrap up
   #+ATTR_REVEAL: :frag (fade-in) :frag_idx (1 1 1)

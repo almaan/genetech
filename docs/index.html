@@ -29,19 +29,19 @@
 <div class="reveal">
 <div class="slides">
 <section id="sec-title-slide">
-<h1 class="title">CB2040 Lab Prep</h1><h2 class="author">Alma Andersson</h2><p class="date">Created: 2021-09-03 Fri 16:52</p>
+<h1 class="title">CB2040 Lab Prep</h1><h2 class="author">Alma Andersson</h2><p class="date">Created: 2021-09-09 Thu 07:31</p>
 </section>
 
 <section>
-<section id="slide-orgf0d9b33">
-<h2 id="orgf0d9b33">Lab course Introduction</h2>
+<section id="slide-org072b527">
+<h2 id="org072b527">Lab course Introduction</h2>
 <p>
 For these slides: <a href="https://almaan.github.io/genetech/">https://almaan.github.io/genetech/</a>
 </p>
 
 </section>
-<section id="slide-org00ef3af">
-<h3 id="org00ef3af">Teaching assistants</h3>
+<section id="slide-orgef47a7e">
+<h3 id="orgef47a7e">Teaching assistants</h3>
 <p>
 There are 4 of us:
 </p>
@@ -50,26 +50,26 @@ There are 4 of us:
 <li>Alma Andersson (almaan@kth.se)</li>
 <li>Ludvig Larsson (ludvig.larsson@scilifelab.se)</li>
 <li>Sami Saarenpää (sami.saarenpaa@scilifelab.se)</li>
-<li>Trang Lee (trang.lee@scilifelab.se)</li>
+<li>Trang Le (trangle@kth.se)</li>
 
 </ul>
 
 
-<div id="org9bc903a" class="figure">
+<div id="org4258704" class="figure">
 <p><img src="./images/tas.png" alt="tas.png" />
 </p>
 </div>
 
 </section>
-<section id="slide-orge86e7e6">
-<h3 id="orge86e7e6">A word on emails</h3>
+<section id="slide-org6d53cad">
+<h3 id="org6d53cad">A word on emails</h3>
 <p>
 Emails are welcome, but hands-on help with the exercises will mainly be limited to the
 lab sessions. You can also reach us on Canvas, but slower response times.
 </p>
 
 
-<div id="org3c9f112" class="figure">
+<div id="org0460960" class="figure">
 <p><img src="./images/fav-mail.jpg" alt="fav-mail.jpg" />
 </p>
 </div>
@@ -80,8 +80,8 @@ For example: <i>"[CB2040] Question about lab 2"</i>
 </p>
 
 </section>
-<section id="slide-org5ea38a0">
-<h3 id="org5ea38a0">Today</h3>
+<section id="slide-org3df93b6">
+<h3 id="org3df93b6">Today</h3>
 <ul>
 <li>Course structure, formalities, access to information, grading and deadlines</li>
 <li>Overview of tools/software</li>
@@ -91,8 +91,8 @@ For example: <i>"[CB2040] Question about lab 2"</i>
 </ul>
 
 </section>
-<section id="slide-org1734ff5">
-<h3 id="org1734ff5">Course Structure</h3>
+<section id="slide-orga2a1646">
+<h3 id="orga2a1646">Course Structure</h3>
 <p>
 In this course 4 labs in total, one "main TA" for each:
 </p>
@@ -116,8 +116,8 @@ All labs are in R, we assume that you have:
 </ul>
 
 </section>
-<section id="slide-org1e81767">
-<h3 id="org1e81767">Formalities</h3>
+<section id="slide-org45f5a9b">
+<h3 id="org45f5a9b">Formalities</h3>
 <p>
 <b>Workflow:</b>
 </p>
@@ -160,8 +160,8 @@ exercises to solve. An incomplete report is also considered late.
 </ul>
 
 </section>
-<section id="slide-orgf063b33">
-<h3 id="orgf063b33">Finding Information</h3>
+<section id="slide-orgd2d3165">
+<h3 id="orgd2d3165">Finding Information</h3>
 <p>
 All information you need can be found at:<br />
 </p>
@@ -177,8 +177,8 @@ All information you need can be found at:<br />
 </ul>
 
 </section>
-<section id="slide-org953ac68">
-<h3 id="org953ac68">A word about zoom</h3>
+<section id="slide-org868305a">
+<h3 id="org868305a">A word about zoom</h3>
 <ul>
 <li>Make sure you have the latest version : <a href="https://zoom.us/download">download</a></li>
 <li>We will have a zoom room open in case you are sick or can't make it</li>
@@ -188,13 +188,13 @@ All information you need can be found at:<br />
 </section>
 </section>
 <section>
-<section id="slide-org6780585">
-<h2 id="org6780585">R</h2>
-<div class="outline-text-2" id="text-org6780585">
+<section id="slide-org2a3e753">
+<h2 id="org2a3e753">R</h2>
+<div class="outline-text-2" id="text-org2a3e753">
 </div>
 </section>
-<section id="slide-org8d072d6">
-<h3 id="org8d072d6">What?</h3>
+<section id="slide-orgac0fe19">
+<h3 id="orgac0fe19">What?</h3>
 <ul>
 <li class="fragment fade-in">Programming language for "statistical computing"</li>
 <li class="fragment fade-in">Released in 1993</li>
@@ -224,17 +224,17 @@ Example R : Interpreted language
 </p>
 <div class="org-src-container">
 
-<pre class="src src-RR">
-  vec1 &lt;- c(1,2,3,4)
-  vec2 &lt;- c(5,6,7,8)
-  prod &lt;- vec1 %*%vec2
+<pre class="src src-R">
+  vec1 <span style="color: #ffffff; font-weight: bold; font-style: italic;">&lt;-</span> c<span style="color: #8c8c8c;">(</span><span style="color: #ffffff; font-weight: bold; font-style: italic;">1</span>,<span style="color: #ffffff; font-weight: bold; font-style: italic;">2</span>,<span style="color: #ffffff; font-weight: bold; font-style: italic;">3</span>,<span style="color: #ffffff; font-weight: bold; font-style: italic;">4</span><span style="color: #8c8c8c;">)</span>
+  vec2 <span style="color: #ffffff; font-weight: bold; font-style: italic;">&lt;-</span> c<span style="color: #8c8c8c;">(</span><span style="color: #ffffff; font-weight: bold; font-style: italic;">5</span>,<span style="color: #ffffff; font-weight: bold; font-style: italic;">6</span>,<span style="color: #ffffff; font-weight: bold; font-style: italic;">7</span>,<span style="color: #ffffff; font-weight: bold; font-style: italic;">8</span><span style="color: #8c8c8c;">)</span>
+  prod <span style="color: #ffffff; font-weight: bold; font-style: italic;">&lt;-</span> vec1 <span style="color: #ffffff; font-weight: bold; font-style: italic;">%*%</span>vec2
 </pre>
 </div>
 </li></ul>
 
 </section>
-<section id="slide-org90cf979">
-<h3 id="org90cf979">Why?</h3>
+<section id="slide-orga5da3d2">
+<h3 id="orga5da3d2">Why?</h3>
 <ul>
 <li data-fragment-index="1" class="fragment fade-in">One the most popular languages within the bioinformatic community</li>
 <li data-fragment-index="2" class="fragment fade-in">Extremely well designed for "<i>data wrangling</i>"</li>
@@ -247,13 +247,13 @@ Example R : Interpreted language
 </section>
 </section>
 <section>
-<section id="slide-org5ecb060">
-<h2 id="org5ecb060">Rstudio</h2>
-<div class="outline-text-2" id="text-org5ecb060">
+<section id="slide-orgb1f3123">
+<h2 id="orgb1f3123">Rstudio</h2>
+<div class="outline-text-2" id="text-orgb1f3123">
 </div>
 </section>
-<section id="slide-org430a696">
-<h3 id="org430a696">What is it?</h3>
+<section id="slide-org61c01e4">
+<h3 id="org61c01e4">What is it?</h3>
 <ul>
 <li class="fragment fade-in">When editing code it's common to use an IDE (<i>Integrated Development Environment</i>)
 <ul>
@@ -280,15 +280,15 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-orgb4c0a93">
-<h3 id="orgb4c0a93">Features of Rstudio</h3>
+<section id="slide-orgeb8f608">
+<h3 id="orgeb8f608">Features of Rstudio</h3>
 <ul>
 <li>Create a new file by: <i>File &#x2013;&gt; New File &#x2013;&gt; R Script</i></li>
 <li>You should see something like this:</li>
 
 </ul>
 
-<div id="org07ed91f" class="figure">
+<div id="org108028d" class="figure">
 <p><img src="./images/rstudio-show.png" alt="rstudio-show.png" width="60%" />
 </p>
 </div>
@@ -301,13 +301,13 @@ Example R : Interpreted language
 </section>
 </section>
 <section>
-<section id="slide-org9c5ae4d">
-<h2 id="org9c5ae4d">GitHub</h2>
-<div class="outline-text-2" id="text-org9c5ae4d">
+<section id="slide-org2283ae8">
+<h2 id="org2283ae8">GitHub</h2>
+<div class="outline-text-2" id="text-org2283ae8">
 </div>
 </section>
-<section id="slide-orgfd5bce8">
-<h3 id="orgfd5bce8">What?</h3>
+<section id="slide-org08a17cc">
+<h3 id="org08a17cc">What?</h3>
 <div class="column" style="float:left; width: 70%">
 <ul>
 <li>All lab material is hosted at GitHub (the course repo).</li>
@@ -326,15 +326,15 @@ Example R : Interpreted language
 </div>
 <div class="column" style="float:right; width: 30%">
 
-<div id="org7b552ee" class="figure">
+<div id="orgce67eea" class="figure">
 <p><img src="./images/github.png" alt="github.png" />
 </p>
 </div>
 </div>
 
 </section>
-<section id="slide-org15ecd73">
-<h3 id="org15ecd73">How::Clone labs from GitHub</h3>
+<section id="slide-orgcae5fa5">
+<h3 id="orgcae5fa5">How::Clone labs from GitHub</h3>
 <ul>
 <li data-fragment-index="1" class="fragment fade-in">Clone repo : [Course Material] Online &#x2013;&gt; Local</li>
 <li data-fragment-index="2" class="fragment fade-in">Go to a folder where you want to save your files
@@ -353,13 +353,13 @@ Example R : Interpreted language
 </section>
 </section>
 <section>
-<section id="slide-org8a1f079">
-<h2 id="org8a1f079">Docker</h2>
-<div class="outline-text-2" id="text-org8a1f079">
+<section id="slide-org6bfe4d5">
+<h2 id="org6bfe4d5">Docker</h2>
+<div class="outline-text-2" id="text-org6bfe4d5">
 </div>
 </section>
-<section id="slide-orge86e167">
-<h3 id="orge86e167">What?</h3>
+<section id="slide-org0eb0d81">
+<h3 id="org0eb0d81">What?</h3>
 <ul>
 <li data-fragment-index="1" class="fragment fade-in">Open source <i>containerization</i> platform</li>
 <li data-fragment-index="1" class="fragment fade-in">Allows you to bundle up OS, programs, packages, and whatever into an <i>image</i> that you can <b><b>share</b></b>
@@ -377,8 +377,8 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-orga2726a8">
-<h3 id="orga2726a8">Why?</h3>
+<section id="slide-org399aa8b">
+<h3 id="org399aa8b">Why?</h3>
 <ul>
 <li>Previous years we've spent <b><b>a lot</b></b> of time on installation and software issues</li>
 <li>You don't think it's fun, we don't think it's fun</li>
@@ -393,8 +393,8 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-orgd30e50b">
-<h3 id="orgd30e50b">How::Download Docker?</h3>
+<section id="slide-org3c70ff3">
+<h3 id="org3c70ff3">How::Download Docker?</h3>
 <ul>
 <li>Go to the GitHub course repo : <a href="https://github.com/almaan/genetech">link</a>
 <ul>
@@ -404,7 +404,7 @@ Example R : Interpreted language
 
 </ul>
 
-<div id="org7140ac0" class="figure">
+<div id="orgdf13d5d" class="figure">
 <p><img src="./images/master-branch.png" alt="master-branch.png" width="70%" height="70%" style="border:none;" />
 </p>
 </div>
@@ -415,8 +415,8 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-org691fdc5">
-<h3 id="org691fdc5">How::Download Docker Image?</h3>
+<section id="slide-org2d203d4">
+<h3 id="org2d203d4">How::Download Docker Image?</h3>
 <ul>
 <li>Download the docker image (we will create a container from this)
 <ul>
@@ -432,8 +432,8 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-org21c2f6e">
-<h3 id="org21c2f6e">How::Build container and run Docker</h3>
+<section id="slide-org02ab90f">
+<h3 id="org02ab90f">How::Build container and run Docker</h3>
 <ul>
 <li>Build your container and bind your <code>genetech</code> to a volume:<br />
 <code class="src src-sh">docker run -d -p <span style="color: #ffffff; font-weight: bold; font-style: italic;">1337:8787</span> --name genetech -e <span style="color: #87afaf;">USER</span>=<span style="color: #afd75f;">'genetech'</span> -e <span style="color: #87afaf;">PASSWORD</span>=<span style="color: #afd75f;">'genetech'</span> --memory=<span style="color: #ffffff; font-weight: bold; font-style: italic;">6g</span> --mount <span style="color: #87afaf;">type</span>=bind,<span style="color: #87afaf;">source</span>=GENETECH_PATH,<span style="color: #87afaf;">target</span>=/home/genetech/code -e <span style="color: #87afaf;">ROOT</span>=TRUE almaand/genetech:TAG</code></li>
@@ -446,8 +446,8 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-org9a34bfb">
-<h3 id="org9a34bfb">How::Access rstudio</h3>
+<section id="slide-org35b9c2f">
+<h3 id="org35b9c2f">How::Access rstudio</h3>
 <ul>
 <li>Having started a genetech container</li>
 <li>Go to your favorite browser and enter:<br />
@@ -463,8 +463,8 @@ Example R : Interpreted language
 </ul>
 
 </section>
-<section id="slide-org245af37">
-<h3 id="org245af37">How::Start and stop a container</h3>
+<section id="slide-org84371e1">
+<h3 id="org84371e1">How::Start and stop a container</h3>
 <ul>
 <li>To <font color="red"> stop</font> a running contianer do: <code class="src src-sh">docker stop CONTAINER_ID</code></li>
 <li>To <font color="lightgreen"> start</font> a running contianer do: <code class="src src-sh">docker start CONTAINER_ID</code></li>
@@ -472,7 +472,7 @@ Example R : Interpreted language
 </ul>
 
 
-<div id="orgb0afb55" class="figure">
+<div id="org6651c73" class="figure">
 <p><img src="./images/docker-container-list.png" alt="docker-container-list.png" />
 </p>
 </div>
@@ -480,8 +480,8 @@ Example R : Interpreted language
 </section>
 </section>
 <section>
-<section id="slide-orgc8ffe54">
-<h2 id="orgc8ffe54">The Labs</h2>
+<section id="slide-org7b38246">
+<h2 id="org7b38246">The Labs</h2>
 <div class="column" style="float:left; width: 70%">
 <ul>
 <li>Information at course repo, select branch <code>CB2040</code></li>
@@ -490,7 +490,7 @@ Example R : Interpreted language
 <li>Subfolders named <code>exY</code>, <code>Y = {1,2,3,4}</code> indicating which lab</li>
 
 </ul></li>
-<li>You work with the <code>exY/main.Rmd</code> files
+<li>You work with the <code>labs/exY/main.Rmd</code> files
 <ul>
 <li>Contains instructions and chunks to insert answers into</li>
 <li>You hand in a <i>knitted</i> version of these files</li>
@@ -509,21 +509,21 @@ We've also installed all of the necessary packages for you
 
 
 </section>
-<section id="slide-orged05998">
-<h3 id="orged05998">Working with the code</h3>
+<section id="slide-orgc62d25c">
+<h3 id="orgc62d25c">Working with the code</h3>
 <p>
 To get an idea of how you work with the code, we will have a look at Lab 1
 </p>
 <ul>
-<li>Go to Rstudio</li>
+<li>Go to Rstudio (in browser &#x2013;&gt; <code>localhost:1337</code>)</li>
 <li>Do: <i>File&#x2013;&gt;Open File</i></li>
 <li>Choose the file <code>/home/genetech/code/labs/ex1/main.Rmd</code></li>
 
 </ul>
 
 </section>
-<section id="slide-orgf086bda">
-<h4 id="orgf086bda">Changing author name</h4>
+<section id="slide-org8319fdd">
+<h4 id="org8319fdd">Changing author name</h4>
 <p>
 At the top of the file you will see:
 </p>
@@ -545,8 +545,8 @@ Change the author field to your name(s)
 </p>
 
 </section>
-<section id="slide-org04ebf2f">
-<h4 id="org04ebf2f">Code chunks</h4>
+<section id="slide-org500e66f">
+<h4 id="org500e66f">Code chunks</h4>
 <p>
 <br />
 </p>
@@ -568,23 +568,26 @@ print<span style="color: #8c8c8c;">(</span>sprintf<span style="color: #93a8c6;">
 </ul>
 
 </section>
-<section id="slide-org731a2a8">
-<h4 id="org731a2a8">Knitting</h4>
+<section id="slide-org80996b1">
+<h4 id="org80996b1">Knitting</h4>
 <ul>
 <li class="fragment fade-in">R markdown &#x2013;&gt; html and pdf documents.</li>
 <li class="fragment fade-in">This process is called <i>knitting</i></li>
-<li class="fragment fade-in">To knit your document, press the <b><b>yarn symbol</b></b> that says "<b><b>Knit</b></b>"</li>
+<li class="fragment fade-in"><p>
+To knit your document, press the <b><b>yarn symbol</b></b> that says "<b><b>Knit</b></b>"
+</p>
+<img src="./images/knit.png" width=90%></li>
 <li class="fragment fade-in">Your rendered document should show up in the "<i>Viewer</i>" pane</li>
 <li class="fragment fade-in">You should <b><b>always</b></b> hand in a knitted report (html)</li>
-<li class="fragment fade-in">If your document does not knit successfully, something is wrong.</li>
+<li class="fragment fade-in">If your document does not knit successfully, something is <b><b>wrong</b></b>.</li>
 
 </ul>
 
 </section>
 </section>
 <section>
-<section id="slide-org06c7dbf">
-<h2 id="org06c7dbf">Wrap up</h2>
+<section id="slide-orgdc0eeec">
+<h2 id="orgdc0eeec">Wrap up</h2>
 <ul>
 <li data-fragment-index="1" class="fragment fade-in">First lab session: 08:00-13:00, 2021/09/17</li>
 <li data-fragment-index="1" class="fragment fade-in">Questions are welcome!</li>
