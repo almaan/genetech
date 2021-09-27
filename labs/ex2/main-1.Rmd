@@ -595,7 +595,7 @@ res <- results(dds,
 
 res_summarized <- res %>%
   dplyr::arrange(padj) %>%
-  dplyr::filter(abs(res$log2FoldChange) >= 2, res$padj <= 0.01)
+  dplyr::filter(abs(log2FoldChange) >= 2, padj <= 0.01)
 head(res_summarized)
 
 
