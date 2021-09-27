@@ -402,7 +402,7 @@ the test that you can read more about [here](http://bioconductor.org/packages/re
 
 *Q5*. Exclude all genes that have a total count value across all samples of $<=100$. Use the skills you learned in Lab 1.
 
-Hint: You should apply the filter to the `counts` matrix.
+Hint: You should apply the filter to the `counts` matrix and overwrite it.
 
 ```{r, eval= TRUE, echo=TRUE, eval=TRUE, echo=TRUE}
 
@@ -604,11 +604,15 @@ head(res_summarized)
 ```
 
 *Q8*. Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values 
-from the `res_summarized` data.frame. You should be able to solve this problem programatically.
-
+from the `res_summarized` data.frame. You should be able to solve this problem programatically. 
+ 
 ```{r select_des, eval=TRUE, echo=TRUE}
 
-degs <- c(up$row, down$row)
+# Replace NA with the names of the top 10 up-regulated genes
+up <- NA
+# Replace NA with the names of the top 10 down-regulated genes
+down <- NA
+degs <- c(up, down)
 
 ```
 
