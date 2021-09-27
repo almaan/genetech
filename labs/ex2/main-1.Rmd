@@ -407,7 +407,6 @@ Hint: You should apply the filter to the `counts` matrix and overwrite it.
 ```{r, eval= TRUE, echo=TRUE, eval=TRUE, echo=TRUE}
 
 # Write code here!
-counts <- counts[rowSums(counts) > 100, ]
 
 ```
 
