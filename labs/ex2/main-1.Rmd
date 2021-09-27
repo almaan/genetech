@@ -70,6 +70,8 @@ The data for the second lab is available from the cloned GitHub repo, found in g
 You will need to adjust the file paths in the code chunk below to have the correct input. 
 Replace "__add path here__" with the path to genetech/labs/ex2/data/.
 
+
+
 ```{r, eval=TRUE, echo=TRUE}
 
 counts <- as.matrix(data.frame(data.table::fread(input = "__add path here__/TCGA_breast_cancer_subtypes.tsv.gz", 
@@ -405,7 +407,7 @@ Hint: You should apply the filter to the `counts` matrix.
 ```{r, eval= TRUE, echo=TRUE, eval=TRUE, echo=TRUE}
 
 # Write code here!
-
+counts <- counts[rowSums(counts) > 100, ]
 
 ```
 
@@ -424,7 +426,6 @@ The code to do this is given below:
 
 ```{r create_deseq2_object, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
 
-# Create the DESeqDataSet (set design = ~1, which we change later)
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata, 
                               design = ~0 + subtype)
@@ -451,7 +452,7 @@ dds <- DESeq(dds)
 ```
 
 If you now print the `dds` object, you will obtain information about the contents of the object. 
-We can for example see that there are 30107 genes and 60 samples and we also get a few example names for each type.
+We can for example see that there are 23716 genes and 60 samples and we also get a few example names for each type.
 
 ```{r, eval= TRUE, echo=TRUE}
 
@@ -607,10 +608,6 @@ from the `res_summarized` data.frame. You should be able to solve this problem p
 
 ```{r select_des, eval=TRUE, echo=TRUE}
 
-
-
-#up <- #c("FOXM1", "CDCA8", "NDC80", "BUB1", "HJURP", "CKAP2L", "CCNE1", "CEP55", "CDCA3", "MELK")
-#down <- #c("PAMR1", "LINC02720", "PDE2A", "HSPB6", "LINC01537", "CAVIN2", "SEMA3G", "FHL1", "CCDC178", "HSD17B13")
 degs <- c(up$row, down$row)
 
 ```
