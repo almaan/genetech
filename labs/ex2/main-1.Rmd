@@ -327,7 +327,7 @@ head(counts_long)
 
 In this long formatted `data.frame` we have a gene name, sample id, log10 mRNA count and the subtype label. 
 
-*Q3* - Now we want you to create a histogram for each sample and color samples by cancer subtype. 
+*Q3* - Now we want you to create a boxplot for each sample and color samples by cancer subtype. 
 
 Hint: `geom_boxplot()` requires a group variable and a numeric vector, then you can pass an additional 
 variable to the "fill" aesthetic to add color to the boxplots.
