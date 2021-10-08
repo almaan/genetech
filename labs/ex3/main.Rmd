@@ -460,6 +460,11 @@ In this course, we will use a method called variance stabilizing transformation 
 [VST](https://www.biorxiv.org/content/10.1101/576827v2)), a method which is provided 
 by the `SCTransform` function from the `Seurat` package (can take up to a minute):
 
+NOTE: Normally you would of course continue to work on the filtered object (`se.subset`), 
+but here we will use the unfiltered so that you can continue with this lab even if you didn't
+finish the filtering step yet. You can use `se.subset` instead in the code chunk below if you 
+are sure that it was correctly filtered.
+
 ```{r sctransform, warning=FALSE, message=FALSE}
 se <- SCTransform(se, verbose=FALSE)
 ```
@@ -615,10 +620,12 @@ cell types are missing compared to the results presented in the article.
 
 When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional
 meta data included. First, we will need to normalize the data with `SCTransform()` and then 
-run a princial component analysis (`RunPCA()`).
+run a princial component analysis (`RunPCA()`). This could take a couple of minutes.
 
-```{r bc}
+```{r bc, warning=FALSE, message=FALSE}
 bc <- readRDS("data/bc")
+bc <- SCTransform(bc)
+bc <- RunPCA(bc)
 ```
 
 Let's try another dimensionality reduction method called UMAP. This method
