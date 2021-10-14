@@ -143,7 +143,6 @@ library(gprofiler2)
 library(ggplot2)
 library(dplyr)
 library(magrittr)
-library(gprofiler2)
 ```
 
 Before we create our `Seurat` object, it can be useful to include some meta data as well. 
@@ -171,7 +170,7 @@ se <- CreateSeuratObject(counts = data, meta.data = metadata)
 ```
 
 To access the meta data from your new Seurat object, you can use double brackets `[[]]`. (You can 
-of course save this meta data to a new variable if you like doing something like this: `mdata <- se[[]]`)
+of course save this meta data to a new variable if you like by doing something like this: `mdata <- se[[]]`)
 
 ```{r head_seurat_object}
 # Check the meta data
@@ -367,9 +366,9 @@ open up a documentation window for the `subset` function.
 
 ```{r subset_seurat}
 
-# Select cell names with at least 1 million unique molecules
+# Select cells (cell ids) with at least 1 million unique molecules
 set1 <- se$nCount_RNA >= 1e6
-# Select cell names with at least 7000 unique genes
+# Select cells (cell ids) with at least 7000 unique genes
 set2 <- se$nFeature_RNA >= 7000
 
 # Select cells where both criteria above are met (set1 AND set2 has to be TRUE)
@@ -460,6 +459,11 @@ in a more meaningful way. You can find a number of normalization strategies and 
 In this course, we will use a method called variance stabilizing transformation (
 [VST](https://www.biorxiv.org/content/10.1101/576827v2)), a method which is provided 
 by the `SCTransform` function from the `Seurat` package (can take up to a minute):
+
+NOTE: Normally you would of course continue to work on the filtered object (`se.subset`), 
+but here we will use the unfiltered so that you can continue with this lab even if you didn't
+finish the filtering step yet. If you use the `se.subset`, the remaining steps will look a bit 
+different so pelase stick to using `se`.
 
 ```{r sctransform, warning=FALSE, message=FALSE}
 se <- SCTransform(se, verbose=FALSE)
@@ -614,13 +618,18 @@ to about 4% to speed up computations. We should also mention that the dataset ha
 modified to simplify the analysis workflow and you will therefore find that some 
 cell types are missing compared to the results presented in the article. 
 
-When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object 
-that has already been normalized and subjected to dimensionality reduction by PCA.
+When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional
+meta data included. First, we will need to normalize the data with `SCTransform()` and then 
+run a princial component analysis (`RunPCA()`). This could take a couple of minutes.
 
-```{r pbmc}
-#pbmc <- readRDS("data/pbmc")
+```{r bc, warning=FALSE, message=FALSE, eval=FALSE}
 bc <- readRDS("data/bc")
+bc <- SCTransform(bc)
+bc <- RunPCA(bc)
+saveRDS(bc, file = "~/Downloads/bc")
 ```
+
+
 
 Let's try another dimensionality reduction method called UMAP. This method
 is commonly used to "embed" the cells into a 2D map that can be very useful
@@ -761,22 +770,22 @@ Let's run `FindAllMarkers()` to get a table of differentially expressed genes pe
 bc <- SetIdent(bc, value = "SCT_snn_res.0.6")
 bc.markers <- FindAllMarkers(bc, only.pos = TRUE)
 
-# Here we will filter the data to keep only the top 2 genes based on avg_logFC
+# Here we will filter the data to keep only the top 2 genes based on avg_log2FC
 top2.markers <- bc.markers %>% 
   group_by(cluster) %>% 
-  top_n(n = 2, wt = avg_logFC)
+  top_n(n = 2, wt = avg_log2FC)
 top2.markers
 ```
 
 In the `top2.markers` table you can find the top 2 most distinct marker genes per celltype 
-based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_logFC
+based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_log2FC
 (short for average log-foldchange) that measures the expression in a celltype relative to its 
 background or p_val_adj (short for adjusted p-value) which gives you a MH-corrected p-value 
 for each gene.
 
 *Q11:* Draw a new plot showing the expression of one marker per celltype on the UMAP embedding.
 
-Hint: Use the function `FeaturePlot()` (type `?FeaturePlot? in the R console  for details). You can 
+Hint: Use the function `FeaturePlot()` (type `?FeaturePlot? in the R console for details). You can 
 adjust the size of the plot window by shanges the fig.width and fig.height options below.
 
 ```{r marker_per_celltype, fig.width=14, fig.height=15}
@@ -788,10 +797,10 @@ genes in a heatmap. With this plot you can also appreciate the within and betwee
 of the marker genes.
 
 ```{r de_heatmap, fig.width=12, fig.height=14}
-bc <- SetIdent(bc, value = "CellType")
+bc <- SetIdent(bc, value = "SCT_snn_res.0.6")
 top6.markers <- bc.markers %>% 
   group_by(cluster) %>% 
-  top_n(n = 6, wt = avg_logFC)
+  top_n(n = 6, wt = avg_log2FC)
 DoHeatmap(bc, features = top6.markers$gene)
 ```
 
@@ -820,8 +829,9 @@ against the GO:biological processes terms.
 
 ```{r fea}
 
+# cluster 12 represent Cancer/epithelial cells
 cancer_epithelial_markers <- subset(bc.markers, cluster == "12") %>%
-  filter(p_val_adj < 0.01, avg_logFC > 1) %>%
+  filter(p_val_adj < 0.01, avg_log2FC > 1) %>%
   pull(gene)
 
 # Run FEA
@@ -837,10 +847,10 @@ head(res$result, 10)
 
 In the result data.frame we can find quite a lot of information, but the most important 
 thing to look at are the term names and p-values.
-We find quite a few significant terms related to epithelial development and cell development which
+We find quite a few significant terms related to epithelial development and cell differentiation which
 makes somewhat sense since we are looking at epithelial derived cancer cells.
 
-*Q12:* Now run another fea but this time on T-cell markers and set the avg_logFC to 0.5 when 
+*Q12:* Now run another fea but this time on T-cell markers and set the avg_log2FC to 0.5 when 
 selecting the marker genes. Use the same reference database as before (GO:BP). Then report the 
 term name and p-value for the most significant term.
 
@@ -849,7 +859,7 @@ Hint: T-cells are the same as cluster 2.
 ```{r fea_T_cells}
 
 t_cell_markers <- subset(bc.markers, cluster == "2") %>%
-  filter(p_val_adj < 0.01, avg_logFC > 0.5) %>%
+  filter(p_val_adj < 0.01, avg_log2FC > 0.5) %>%
   pull(gene)
 
 # Run FEA
@@ -921,8 +931,8 @@ from different cell types form their own cluster. If the cell cycle state is irr
 bioloigical question of interest, it is common practice either regress out the effects of cell 
 cycle phase in the normalization process or remove cycling cells from the analysis. 
 
-*Q12:* Draw a plot showing the `G2M.Score` in the UMAP embedding and save it to a variable `p1`. 
-Draw a second plot showing the `celltype` labels in the UMAP embedding and save it to a 
+*Q13:* Draw a plot showing the `G2M.Score` in the UMAP embedding and save it to a variable `p1`. 
+Draw a second plot showing the `CellType` labels in the UMAP embedding and save it to a 
 variable `p2`. Combine these plots to show them side by side.
 
 Hint: You can use the "patchwork" system by simply combining plots with `+` or `-` (check 
@@ -936,11 +946,11 @@ _______
 ## Hand In Guidelines
 _______
 **How :** Complete the code chunks after the questions marked with a ''Q'' in this .Rmd file. There
-are 12 of those. When you have completed these code chunks, you should knit this report into an 
+are 13 of those. When you have completed these code chunks, you should knit this report into an 
 html file and submit this in canvas under Computer Lab 3. Do not edit the top part of the code chunks 
 except for adjusting the plot layout using fig.width and fig.height.
 
-**Deadline**: Your report is due 23:59 December 15th 2020; if working in pairs -
+**Deadline**: Your report is due 23:59 October 15th 2021; if working in pairs -
 each of you should hand in (identical) reports where the names of both authors
 are clearly stated. For further information see the guidelines on the course
 web-page.
