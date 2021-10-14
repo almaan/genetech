@@ -4,7 +4,6 @@ author: "Alma Andersson"
 date: 2021-10-14
 output:
   tufte::tufte_html: default 
-
 ---
 
 # Lab4 - Spatial Transcriptomics
