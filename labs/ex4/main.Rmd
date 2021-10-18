@@ -1246,7 +1246,7 @@ print(sprintf("Factor 1 is associated with process %d",ans.q11))
 ```
 
 *Q12* : Create a data frame called `top.2.genes` with the *2 genes* that are most strongly associated with each
-factor. This data frame should have the columns: "gene","prob" and "topic",
+factor. This data frame should have the columns: "gene","prob" and "factor",
 containing the following information:
 
 * gene - name of the genes
