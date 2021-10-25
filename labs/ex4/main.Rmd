@@ -124,11 +124,11 @@ fly. The `bash` code below takes care of this, all you need to do is to execute
 it.
 
 ```{bash,echo=F,eval=F}
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.tar.gz -O /home/genetech/code/labs/ex4/data/bc-data.tar.gz -nv
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.tar.gz -O ~/genetech/code/labs/ex4/data/bc-data.tar.gz -nv
 tar -xf data/bc-data.tar.gz -C data/
 rm data/bc-data.tar.gz
 
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz -O /home/genetech/code/labs/ex4/data/spatial.tar.gz -nv
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz -O ~/genetech/code/labs/ex4/data/spatial.tar.gz -nv
 tar -xf data/spatial.tar.gz -C data/
 rm data/spatial.tar.gz
 
@@ -189,7 +189,7 @@ file located at `data/spatial/tissue_positions_list.csv`. Let us briefly inspect
 this file:
 
 ```{bash}
-head data/spatial/tissue_positions_list.csv -n 10
+head -n 10 data/spatial/tissue_positions_list.csv
 ```
 
 Excellent! As you can see, the rownames of this file are similar to the colnames of our expression data. Having inspected the file, you are now ready for the first task!
@@ -206,6 +206,8 @@ Excellent! As you can see, the rownames of this file are similar to the colnames
 
 ```{r,eval=T,echo=T}
 # Insert code to create the "spatial.data" data frame here
+spatial.data <- setNames(read.csv(file = "data/spatial/tissue_positions_list.csv", header = FALSE, row.names = 1)[, 4:5], c("x", "y"))
+spatial.data <- spatial.data[intersect(colnames(raw.data), rownames(spatial.data)), ]
 
 raw.data[1:5,1:5]
 ```
@@ -296,10 +298,10 @@ Give your answers below
 # by assigning the values (answers) to
 # the variables ans1,ans2 and ans3
 
-ans1 <- NA
-ans2 <- NA
-ans3 <- NA
-ans4 <- NA
+ans1 <- ncol(se)
+ans2 <- nrow(se)
+ans3 <- sum(se$nCount_spRNA)
+ans4 <- rownames(se)[1306]
 
 cat(sprintf("No. Spots : %d \nNo genes: %d\n1306th gene : %s",ans1,ans2,ans3))
 q1.ans <- c(ans1,ans2,ans3,ans4)
@@ -594,7 +596,8 @@ Use the `spatial.plot` function to both inspect the spatial distribution of thes
 ```{r,fig.width=5, fig.height=5}
 # Plot the gene highly expressed in the DCIS region here
 # using the spatial.plot function
-
+color.vector <- as.numeric(se$spRNA["MGP",])
+spatial.plot(se, img = img, color.vector = color.vector)
 
 ```
 
@@ -668,6 +671,7 @@ _Comment_ : Do *not* make any changes to your Seurat object yet.
 
 ```{r,eval = GRADE_MODE}
 # Enter code to create the keep.spots vector here
+keep.spots <- colnames(se)[se$nCount_spRNA >= 2e3 & se$nFeature_spRNA >= 8e2]
 ```
 
 Execute the code below to check whether your `keep.spots` vector is constructed
@@ -741,6 +745,7 @@ _Comment_ : do **not** make any modifications to your Seurat object yet.
 ```{r,eval = GRADE_MODE}
 # Enter code to create the keep.genes vector here
 
+keep.genes <- rownames(se)[gene.data$nObs >= 5 & (10^gene.data$nCounts - 1) >= 300]
 ```
 
 Again, you can check whether your answers are correct with the next code chunk!
@@ -776,7 +781,7 @@ should overwrite the old one)
 
 ```{r,eval = GRADE_MODE}
 # enter code to subset your Seurat object here
-
+se <- subset(se, cells = keep.spots, features = keep.genes)
 # inspect Seurat object
 se
 ```
@@ -794,8 +799,8 @@ _Q7_: Now please answer these to questions below:
 
 ```{r,eval = GRADE_MODE}
 
-ans.q7.1 <- NA
-ans.q7.2 <- NA
+ans.q7.1 <- 36601 - length(keep.genes)
+ans.q7.2 <- 3798 - length(keep.spots)
 
 cat(sprintf("Removed genes : %s\nRemoved spots %s",ans.q7.1,ans.q7.2))
 
@@ -935,8 +940,8 @@ us throw in a question! In the chunk below, answer the following two questions:
 
 ```{r,eval = GRADE_MODE}
 # Enter the answers to question 9 here
-q8.ans1 <- NA
-q8.ans2 <- NA
+q8.ans1 <- 8
+q8.ans2 <- 5
 # print answers
 print(sprintf("There are %d clusters\n Cluster %d overlaps with the DCIS regions",q8.ans1,q8.ans2))
 ```
@@ -1066,7 +1071,7 @@ the genes, even though we'll be using `spRNA` later on.
 
 ```{r,eval = GRADE_MODE}
 # create the vector top.5000 here
-top.5000 <- NA
+top.5000 <- names(head(sort(Matrix::rowSums(GetAssayData(se, assay = "SCT", slot = "data")), decreasing = T), n = 5000))
 # print head of top.5000
 print(head(top.5000))
 ```
@@ -1242,7 +1247,7 @@ Processes
 
 ```{r}
 # Answer Q11 with the number of the process you think is the right one, for example
-ans.q11 <- NA
+ans.q11 <- 2
 
 print(sprintf("Factor 1 is associated with process %d",ans.q11))
 
@@ -1267,6 +1272,7 @@ _Hint 3_: If you want append an element to a vector, you simply do
 
 ```{r,eval = GRADE_MODE}
 # code to produce the top.2 data frame
+top.2.genes <- 
 ```
 
 And you guessed it, you can check your answers with the chunk below!
