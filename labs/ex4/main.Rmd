@@ -1,7 +1,7 @@
 ---
 title: "Lab4 - Spatial Transcriptomics"
 author: "Alma Andersson"
-date: 2021-08-03
+date: 2021-10-14
 output:
   tufte::tufte_html: default 
 
@@ -147,7 +147,7 @@ as a concrete parachute would be to a skydiver. Just as for the single cell
 data, a bioinformatics pipeline is applied to the `FASTQ` files generated from a
 Visium experiement, this time called `spaceranger`. The `spaceranger` pipeline
 will output an expression matrix and meta-data with information regarding how
-the spot coordinates, relate to the pixel coordinates in the HE-image (i.e.,
+the spot coordinates relate to the pixel coordinates in the HE-image (i.e.,
 pairing expression data and image data).
 
 Below we will load the expression data, from the `.mtx` files that we just
@@ -197,7 +197,7 @@ Excellent! As you can see, the rownames of this file are similar to the colnames
 *Q0*: Load the file containing the spatial information, and create a
 `data.frame` object called `spatial.data` with the two columns `x`and `y` holding the _x_ and _y_ coordinates of your data. Some tips to help you with this quest are:
 
-1. The second-to-last and las columns in `tissue_positions_list.csv` represent the _x_ and _y_ coordinates respectively. You can ignore all other columns except the barcodes of course.
+1. The second-to-last and last columns in `tissue_positions_list.csv` represent the _x_ and _y_ coordinates respectively. You can ignore all other columns except the barcodes of course.
 
 2. There are **more entries in the file than there are spots in the expression data**, the entries are also **differently sorted**, make sure to adjust for this and that the rownames and colnames match once you've loaded the data.
 
@@ -256,7 +256,7 @@ the following parameters:
 * assay - `spRNA`
 
 
-_Comment1_ : Note how set the `spatial.data` as meta data in our Seurat object.
+_Comment1_ : Note how we set the `spatial.data` as meta data in our Seurat object.
 That gives us easy access to the coordinates.
 
 _Comment2_ : The assay name "spRNA" is short for "spatial RNA"
@@ -268,11 +268,6 @@ _Comment2_ : The assay name "spRNA" is short for "spatial RNA"
 se <- NA
 
 se
-```
-
-```{r,warning=FALSE}
-# For teachers only
-se <- CreateSeuratObject(counts = raw.data,project ="BreastCancer",assay="spRNA",meta.data = spatial.data)
 ```
 
 
@@ -378,7 +373,7 @@ a bit more with our data.
 
 The whole **purpose** of using Visium is to associate gene expression to spatial
 locations, i.e., each spot has an associated expression value for every gene. To
-see this property in action, we will visualize the expression of gene called
+see this property in action, we will visualize the expression of a gene called
 _ERBB2_  (a marker gene for HER2-positive breast cancer). In short, this will be done in
 three steps, namely:
 
@@ -439,10 +434,10 @@ print(g)
 
 Interesting indeed! What we see here is how the gene expression of _ERBB2_ is
 elevated in the darker regions (=more cells --> more likely to be a cancerous
-region). This results is in concordance what we expect, and thus affirmative of two things:
+region). This result is in concordance what we expect, hence we can conclude that:
 
-1. The data we have collected seems to be of descent quality, nothing weird (like mixing up the spatial barcodes) have happened to it.
-2. Our plotting code also seems to be working fine!
+1. The data we have collected seems to be of descent quality, nothing weird (like mixing up the spatial barcodes) has happened to it.
+2. Our code for plotting also seems to be correct!
 
 
 Before we proceed, note how we have already used the "plot-spots-on-image"
@@ -463,7 +458,7 @@ designed to take the following parameters:
 * color.type - [optional] if colors are continuous values or categorical variables
 
 Again, you don't have to spend tons of time on the code here, but give it a look
-and see if you sort of understand the workflow.
+and see if you follow the workflow.
 
 ```{r}
 
@@ -551,7 +546,7 @@ spatial.plot <- function(se,
 ```
 
 Of course, we now want to test our new function. We use `spatial.plot` to
-create the same plot as before, using the `color.vector` from before (expression of _ERBB2_)
+create the same plot as before, using the `color.vector` from earlier (expression of _ERBB2_)
 to color our spots.
 
 ```{r, fig.width= 5, fig.height=5}
@@ -571,7 +566,7 @@ What's really cool with having an HE-image associated with the expression data,
 is that pathologists can annotate regions of interest with labels such as
 "cancer" or "benign". These annotations can then be used in our analysis, for
 example we can inspect which genes that are up-regulated in these regions. Below
-you have such annotations (rough but still descent) of the same tissue as we are
+you have such annotations (rough, but still decent) of the same tissue as we are
 working with.
 
 ![Annotation of HE-image](img/annot.png)
@@ -611,15 +606,16 @@ pre-processing, which includes filtering and normalization. But we are almost
 there!
 
 Just as with the single cell data, we want to curate our data to make sure that
-it's prepared for the downstream analysis. The first step in this procedure is to
-remove bad "spots" - these could for example be spots which aren't covered by
-the tissue (but still were - falsely - identified as such by the 10x software).
+it's prepared for the downstream analysis. The first step in this procedure is
+to remove bad "spots" - these could for example be spots which aren't covered by
+the tissue (but still were - falsely - identified as such by the 10x
+bioinformatics software).
 
 To get a better sense of what spots we should remove, we will look at the
 histograms of the meta data `nCount_spRNA` and `nFeatures_spRNA`. The former
 informs us of the total number of observed transcript in each spot, while the
-latter is telling of how many _different_ genes that we observe in respective
-spot.
+latter is informative of how many _different_ genes that we observe in
+respective spot.
 
 ```{r, fig.widht = 14, fig.height = 5}
 # Plot histograms over nCounts_spRNA and nFeatures_spRNA
@@ -688,7 +684,11 @@ Naturally, the next step is to identify which genes we want to keep and discard.
 To guide us in the procedure we will plot histograms of: (i) the total number of
 UMI's of each gene (taken over all spots) and (ii) the number of spots in which
 a gene is observed. We use a `log10` transformation with a pseudocount of 1 for
-(i), otherwise the histogram becomes very distorted.
+(i), otherwise the histogram becomes very distorted. 
+
+_Comment_ : A pseudocount is added to make sure we never end up with having to
+do $\log(0)$ which is equal to the negative infinity, and we don't like to
+work with infinite numbers...
 
 ```{r}
 
@@ -738,7 +738,7 @@ print(h)
 criteria:
 
 1. Total expression across all spots is larger or equal to $300$
-2. The gene should be observed in _at least_ 5 spots (about 0.2%)
+2. The gene should be observed (i.e., have a non-zero count) in _at least_ 5 spots (about 0.2% of )
 
 _Comment_ : do **not** make any modifications to your Seurat object yet.
 
@@ -784,11 +784,6 @@ should overwrite the old one)
 se <- subset(se, cells = keep.spots, features = keep.genes)
 # inspect Seurat object
 se
-```
-
-```{r}
-# For teachers only
-se <- se[keep.genes,keep.spots]
 ```
 
 
@@ -839,19 +834,19 @@ this allows us to assess how our spots relate to each other and whether there
 are any natural groupings contained within this data.
 
 Just as for the single cell data we will apply _dimensionality reduction_ to our
-data in an attempt to avoid [the curse ofdimensionality](https://en.wikipedia.org/wiki/Curse_of_dimensionality), before
-clustering it. Here the choice of method in _PCA_ (Principal Component Analysis),
-executed by using `RunPCA`. For purposes of visualization we also use _UMAP_
-(Uniform Manifold Approximation and Projection), this is done with the help of
-`RunUMAP`.
+data in an attempt to avoid [the curse
+ofdimensionality](https://en.wikipedia.org/wiki/Curse_of_dimensionality). Here
+the choice of method in _PCA_ (Principal Component Analysis), executed by using
+`RunPCA`. For purposes of visualization we also use _UMAP_ (Uniform Manifold
+Approximation and Projection), this is done with the help of `RunUMAP`.
 
 For the actual clustering we use the two functions `FindNeighbors` and
 `FindClusters`. The former constructs a _SNN_ (Shared Nearest Neighbor) graph
 which is used by the latter to actually identify the clusters.
 
 _Comment_ : You will see that we specify a `seed` in some of the functions
-below, this puts or machine in a specific state that makes random numbers being
-generated the same in all instances, making the analysis reproducible. 
+below, this puts our machine in a specific state that makes random numbers being
+generated the same in all instances. Using these random seeds makes the analysis reproducible. 
 **TLDR :Don't change the seed value plz**.
 
 ```{r,echo=FALSE}
@@ -924,13 +919,15 @@ That's it.
 
 From a few lines of code that constitute our simple analysis of the gene
 expression data, we manage to capture real anatomical structures and regions in
-our tissue, in a completely unsupervised way. For example, look how one of the
-clusters overlaps near perfectly with the regions manually annotated as DCIS.
-Who needs pathologists when there's computational analysis at hand, right?
-Actually they - the pathologists - are invaluable, but with this type of
-analysis there's a possibility that computational method could replace them in
-tedious and time-consuming annotation tasks, allowing them to focus their
-expertise and skills at more relevant tasks, it's a win-win!
+our tissue, in a completely unsupervised way.
+
+For example, look how one of the clusters overlaps near perfectly with the
+regions manually annotated as DCIS. Who needs pathologists when there's
+computational analysis at hand, right? Actually they - the pathologists - are
+invaluable, but with this type of analysis there's a possibility that
+computational method could replace them in tedious and time-consuming annotation
+tasks, allowing them to focus their expertise and skills at more relevant tasks,
+it's a win-win!
 
 **Q8** : To make sure you aren't just scrolling through this exciting stuff, let
 us throw in a question! In the chunk below, answer the following two questions:
@@ -949,8 +946,8 @@ print(sprintf("There are %d clusters\n Cluster %d overlaps with the DCIS regions
 But we are not done yet, now when we have these clusters to work with, the next
 step is to characterize them, i.e., figure out what they constitute?
 
-One to further explore the cluster is to do a DGE (Differential Gene Expression)
-analysis. Again, we'll recycle some functions from the single cell lab to do
+One way to further explore the cluster is to do a DGE (Differential Gene Expression)
+analysis. Again, we'll reuse some functions from the single cell lab to do
 this, here `FindAllMarkers`, which will present us with marker genes for each
 cluster. We set the parameter `logfc.threshold` to `1` to ensure we only get
 genes that have a fairly high log-fold-change, the parameter `only.pos` is set
@@ -1177,9 +1174,9 @@ complete the following sentences:
 2. There are ...  spots in the data set
 3. There are ... genes in the data set
 
-Now, compute_the rowsums of the `gamma` slot in `lda.res`, inspect your result and answer the following questions:
+Now, compute the row sums of the `gamma` slot in `lda.res`, inspect your result and answer the following questions:
 
-4. The rowsums are all identical, what is the value that all of them share?
+4. The row sums are all identical, what is the value that all of them share?
 
 5. *Why* do all rows sum to this value?
 
@@ -1233,8 +1230,8 @@ arbitrary letters or numbers).
 *Q11*: It's often common to google a few of the genes to get a "sense" of what
 kind of biological process(es) each factor could represent. And, evaluation of
 results are just as important as obtaining them. Thus your task is to -- with
-the help of the internet if you like -- pick the one biological process from the
-ones listed below that you consider it most likely that factor 1 is associated
+the help of the internet if you like -- pick the biological process from the
+ones listed below that you consider most likely that factor 1 is associated
 with.
 
 Processes
@@ -1253,18 +1250,18 @@ print(sprintf("Factor 1 is associated with process %d",ans.q11))
 
 ```
 
-*Q12* : Create a data frame called `top.2.genes` with the *top 2* genes of each
-factor. This data frame should have the columns: "gene","prob" and "topic",
+*Q12* : Create a data frame called `top.2.genes` with the *2 genes* that are most strongly associated with each
+factor. This data frame should have the columns: "gene","prob" and "factor",
 containing the following information:
 
-* gene - name of the gene
+* gene - name of the genes
 * prob - probability of being sampled from the associated factor
 * factor - the factor to which the gene is associated
 
-_Hint 1_: the names of the genes can be accessed by `lda.res@terms`. As you saw
+_Hint 1_: the names of the genes can be accessed via `lda.res@terms`, as you saw
 in the code chunk above.
 
-_Hint 2_: It might be a good idea to use a for loop here. However, it's not a
+_Hint 2_: It might be a good idea to use a for-loop here. However, it's not a
 must, there are multiple ways of solving this exercise!
 
 _Hint 3_: If you want append an element to a vector, you simply do 
@@ -1286,15 +1283,14 @@ check.q12(top.2.genes)
 ## Single Cell Integration
 
 The idea of factor decompisition is attractive, but there are still some
-challenges to this approach. The factors (what we referred to as topics before,
-factor is a more general term), do not necessarily represent specific cell types
-and we have no immediate biological interpretation of them.
+challenges to this approach. The factors (a more general term than topic), do
+not necessarily represent specific cell types and we have no immediate
+biological interpretation of them.
 
-What if we wanted to where a specific type of Neurons or Astrocytes (common cell
-types in the brain) are located in our spatial data; then we would have to hope
-that some of our factors correspond to these types (which there is no guarantee
-of) and then try to figure out which factors that would be. Not the most robust
-approach, right?
+What if we wanted to know where a specific type of T-cells or B-cells are
+located in our spatial data; then we would have to hope that some of our factors
+correspond to these types (which there is no guarantee of) and then try to
+figure out which factors that would be. Not the most robust approach, right?
 
 A solution this problem is to use a form of guided factor decomposition, where
 we already know our factors but are interested how they are distributed across
@@ -1305,16 +1301,16 @@ a different type of data, namely _single cell RNA-seq_.
 
 In single cell experiments, each data point corresponds to one individual cell
 (once duoublets have been removed). This means that if we assign an identity
-(e.g., cell type or cluster), we can learn the expresion profiles and then
+(e.g., cell type or cluster), we can learn the expression profiles and then
 deconvolve our spatial data with them.
 
 Multiple strategies exists to "map" single cell information onto the spatial
 data, but we will use output from a tool called `stereoscope` (from the paper
-_"single-cell and spatial transcriptomics enables probabilistic inference of
-cell type topography"_ in Nature Communications Biology), the software is found
-at [github](https://github.com/almaan/stereoscope). In short this method models
+_"single-cell and spatial transcriptomics enables probabilistic inference of cell type topography"_
+in Nature Communications Biology), the software is found at
+[github](https://github.com/almaan/stereoscope). In short this method models
 both single cell and spatial data as _Negative Binomial_ (NB) distributed, then
-for every gene infers the paramters of each cell type's distribution, to finally
+for every gene infers the parameters of each cell type's distribution, to finally
 find the optimal combination of cell types in each spot based on Maximum a
 Posteriori estimation.
 
@@ -1324,12 +1320,13 @@ where we expect the same set of cell types to be present in both data sets.
 
 Fortunately we have some connections down under, where a group at the Garvan
 Institute of Australia have produced an _excellent_ single cell data set which
-they've shared with us.
+they've shared with us, this is the same data set as you used in the single cell
+lab.
 
 Now `stereoscope` is a probabilistic model that takes quite a lot of time to
 fit, and you usually need GPU resources for it to run in reasonable time.
 Therefore you will load the output of `stereoscope` when applying it to the
-aforemention single cell data set and the section
+aforementioned single cell data set and our spatial data.
 
 ```{r}
 # Load stereoscope analysis results

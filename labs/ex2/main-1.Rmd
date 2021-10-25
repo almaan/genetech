@@ -21,7 +21,7 @@ Please answer **all** the questions in this markdown file and return the knitted
 
 # Introduction
 ***
-For this second lab we will be working with RNA sequencing data, a method that became a gold-standard for transcriptomic research 
+For this second lab we will be working with bulk-RNA sequencing data, a method that became a gold-standard for transcriptomic research 
 that was published in the mid 00s. Although the method has been around for a while it is still widely used to by research labs due 
 to its robustness and simplicity.
 
@@ -73,14 +73,14 @@ Replace "__add path here__" with the path to genetech/labs/ex2/data/.
 
 
 ```{r, eval=TRUE, echo=TRUE}
-
-counts <- as.matrix(data.frame(data.table::fread(input = "__add path here__/TCGA_breast_cancer_subtypes.tsv.gz", 
+install.packages("R.utils")
+counts <- as.matrix(data.frame(data.table::fread(input = "/home/genetech/code/labs/ex2/data/TCGA_breast_cancer_subtypes.tsv.gz", 
                                        sep = "\t",
                                        header = TRUE),
                      check.names = FALSE,
                      row.names = 1))
 
-metadata <- read.table(file = "__add path here__/TCGA_breast_cancer_subtypes_metadata.tsv")
+metadata <- read.table(file = "/home/genetech/code/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv")
 
 # Check content of matrix
 counts[1:5, 1:5] # this will print the top left corner of the matrix
