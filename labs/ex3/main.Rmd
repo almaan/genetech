@@ -415,6 +415,7 @@ VlnPlot(se, features = paste0("PC_", 1:6), group.by = "replicate")
 ```
 
 Here you can clearly see that r1 stands out in PC_3. We actually know here that the colors represent technical replicates, meaning that the cells have been sampled from the same populations. So from this we can draw the conclusion that the separation along PC_3 represents a technical effect and should be removed. This type of technical effect found between groups processed independently is commonly referred to as a "batch effect" because the cells have been procesed in three different batches. (A batch effect could for example be represented by different sequencing dates, different labs, different experimentalists or even different experimetnal platforms but should always refer to non-biological factors).
+<<<<<<< HEAD
 
 The `SCTransform` normalization method allows us to model and account for minor batch effects by passing variables to "regress out".What we have to do is to specify a batch variable so that the `SCTransform` function knows how the cells are partitioned into different batches. We can do this using the `var.to.regress` argument:
 
@@ -422,6 +423,15 @@ The `SCTransform` normalization method allows us to model and account for minor 
 
 Unfortunately, this approach is often not enough to correct for more severe batch effects. Here we will instead apply a different approach called mnnCorrect ([Hagverdi et al. 2017](https://www.nature.com/articles/nbt.4091))
 
+=======
+
+The `SCTransform` normalization method allows us to model and account for minor batch effects by passing variables to "regress out".What we have to do is to specify a batch variable so that the `SCTransform` function knows how the cells are partitioned into different batches. We can do this using the `var.to.regress` argument:
+
+`se <- SCTransform(se, vars.to.regress = "replicate", verbose=FALSE)`
+
+Unfortunately, this approach is often not enough to correct for more severe batch effects. Here we will instead apply a different approach called mnnCorrect ([Hagverdi et al. 2017](https://www.nature.com/articles/nbt.4091))
+
+>>>>>>> cb2040
 To run mnnCorrect on our Seurat object we will use the wrapper function `RunFastMNN()`. This function takes a list of `Seurat` objects as input, one for each batch, so the first thing we need to do is to split our `Seurat` object into a list of objects.
 
 ```{r sctransform_batch, warning=FALSE, message=FALSE}
@@ -434,6 +444,7 @@ Now that we have our list of `Seurat` objects, we can run the batch correction.
 
 ```{r mnnCorrect}
 se.corrected <- RunFastMNN(object.list = se.list, assay = "RNA", features = 3000, verbose = T, reconstructed.assay = "MNN")
+<<<<<<< HEAD
 ```
 
 Now we will have access to a corrected version of our count matrix that we can use for downstream analysis. 
@@ -446,6 +457,20 @@ se.corrected <- ScaleData(se.corrected) # Scale data
 se.corrected <- RunPCA(se.corrected) # Rerun PCA
 ```
 
+=======
+```
+
+Now we will have access to a corrected version of our count matrix that we can use for downstream analysis. 
+To use this new, batch corrected assay, we need to switch our default assay to "MNN". Then we scale the data 
+and rerun the PCA.
+
+```{r scale_and_pca}
+DefaultAssay(se.corrected) <- "MNN" # Set default assay to the batch corrected assay
+se.corrected <- ScaleData(se.corrected) # Scale data
+se.corrected <- RunPCA(se.corrected) # Rerun PCA
+```
+
+>>>>>>> cb2040
 Now we should see that the separation of replicates along PC_3 is no longer present.
 
 ```{r vln_pot_after_batch_corr}
@@ -761,4 +786,3 @@ _______
 **How :** Complete the code chunks after the questions marked with a ''Q'' in this .Rmd file. There are 13 of those. When you have completed these code chunks, you should knit this report into an html file and submit this in canvas under Computer Lab 3. Do not edit the top part of the code chunks except for adjusting the plot layout using fig.width and fig.height.
 
 **Deadline**: Your report is due 23:59 October 15th 2021; if working in pairs - each of you should hand in (identical) reports where the names of both authors are clearly stated. For further information see the guidelines on the course web-page.
-
