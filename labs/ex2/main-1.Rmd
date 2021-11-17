@@ -1,9 +1,9 @@
 ---
-title: "Lab2 - Bulk RNA-seq analysis and GWAS"
-author: "Sami Saarenpää"
+title: "Lab2 - Data visualization and Bulk RNA-seq analysis"
+author: "Ludvig Larsson & Sami Saarenpää"
 date: "22 Sep 20"
 output:
-  tufte::tufte_html: default
+  rmarkdown::html_vignette
 vignette: |
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -13,678 +13,718 @@ vignette: |
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
-# Bulk RNA-seq analysis
 
-## Introduction
+# Instructiuons
+***
 
-For this part of the lab we are exploring RNA-seq data from mice tumors which
-are treated with different kinase inhibitors. Each drug (A-F) is tested on
-several mice and the tumor response is recorded (i.e. did the tumor continue to
-grow above a certain threshold or not). The responses are binary classified as
-"responder" and "Non_responder".
+Please answer **all** the questions in this markdown file and return the knitted .html file in Canvas by latest one week after the lab. 
 
+# Introduction
+***
+For this second lab we will be working with bulk-RNA sequencing data, a method that became a gold-standard for transcriptomic research 
+that was published in the mid 00s. Although the method has been around for a while it is still widely used to by research labs due 
+to its robustness and simplicity.
 
-## General workflow
+When you receive a dataset to analyze it is always a good idea to spend some time to try understand the its characteristics, and one way do this is using
+data visualization techniques. Data visualization is an important part of RNA-seq analysis and can also be extremely useful to present results. For this 
+reason, we will cover some of the basics of data visualization in the first part of this lab.
 
-This is a general pipeline for a bulk RNA-seq analysis workflow:
+For the second lab we will work with bulk RNA-seq data obtained from breast cancer samples downloaded from The Cancer Genome Atlas (TCGA). 
+Each sample represents a patient from the BRCA-TCGA cohort and have been classified into **5 different "mRNA  cancer subtypes"**; 
+Her2, Basal-like, LumA, LumB and Normal-like. 
+We have also included a sixth "subtype" which consists of normal tissue to be used as a control. The full cohort consists of 1217 patients 
+but for the purpose of this exercise, we have reduced this dataset to **10 patients** per subtype, adding up to a total of **60 samples**.
 
-pre-processing (yellow):
-  * Check quality of raw reads and filter out reads with poor quality
-  * Align reads to a reference genome (or construct a _de novo_ genome assembly if a reference is unavailable)
-  * Annotate aligned reads to gene loci
-  * Filter out aligned reads with poor mapping stats and remove PCR duplicates (if applicable)
+In literature, you will most likely come across different classifications depending on histopathology, clinical grade, receptor status and genomic alterations. 
+Here we will use the "mRNA subtypes" as defined by the TCGA. 
 
-quality control and normalization (orange):
-  * Check quality of gene expression vectors and remove poor quality samples
-  * Normalization is needed to adjust for technical variability across samples, e.g. differences in the amount of reads 
-  * Adjust for other confounding factors, e.g. gender specific expression, experimental date and age 
-  
-analysis (blue):
-  * Differential gene expression analysis, clustering and network analysis 
+You can find more information about each subtype on this [website](https://www.cancercenter.com/cancer-types/breast-cancer/types/breast-cancer-molecular-types). 
+We should also warn you that these subtypes are perhaps a bit outdated but were defined in the original TCGA [paper](https://www.nature.com/articles/nature11412) on breast tumors in 2012. 
+Here for example, they use TNBC as a synonym for basal-like cancers and although these two types are similar, they are not biologically equivalent.
+For this exercise we will just pretend that these 5 subtypes are well established.
 
-![](flowchart_rnaSeq.png)
+# Data preprocessing
+***
 
-In this lab, we once again omit several steps and start with a count matrix of
-transcripts, after alignment and mapping has been carried out. We will explore
-different tools that can be used for quality control, differential gene
-expression and clustering.
+## Load packages
+***
 
-## Analysis pipeline
-
-### Loading packages
-
-The following packages should be loaded. Remember, if you haven't installed a
-specific package, use `BiocManager::install("packageName")`. When running this,
-you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip
-updating the rest of the packages for this lab (which can otherwise take some
-time).
+The following packages should be loaded. 
+Remember, if you haven't installed a specific package, use `BiocManager::install("packageName")` if the package ishosted on BioConductor or `install.packages("packageName")`if the package is hosted on CRAN. 
+When running this, you often get asked "Update all/some/none? [a/s/n]:". 
+In general, it's ok to skip updating the rest of the packages for this lab (which can otherwise take some time and require troubleshooting).
 
 ```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
-library(SummarizedExperiment)
+
 library(DESeq2)
 library(pheatmap)
 library(ggplot2)
 library(viridis)
-```
-
-### Load the data
-
-The data for the second lab is available from the cloned GitHub repo, found in
-genetech/labs/ex2/data/.
-
-```{r, eval= TRUE, echo=TRUE}
-
-counts <- as.matrix(read.table("data/RNAseq_mouse_ensembl_rawCounts.csv", 
-                     sep="\t", 
-                     row.names = 1,
-                     stringsAsFactors = F,
-                     header = T))
-
-grep <- grepl(colnames(counts), pattern="Control*")
-counts <- counts[, !grep]
-
-treatment <- sapply(strsplit(colnames(counts), "_"), "[[", 2)
-outcome <- sapply(strsplit(colnames(counts), "_"), "[[", 3)
-replicate <- sapply(strsplit(colnames(counts), "_"), "[[", 4)
-metadata <- as.data.frame(cbind(treatment, outcome, replicate))
+library(dplyr)
 
 ```
 
-Now, you have a data frame called "metadata", with experimental information. 
+## Load the data
 
-### SummarizedExperiment
+The data for the second lab is available from the cloned GitHub repo, found in genetech/labs/ex2/data/.
+You will need to adjust the file paths in the code chunk below to have the correct input. 
+Replace "__add path here__" with the path to genetech/labs/ex2/data/.
 
-Create a SummarizedExpermient object with the loaded counts, call this object `se`. See
-`?SummarizedExperiment` to see how to add metadata as a parameter to the
-function call.
 
-```{r, eval= TRUE, echo=TRUE}
 
-#Write code
+```{r, eval=TRUE, echo=TRUE}
+install.packages("R.utils")
+counts <- as.matrix(data.frame(data.table::fread(input = "/home/genetech/code/labs/ex2/data/TCGA_breast_cancer_subtypes.tsv.gz", 
+                                       sep = "\t",
+                                       header = TRUE),
+                     check.names = FALSE,
+                     row.names = 1))
+
+metadata <- read.table(file = "/home/genetech/code/labs/ex2/data/TCGA_breast_cancer_subtypes_metadata.tsv")
+
+# Check content of matrix
+counts[1:5, 1:5] # this will print the top left corner of the matrix
+
+# Check content of metadata
+head(metadata) # this will print the top 6 rows of the data.frame
+
+# Each row of metadata contains information about the samples (columns) in our expression matrix "counts". 
+# As a sanity check, we can just make sure that the column names of "counts" are identical to the row names 
+# of "metadata".
+all(colnames(counts) == rownames(metadata))
 
 ```
 
-In order to extract the metadata you type e.g. `se@metadata$treatment`.
-In order to extract the count data, you type `assays(se)$counts`.
+*Q1*: One of the most important aspect doing data analysis is to understand what kind of data formats you are using and the dimensions of these data modalities. What data types you have here? What dimensions the data has? Use commands from lab 1.
+
+```{r Q1, eval=FALSE,echo=TRUE}
+#Write the answer here!
+```
+
+# Data visualization
+***
+
+In the first part of this lab we want to give a very basic introduction to data visualization in R using ggplot2. 
+Do not rush through this part as you will be asked to create your own plots later on in the second part of the lab.
+We encourage you to take your time and play around with the data at hand or other datasets for that matter to get 
+familiarized with the material.
+
+## ggplot2
+
+[ggplot2](https://ggplot2.tidyverse.org/) is a graphics framework which has became very popular among R users, mainly 
+because its aesthetically pleasing nature. The syntax for ggplot2 can seem quite difficult for beginners, but can be 
+extremely versatile once you get the hang of it. 
+
+To start with, a plot made with ggplot2 (let's call it a "ggplot") takes a `data.frame` as input that is typically supplied to the function `ggplot()`. 
+In addition, you need to specify _what column(s)_ of the `data.frame` that should be drawn in the plot and finally, add a "geom" to specify what _what type_ of plot that you want to draw. 
+We can summarize these steps as follows:
+
+  1. Initialize a ggplot object with some input data (you can think of it as creating an empty canvas)
+  2. Specify what columns (variables) to include in the plot
+  3. Add a "geom" that defines the plot type (e.g. a bar chart or points)
+
+Let's try this using a basic example. We want to draw a bar chart summarizing the total number of samples per breast cancer subtype:
+
+```{r ggplot1, fig.width=7, fig.height=5, , eval=TRUE, echo=TRUE}
+
+ggplot(metadata, aes(subtype)) + 
+  geom_bar()
+
+```
+
+That was a pretty useles example since we already knew that we had 10 samples per subtype! A quicker way of
+doing this would be to simply use the `table()` function:
+
+```{r table, eval=TRUE, echo=TRUE}
+
+table(metadata$subtype)
+
+```
+
+
+But let's go through the code for drawing the bar chart one step at the time:
+
+`ggplot(metadata)` : initialize a new ggplot with metadata as input
+
+`ggplot(metadata, aes(subtype))` : tell ggplot that the column `subtype` should be included in the drawing
+
+`ggplot(metadata, aes(subtype)) +
+  geom_bar()` : add a "geom" to draw a bar chart
+  
+  
+You have probably noticed that a function called `aes()` slipped into the code. `aes()` (short for "aesthetic mappings") 
+is used to tell `ggplot()` how variables in the data are mapped to visual properties of geoms. 
+In our example above, `geom_bar()` is a "geom" that takes some group variable, summarizes the count for each group and 
+draws a bar chart. So by including `aes(subtype)` we told `ggplot()` that the group variable "subtype" should be pulled 
+out from our metadata `data.frame`.
+
+Geoms are functions used to draw specific types of plots, for example: 
+`geom_bar()` -> bar chart
+`geom_point()` -> points
+`geom_line()` -> lines
+`geom_histogram()` -> histogram
+
+
+Geoms have quite intuitive names but you will often need to search the web for a geom that suits your needs. 
+The [tidyverse](https://ggplot2.tidyverse.org/) is a great resource to look into to get started with ggplot2 
+(and a bunch of other great R packages as well). 
+You should also note that a geom takes different variables as input, for example `geom_histogram()` requires at least 
+a numeric vector to draw a histogram whereas `geom_point()` requires two vectors with x and y coordinates to draw points. 
+It's always a good idea to look at examples for how to use these geoms! If you type `?geom_point()` in your console
+you will get the documentation for `geom_point()`. In the bottom part of this documentation (if it's a well dosumented 
+package) you will usually find examples. 
+
+Let's move on to a slightly more interesting example. 
+We want to make histogram of the total mRNA counts for all samples:
+
+```{r histogram, fig.width=7, fig.height=5, eval=TRUE, echo=TRUE}
+
+# Create a new data.frame with the total counts (= column sums of counts)
+gg <- data.frame(total_counts = colSums(counts))
+
+ggplot(gg, aes(total_counts)) +
+  geom_histogram(bins = 15) # Add geom for histograms (we can also adjust the number of bins here!)
+
+```
+
+Just like geom_bar, geom_histogram takes one variable as input but this time it needs to be a variable with _numeric_ values. 
+
+*Q2* - Now add a new column to the gg `data.frame` with gene log10-transformed expression values for COL1A1 and draw a new histogram with these values.
+
+```{r COL1A1_histogram, fig.width=7, fig.height=5, eval=TRUE, echo=TRUE}
+
+# Replace ... with the correct answer
+gg$COL1A1 <- log10(...)
+
+
+
+ggplot(gg, aes(COL1A1)) +
+  geom_histogram(bins = 15)
+
+```
+
+If we want to compare distributions for multiple groups at the same time, it could be useful to use a boxplot or a violin plot instead of a histogram. 
+Let's add a group variable to our `data.frame` with the breast cancer subtype.
+
+```{r boxplot2, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
+
+# Add a new column with subtype information to our data.frame object
+gg$subtype <- metadata$subtype
+
+# Note that the boxplot geom takes two aesthetic variables in aes(subtype, total_counts); 
+# one group variable and one variable (subtype) with numeric values (total_counts)
+ggplot(gg, aes(subtype, total_counts)) +
+  geom_boxplot()
+
+```
+
+Sometimes you might want to add the raw values to the plot as well and not just summarize the values in a boxplot. 
+This is quite easy to do by just adding another geom in a new layer to draw points. 
+Here we'll use the `geom_jitter()` geom to draw the points which will add a bit of random variation along the x axis so that the points don't overlap. 
+You can try to use `geom_point()` instead to see what happens if you draw the points without jitter.
+
+```{r boxplot, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
+
+# Add a new layer with jittered points
+ggplot(gg, aes(subtype, total_counts)) +
+  geom_boxplot() +
+  geom_jitter()
+
+```
+
+Let's make this plot a bit more interesting by adding some color to the boxes:
+
+```{r boxplot_colored, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
+
+# Add a new aesthetic variable which defines group to color boxes by
+ggplot(gg, aes(subtype, total_counts, fill = subtype)) +
+  geom_boxplot() +
+  geom_jitter()
+
+```
+
+Here we just added a new aesthetic variable (i.e. "subtype") to `aes()`, telling `ggplot()` to map a unique 
+color to each subtype. This also gave us a nice legend to the right telling us what subtype each color corresponds to. 
+For some geoms the color can be defined using "fill" and sometimes by "color" which depends on the shape of the geom. 
+A boxplot for example, consists of a "body" which will be colored by "fill" and the outlines will be colored by the 
+"color" aesthetic. We can try this out our boxplots to see what happens if we add the "color" aesthetic.
+
+```{r r boxplot_coloredx2, fig.width=7, fig.height=4, eval=TRUE, echo=TRUE}
+
+# Add a new aesthetic variable which defines group to color boxes by
+ggplot(gg, aes(subtype, total_counts, fill = subtype, color = subtype)) +
+  geom_boxplot() +
+  geom_jitter()
+
+```
+
+Completely useless in this case, because now we can't read any statistical properties from the boxplots or see the raw 
+value points that blend with the boxes.
+
+Now let's move on to an example with two variables. 
+We want to compare the expression of two selected genes; POTEKP and LINC01087, using a "scatter plot". 
+A scatter plot uses dots to represent values for two different numerical variables. 
+We'll also apply a log10 transformation to obtain a more normal-like distribution of values.
+
+```{r scatter_plot, fig.width=7, fig.height=6, eval=TRUE, echo=TRUE}
+
+gg$POTEKP<- log10(counts["POTEKP", ] + 1) # Here we add a so called "pseuocount" to avoid taking the log10 of 0 values
+gg$LINC01087 <- log10(counts["LINC01087", ] + 1)
+
+ggplot(gg, aes(POTEKP, LINC01087)) +
+  geom_point()
+
+```
+
+These two genes appear to be highly correlated across our dataset. 
+To highlight this we can add smoothed conditional means which will fit a trendline with error bars to out scatter plot:
+
+```{r scatter_plot_smooth, fig.width=7, fig.height=6, eval=TRUE, echo=TRUE}
+
+ggplot(gg, aes(POTEKP, LINC01087)) +
+  geom_point() +
+  geom_smooth(method = lm) # Set method = lm to tell geom_smooth that we expect a linear relationship
+
+```
+
+But what if we don't want to make this comparison across all samples, but rather for each subtype separately?
+There is a very neat way of doing this using something called "facets". 
+We could of course just color the points by subtype (as we have already learned how to do), but facets are often a 
+lot easier to interpret. By adding the function `facet_grid()` or `facet_wrap()` we can split the entire plot into 
+several subplots, one for each of our cancer subtypes.
+
+Let's take a look at how to do this:
+
+```{r facets, fig.width=9, fig.height=6, eval=TRUE, echo=TRUE}
+
+ggplot(gg, aes(POTEKP, LINC01087)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(vars(subtype), ncol = 3) # specify what variable to split the plot by 
+
+# NOTE: the vars function is used to tell that the input should be evaluated
+# in the context of the dataset. Without this, the facet_wrap function will 
+# fail to find the facettting variable in your data.frame
+
+```
+
+We can still see the same trend, i.e. a high correlation between the two genes, but there's substantial variation 
+across the different tumor subtypes. Also, for the basal subtype there is almost no expression of either of these 
+two genes which could not be concluded from the previous plot.
+
+This far we have looked at the distribution of total counts for each sample, but now we want to look at the distribution 
+of counts across all genes within each sample. Essentially, what we want to do is to create a boxplot for each column of 
+our counts matrix. Below we have provided code to cast the counts matrix into something called "long format" which makes 
+it possible to leverage into ggplot.
+
+```{r long_format}
+
+counts_long <- setNames(reshape2::melt(log10(counts + 1)), nm = c("gene", "sample_id", "log10_count"))
+counts_long$subtype <- metadata[counts_long$sample_id, ]$subtype
+head(counts_long)
+
+```
+
+In this long formatted `data.frame` we have a gene name, sample id, log10 mRNA count and the subtype label. 
+
+*Q3* - Now we want you to create a boxplot for each sample and color samples by cancer subtype. 
+
+Hint: `geom_boxplot()` requires a group variable and a numeric vector, then you can pass an additional 
+variable to the "fill" aesthetic to add color to the boxplots.
+
+```{r histogram_all_counts, fig.width=12, fig.height=5, echo=TRUE}
+
+# Replace ... with your answer
+ggplot(counts_long, aes(...)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+*Q4* - Now make the same plot but with facets instead of colors.
+
+Hint: The boxplots should be put into 6 separate facets, one for each cancer subtype.
+
+```{r histogram_all_counts_facets, fig.width=12, fig.height=5, echo=TRUE}
+
+# Replace ... with your answer
+ggplot(counts_long, aes(sample_id, log10_count)) +
+  geom_boxplot() +
+  facet_wrap(vars(...), scales = "free", ncol = 6) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+
+# Bulk RNA-seq analysis
+
+## General workflow
+
+Below is a suggested workflow for bulk RNA-seq data processing and analysis.
+
+Pre-processing of raw fastq data:
+  * Check quality of raw reads and filter out reads with poor quality
+  * Filter raw reads to remove artifacts (e.g. Illumina primer sequences and adapters)
+  * Align reads to a reference genome (or construct a _de novo_ genome assembly if a reference is unavailable)
+  * Annotate aligned reads to gene loci
+  * Quantify read counts per gene loci
+  
+These steps are typically done using command line tools and will not be covered in this lab. 
+The data that we will be working on in this lab is an expression matrix with genes in rows and samples in columns. 
+We have essentially just collected files with read counts per gene for a number of samples and merged them into a matrix.
+
+Quality control:
+  * Check quality of samples and filter out outliers
+  * Filter out low abundant genes or other potentially confounding genes
+  * Adjust for other confounding factors, e.g. gender specific expression, experimental date and age 
+  
+Analysis:
+  * Differential gene expression analysis
+  * Data transformations for visualization and clustering
+  * Clustering
+  * Gene regulatory networks
+  
+
+In this lab, we will only explore a few of these steps with a focus on quality control and differential expression analysis.
+
+## Analysis pipeline
+
+In this second part of the lab we will use the DESeq2 R package to demonstrate an analysis workflow of bulk RNA-seq data.
 
 ### Pre-processing 
 
-We are testing several samples for differential expression of many genes
-simultaneously. This adds to the multiple testing issue, reducing the power to
-detect DE (differentially expressed) genes.
+Filtering out low abundant genes is not a requirement to run DESeq2 functions but can be useful for two reasons: 
+we can reduce the memory size of our DESeq2 data object and increase the speed of transformation and testing 
+functions within our analysis workflow. 
 
-Therefore, we filter out genes with all zero or low counts that does not add
-anything in terms of evidence for differential expression.
+Note that when your run a DE test using DESeq2, a more strict filtering is automatically applied before running 
+the test that you can read more about [here](http://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#indfilt).
 
-Perform filtering, exlude all genes that have a total count value across all
-samples of $<=10$. Use the skills you learned in Lab 1.
+*Q5*. Exclude all genes that have a total count value across all samples of $<=100$. Use the skills you learned in Lab 1.
 
-```{r, eval= TRUE, echo=TRUE}
+Hint: You should apply the filter to the `counts` matrix and overwrite it.
 
-#Write code
+```{r, eval= TRUE, echo=TRUE, eval=TRUE, echo=TRUE}
 
-```
-
-Now print your SummarizedExperiment object. 
-
-```{r, eval= TRUE, echo=TRUE}
-
-#Write code
+# Write code here!
 
 ```
 
 ### DESeq2
 
-We will use DESeq2 for DE analysis. 
+Now, in order to use DESeq2, we first need to create a DESeq2 object to store our data in. 
+DESeq2 takes many different data types as an input, but since we have a count matrix we'll use the `DESeqDataSetFromMatrix()` 
+function to create our DESeq2 object.
 
-To study DE genes we *don't need* to take into an account gene length because
-the tools for DE analysis are comparing the counts between sample groups for the
-same gene. However, sequencing depth and RNA composition *do need* to be taken
-into account.
+When we create our object we will add the count data and metadata, but we will also specify a design formula. This formula 
+expresses how the counts for each gene depend on the variables in colData. This can be changed later into more complex designs 
+depending on your research setting and questions, but here we will simply tell DESeq2 that the counts are grouped by breast 
+cancer subtype.
 
-To normalize for sequencing depth and RNA composition, DESeq2 uses
-the median of ratios method. On the user-end there is only one step, but on the
-back-end there are multiple steps involved, as described below.
+The code to do this is given below:
 
-Let's start by looking at the variability of sequencing depth across our
-samples: (is normalization needed?)
+```{r create_deseq2_object, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
 
-Next we’ll use box plots to check the distribution of the read counts.
-For convenience, we apply a log2 transformation before visual inspection of the data because the distribution is skewed towards lower values. 
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = metadata, 
+                              design = ~0 + subtype)
 
-```{r, eval= TRUE, echo=TRUE}
-
-f <- assays(se)$counts
-colnames(f) <- se@metadata$replicate
-boxplot(log2(f + 0.5), ylab = "log (base 2) read counts + 0.5")
+# We will just relevel the subtype factor to make sure that Normal_NT is used as the reference
+dds$subtype <- relevel(dds$subtype, ref = "Normal")
 
 ```
 
+Now, we can run the `DESeq()` function which will perform a set of default analysis steps: 
 
-Q1 - What is your interpretation from the plot?
+  1. estimation of size factors (see `?estimateSizeFactors`)
+  2. estimation of dispersion (see `?estimateDispersions`)
+  3. Negative Binomial GLM fitting and Wald statistics (see `?nbinomWaldTest`)
 
-```{r}
-# Add an answer
-```
+The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
 
-Now, in order to use the DESeq2 workflow, we first need to create a DESeq2
-object to store our data. (Similar to our SummarizedExperiment). The code to do
-this is given below:
+Note: This next code chunk might take a few minutes to run.
 
-
-```{r, warning=FALSE, message=FALSE, eval= TRUE, echo=TRUE}
-
-#Create the DESeqDataSet (set design = ~1, which we change later)
-dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
-                              colData = metadata, design = ~ 1)
-
-#Combine factors of interest into a single factor with all combinations of the original factors
-dds$group <- factor(paste0(dds$treatment,
-                           dds$outcome))
-design(dds) <- ~ group
-
-```
-
-Now, we can use the DESeq2 function `DESeq`. This is a function that performs
-several steps, including normalization. The theory behind the model is explained [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#theory)
-
-```{r, message=FALSE, warning=FALSE, eval= TRUE, echo=TRUE}
+```{r run_deseq2, message=FALSE, warning=FALSE, eval=TRUE, echo=TRUE}
 
 dds <- DESeq(dds)
 
 ```
 
-This might take a few minutes.
-
-If you now print the `dds` object, you will see that the structure is similar to
-the SummarizedExperiment, but with some new assays and colData.
+If you now print the `dds` object, you will obtain information about the contents of the object. 
+We can for example see that there are 23716 genes and 60 samples and we also get a few example names for each type.
 
 ```{r, eval= TRUE, echo=TRUE}
+
 dds
+
 ```
 
-For each sample, we now have a sizefactor (stored in colData). We can use this
-sizefactor to normalize our samples by dividing the raw count with the size
-factor. This is stored in `counts(dds, normalized=T)`
+After running `DESeq()`, we now have so called sizefactors stored in colData (1 size factor per column/sample). 
+We can use these sizefactors to normalize our samples by dividing the raw count with the size factor which will 
+adjust for differencies in library sizes between the samples. 
 
-Make a similar boxplot as before, but with the normalized data.
+To obtain the normalized data you can run `counts(dds, normalized = T)`.
 
-```{r, eval= TRUE, echo=TRUE}
-#Write code
+*Q6*. Make a boxplot for each sample showing the distribution of normalized counts.
+
+Hint!: You already have the code to do this from the first part of the lab. Look at Q2 and Q3 as well as the code 
+used to prepare the `counts_long` dataframe. Here you will need to replace the `counts` matrix with the normalized counts.
+
+```{r boxplot_normalized, eval=TRUE, echo=TRUE, fig.width=12, fig.height=5}
+
+#Write your code here!
+
+
 ```
-
 
 Do you spot the difference?
+
+If you managed to do this correctly you should be able to see that the distributions are now more comparable across samples.
 
 
 ### Exploratory analysis
 
-When exploring RNAseq data, you usually want to perform some kind of
-transformation before visualization. Otherwise, highly expressed genes tend to
-dominate the result. A common method to deal with this is to simply take the
-log2 of the counts (with a pseudocount added). However, this can lead to the
-opposite situation - lowly expressed genes getting to much influence on the
-result.
+Exploratory data analysis (EDA) can sometimes be useful to better understand the data that you are working with. 
+For example, it might be interesting to know whether some groups exhibit greater within-group variability than other 
+or to check how samples are related to each other based on expression similarity. You might even want to use a 
+clustering approach based on similarities of gene expression profiles to define new subtypes. This is actually how 
+our subtypes were defined within the TCGA!
 
-Another frequently used method is the variance-stabilizing transformation (VST),
-this is used to disentangle the mean-variance relationship seen in count data.
-VST is included in the DESeq2 package.
+Before we move on to data exploration it is often beneficial to transform the count data first. If we don't do this, 
+highly expressed genes tend to dominate the result. 
 
+One frequently used method is the variance-stabilizing transformation (VST), which is used to disentangle the 
+mean-variance relationship seen in count data.
 
-In RNA-Seq data, genes with larger mean expression tend to have higher observed
-variances across samples. Random variables for which variance differ across
-certain ranges of values are called "heteroscedastic". If we VST transform
-the data, the standard deviation (sd) becomes more constant along the whole dynamic
-range. The following picture illustrate this:
+In RNA-Seq data, genes with larger mean expression tend to have higher observed variances across samples. 
+Random variables for which variance differ across certain ranges of values are called "heteroscedastic". 
+If we VST transform the data, the standard deviation (sd) becomes more constant along the whole dynamic range. 
+The following picture illustrate this:
 
 ![effect of vst transformation](lab2_vst.png)
 
-Let's transform our data via the VST method before looking at our samples:
+Let's transform our data using the VST method before looking at our samples:
 
 ```{r, eval= TRUE, echo=TRUE}
 
-#Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable called vst.data
-
+# Do this by using the DESeq2 function vst(), with parameter blind=FALSE and save the results to a variable called vst.data
+vst.data <- vst(dds, blind = FALSE)
 
 ```
 
 #### Heatmap
 
-Using the VST transformed counts, we can create a heatmap:
+A heatmap is a type of plot that can be useful to obtain an overview of pairwise relationships between many 
+samples at the same time. Here we have 60 samples which is a decent amount of samples and it could be useful 
+to understand if these are correlated with each other at the gene expression level.
 
-```{r, eval= TRUE, echo=TRUE, fig.height=9, fig.width=9}
+Using our normalized counts (VST transformed), we can compute correlation scores between each pair of samples 
+and visualize these correlations using the code below:
 
-sampleDists <- dist(t(assay(vst.data)))
-sampleDistMatrix <- as.matrix(sampleDists)
-rownames(sampleDistMatrix) <- paste(vst.data$treatment, vst.data$outcome, vst.data$replicate, sep="-")
-colnames(sampleDistMatrix) <- NULL
-colors <- rev(viridis(12))
-pheatmap(sampleDistMatrix,
-         clustering_distance_rows=sampleDists,
-         clustering_distance_cols=sampleDists,
-         col=colors)
+(Don't freak out if the code doesn't make any sense, let's just focus on the heatmap)
+
+```{r heatmap1, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
+
+# Below are a few lines of code to create a correlation matrix that we'll be using
+rv <- rowVars(assay(vst.data))
+select <- order(rv, decreasing = TRUE)[seq_len(min(500, length(rv)))]
+pca <- prcomp(t(assay(vst.data)[select, ]))
+sampleDistMatrix <- cor(t(pca$x))
+diag(sampleDistMatrix) <- NA
+colors <- viridis::magma(50)
+
+# Draw heatmap
+pheatmap(sampleDistMatrix, col = colors, border_color = NA)
+
 ```
 
-Q2 - Is there any sample that stands out? What would you do with it?
+From the heatmap we can see that samples are ordered into a hierarchical structure based on pairwise correlations. 
+Cells (tiny squares) with a yellow color represents a pair of samples with high correlation whereas cells with a 
+purple color represents a pair of samples with low correlation. We can see that there are at least three larger 
+blocks of samples with higher similarity, but right now we can only make a guess for why this is the case.
 
+Let's add a new component to this heatmap to show some of our sample metadata using the `annotation_col` argument 
+in `pheatmap`. What we want to do here is to add a bar on top of the heatmap to show the cancer subtype for each 
+sample. You can check the documentation for the `annotation_col` argument by typing `?pheatmap` in the console. 
 
-```{r}
+*Q7* - Replace `...` in the code chunk below with the correct answer. Based on the characteristics of the different subtypes, can you speculate why some of them are more difficult to distinguish?
 
-#Write code
+```{r heatmap2, eval= TRUE, echo=TRUE, fig.height=12, fig.width=13}
+
+# // Replace ... with the correct code
+ann <- data.frame(...)
+pheatmap(sampleDistMatrix, col = colors, annotation_col = ann)
 
 ```
 
+One thing that becomes quite clear after looking at this heatmap is that even though there is a lot of 
+heterogeneity across samples, there are similarities within the respective subtypes as well. Next, we 
+want to know what genes are driving this separation of subtypes at a transcriptional level.
 
 ### Differential expression
 
-When we conduct DE analysis in this manner, we are comparing 2 conditions
-against each other. As noted, we have several different conditions in this data
-set, each pairwise comparison is saved as separate results in our dds object. To
-view what we have:
+When we conduct DE analysis with DESeq2, we are free to set up quite complex designs to adress our question 
+of interest. For example, we could be interested in differential expression between a subtype and our Normal 
+control or one subtype against all other subtypes. Or if we have access to additional clinical data, we could 
+for example design our test to adress differences in gene expression due to genotype, age, gender, BMI, 
+treatments etc.
 
-```{r, eval= TRUE, echo=TRUE}
+Our current design allows us to do pairwise comparisons between subtypes and we can check the coefficients 
+of our model using `resultsNames`.
+
+```{r DE_test, eval=TRUE, echo=TRUE}
+
 resultsNames(dds)
-```
-
-For example, "group_AR_vs_ANR", contains the DE result comparing Drug A
-"Responder" vs Drug A "Non-responder".
-
-A contrast is a linear combination of estimated log2 fold changes, which can be
-used to test if differences between groups are equal to zero. To extract the DE
-result for a specific drug, we may use results command:
-
-```{r, eval= TRUE, echo=TRUE}
-
-res <- results(dds, contrast=c("group", "BR", "BNR"), tidy = TRUE)
 
 ```
 
-Note that the log2 fold change and Wald test p-values will be for the last
-variable. (See [this
-link](https://www.statisticshowto.datasciencecentral.com/wald-test/) for an
-explanation on the Wald test.)
+A contrast is a linear combination of estimated log2 fold changes, which can be used to test if differences 
+between groups are equal to zero. To extract the DE results for a specific comparison, we can use `results` 
+command. For this simple example we set the contrast using a vector of length 3 where the first element is 
+the name of a factor in the design formula, the second element is the numerator and the third element is the 
+denominator. We have also added a few filtering steps to remove genes with an absolute log2 foldchange lower 
+than 2, adjusted p-value higher than 0.01 and then we have arranged the results by increasing adjusted p-values 
+to have the most significant hits in the top of our table.
 
-NOTE: The genes with adjusted p-values of NA have less mean normalized counts
-than the optimal threshold.
+```{r, eval=TRUE, echo=TRUE}
 
-Now, use this method to find the top 50 upregulated and downregulated genes
-(based on adjusted p-value) for each specific drug, i.e. for drug A -> compare
-responders vs non-responders. Do this for all drugs and create a list of the
-genes.
+# Run test Basal.like vs Normal
+res <- results(dds, 
+               contrast = c("subtype", "Basal.like", "Normal"),
+               tidy = TRUE)
+
+res_summarized <- res %>%
+  dplyr::arrange(padj) %>%
+  dplyr::filter(abs(log2FoldChange) >= 2, padj <= 0.01)
+head(res_summarized)
 
 
-```{r, eval= TRUE, echo=TRUE}
-#Write code
+
 ```
 
-
-Q3 - Is there any overlap between these genes across drugs? Are there some genes
-that seem to correlate with all responders regardless of drug? Is there any drug
-with a specific set of genes?
-
-Hint: the function `intersect()` could be useful
-
-```{r, eval= TRUE, echo=TRUE}
-# Add answer
-```
-
-Q4 - Take one or two genes and look it up. Can you make any conclusion? Motivate your finding!
-
-```{r}
-# Add answer
-```
-
-
-
-# Genome wide assiciation study - GWAS
-
-## Lab info 
-
-We will will use the data from Saw et.al (2017) to illustrate the genome-wide association studies (GWAS). We will map the genetic determinants of 
-cholesterol levels within three Southeast Asian populations. 
-
-In this part of the lab we will give you the output of the R code directly. Instead the focus is to understand what type of data one could get out 
-of variant calling and genome-wide association studies (GWAS). The data for the GWAS part is available here: https://github.com/monogenea/GWAStutorial. 
-If you want to run the code (*not required*), just copy the whole repo to the "../genetech/labs/ex2/data" and run it from there. 
-
-Use the provided template to answer the questions! 
-
-### What is GWAS?
-
-Genome-wide association (GWA) studies scan an entire species genome for association between up to millions of SNPs/indels and a given trait of interest. 
-Notably, the trait of interest can be virtually any sort of phenotype ascribed to the population, be it qualitative (e.g. disease status) or 
-quantitative (e.g. height). 
-
-Essentially, given p SNPs and n samples or individuals, a common method is to fit p linear models, each based on n samples, using the genotype of each SNP as predictor of the trait of interest. GWAS can be univariate or multivariate depending how many traits are being studied. 
-The significance of association (P-value) in each of the p tests is determined from the coefficient estimate $\beta_{i}$  of the corresponding SNP (technically speaking, the significance of association is $P(\beta_{i}|H_0: \beta_{i}=0)$ ). Since we are testing multiple SNP's it's necessary to adjust the resulting P-values using multiple hypothesis testing (MHT) methods such as Bonferroni, Benjamini-Hochberg or false discovery rate (FDR).
-
-
-### Data
-
-Data is from Saw et.al (2017): https://www.nature.com/articles/s41467-017-00413-x.
-
-There is a mixed population of 316 Chinese, Indian and Malay in the study. These individuals were characterized using high-throughput SNP-chip sequencing, transcriptomics and lipidomics. In this data, we have >2.5 million SNP markers as well as cholesterol levels which we will search for associations with.
-
-### General workflow
-
-These steps have already been executed (i.e., you do not have to do them), but to get the overall picture -> 
-
-![](gwas_lab_0.png)
-
-#### Steps after SNP calling
-
-```{r, eval=FALSE, echo=FALSE}
-
-#The following packages should be loaded. Remember, if you havn't installed a specific package, use `BiocManager::install("packageName")`. When running this, you often get asked "Update all/some/none? [a/s/n]:" In general, it's ok to skip updating the rest of the packages for this lab (which can otherwise take some time). 
-
-library(ggbio)
-library(GenomicRanges)
-library(snpStats)
-library(SNPRelate)
-library(dplyr)
-```
-
-```{r, eval=FALSE, echo=FALSE}
-
-#you don't have to run the code!
-
-#Loading the SNP data
-load("data/GWAStutorial/conversionTable.RData")
+*Q8*. Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values 
+from the `res_summarized` data.frame. You should be able to solve this problem programatically. 
  
-pathM <- paste("data/GWAStutorial/public/Genomics/108Malay_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
-SNP_M <- read.plink(pathM[1], pathM[2], pathM[3])
- 
-pathI <- paste("data/GWAStutorial/public/Genomics/105Indian_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
-SNP_I <- read.plink(pathI[1], pathI[2], pathI[3])
- 
-pathC <- paste("data/GWAStutorial/public/Genomics/110Chinese_2527458snps", c(".bed", ".bim", ".fam"), sep = "")
-SNP_C <- read.plink(pathC[1], pathC[2], pathC[3])
- 
-# Merge the three SNP datasets
-SNP <- SNP_M
-SNP$genotypes <- rbind(SNP_M$genotypes, SNP_I$genotypes, SNP_C$genotypes)
-colnames(SNP$map) <- c("chr", "SNP", "gen.dist", "position", "A1", "A2") # all 3 maps are based on the same ordered set of SNPs
-SNP$fam<- rbind(SNP_M$fam, SNP_I$fam, SNP_C$fam)
+```{r select_des, eval=TRUE, echo=TRUE}
 
-# Rename SNPs present in the conversion table into rs IDs
-mappedSNPs <- intersect(SNP$map$SNP, names(conversionTable))
-newIDs <- conversionTable[match(SNP$map$SNP[SNP$map$SNP %in% mappedSNPs], names(conversionTable))]
-SNP$map$SNP[rownames(SNP$map) %in% mappedSNPs] <- newIDs
-```
-
-So, lets start where the SNPs are already called. We also have some metadata along with our samples (lipid measurements on each patient and their country). We lack all info on some of the samples, so we only keep complete cases (a quite common solution). 
-
-```{r, eval=FALSE, echo=FALSE}
-
-# Load lipid datasets & match SNP-Lipidomics samples
-lipidsMalay <- read.delim("data/GWAStutorial/public/Lipidomic/117Malay_282lipids.txt", row.names = 1)
-lipidsIndian <- read.delim("data/GWAStutorial/public/Lipidomic/120Indian_282lipids.txt", row.names = 1)
-lipidsChinese <- read.delim("data/GWAStutorial/public/Lipidomic/122Chinese_282lipids.txt", row.names = 1)
-
-all(Reduce(intersect, list(colnames(lipidsMalay),
-  colnames(lipidsIndian),
-  colnames(lipidsChinese))) == colnames(lipidsMalay)) # TRUE
-lip <- rbind(lipidsMalay, lipidsIndian, lipidsChinese)
- 
-# Add country information
-country <- sapply(list(SNP_M, SNP_I, SNP_C), function(k){
-  nrow(k$genotypes)
-})
-origin <- data.frame(sample.id = rownames(SNP$genotypes),
-                     Country = factor(rep(c("M", "I", "C"), country)))
-
-matchingSamples <- intersect(rownames(lip), rownames(SNP$genotypes))
-SNP$genotypes <- SNP$genotypes[matchingSamples,]
-lip <- lip[matchingSamples,]
-origin <- origin[match(matchingSamples, origin$sample.id),]
-
-# Combine SNP and Lipidomics
-genData <- list(SNP = SNP$genotype, MAP = SNP$map, LIP = lip)
-
-# Write processed omics and GDS
-save(genData, origin, file = "data/GWAStutorial/PhenoGenoMap.RData")
-write.plink("data/GWAStutorial/convertGDS", snps = SNP$genotypes)
- 
-# Clear memory
-rm(list = ls())
+# Replace NA with the names of the top 10 up-regulated genes
+up <- NA
+# Replace NA with the names of the top 10 down-regulated genes
+down <- NA
+degs <- c(up, down)
 
 ```
 
-#### Pre-processing
+Now we can use the vst transformed values to compare the expression these genes in a heatmap. 
+Here we only look at the expression across two subtypes that were used in the test, i.e. Basal-like and Normal.
 
-Since we are working with a huge dataset, it would be in order to conduct some filtering prior to analysis. Let us:
-- discarding SNPs with call rate < 1  or  Minor-allele frequency (MAF) < 0.1
-- discarding samples with call rate < 100%, IBD kinship coefficient > 0.1 or inbreeding coefficient |F| > 0.1
+```{r plot_degs, fig.width=10, fig.height=7, eval=TRUE, echo=TRUE}
 
-Again, this is already made for you... Just keep in mind that various filtering steps are usually conducted to limit the size of the data, both for computational and statistical reasons. 
+vst.vals <- vst.data[degs, vst.data$subtype %in% c("Basal-like", "Normal")]
+ann <- data.frame(subtype = vst.vals$subtype, row.names = colnames(vst.vals))
 
-```{r, eval=FALSE, echo=FALSE}
-#Linux/macOS installation of GenABEL:
-#install.packages("GenABEL.data", repos="http://R-Forge.R-project.org")
-#packageurl <- "https://cran.r-project.org/src/contrib/Archive/GenABEL/GenABEL_1.8-0.tar.gz"
-#install.packages(packageurl, repos=NULL)
-#for(pkg in c("snpStats", "doParallel", "SNPRelate", "GenABEL")){
-#  if(!require(pkg, character.only = T)) {
-#    stop("At least one pckg is required for this script. Please install it on your system.")
-#  }
-#}
-
-source("data/GWAStutorial/GWASfunction.R")
-load("data/GWAStutorial/PhenoGenoMap.RData")
- 
-# Use SNP call rate of 100%, MAF of 0.1 (very stringent)
-maf <- 0.1
-callRate <- 1
-SNPstats <- col.summary(genData$SNP)
- 
-maf_call <- with(SNPstats, MAF > maf & Call.rate == callRate)
-genData$SNP <- genData$SNP[,maf_call]
-genData$MAP <- genData$MAP[maf_call,]
-SNPstats <- SNPstats[maf_call,]
-
-# Sample call rate & heterozygosity
-callMat <- !is.na(genData$SNP)
-Sampstats <- row.summary(genData$SNP)
-hetExp <- callMat %*% (2 * SNPstats$MAF * (1 - SNPstats$MAF)) # Hardy-Weinberg heterozygosity (expected)
-hetObs <- with(Sampstats, Heterozygosity * (ncol(genData$SNP)) * Call.rate)
-Sampstats$hetF <- 1-(hetObs/hetExp)
-# Use sample call rate of 100%, het threshold of 0.1 (very stringent)
-het <- 0.1 # Set cutoff for inbreeding coefficient;
-het_call <- with(Sampstats, abs(hetF) < het & Call.rate == 1)
-genData$SNP <- genData$SNP[het_call,]
-genData$LIP <- genData$LIP[het_call,]
-
-# LD and kinship coeff
-ld <- .2
-kin <- .1
-snpgdsBED2GDS(bed.fn = "data/GWAStutorial/convertGDS.bed", 
-              bim.fn = "data/GWAStutorial/convertGDS.bim",
-              fam.fn = "data/GWAStutorial/convertGDS.fam", 
-              out.gdsfn = "myGDS", 
-              cvt.chr = "char")
-genofile <- snpgdsOpen("myGDS", readonly = F)
-gds.ids <- read.gdsn(index.gdsn(genofile, "sample.id"))
-gds.ids <- sub("-1", "", gds.ids)
-add.gdsn(genofile, "sample.id", gds.ids, replace = T)
-geno.sample.ids <- rownames(genData$SNP)
-# First filter for LD
-snpSUB <- snpgdsLDpruning(genofile, ld.threshold = ld,
-                          sample.id = geno.sample.ids,
-                          snp.id = colnames(genData$SNP))
-snpset.ibd <- unlist(snpSUB, use.names = F)
-# And now filter for MoM
-ibd <- snpgdsIBDMoM(genofile, kinship = T,
-                    sample.id = geno.sample.ids,
-                    snp.id = snpset.ibd,
-                    num.thread = 1)
-ibdcoef <- snpgdsIBDSelection(ibd)
-ibdcoef <- ibdcoef[ibdcoef$kinship >= kin,]
- 
-# Filter samples out
-related.samples <- NULL
-while (nrow(ibdcoef) > 0) {
-  # count the number of occurrences of each and take the top one
-  sample.counts <- arrange(count(c(ibdcoef$ID1, ibdcoef$ID2)), -freq)
-  rm.sample <- sample.counts[1, 'x']
-  cat("Removing sample", as.character(rm.sample), 'too closely related to', sample.counts[1, 'freq'],'other samples.\n')
-  
-  # remove from ibdcoef and add to list
-  ibdcoef <- ibdcoef[ibdcoef$ID1 != rm.sample & ibdcoef$ID2 != rm.sample,]
-  related.samples <- c(as.character(rm.sample), related.samples)
-}
-
-genData$SNP <- genData$SNP[!(rownames(genData$SNP) %in% related.samples),]
-genData$LIP <- genData$LIP[!(rownames(genData$LIP) %in% related.samples),]
+# Here we have also added some code to scale the data: `t(scale(t(assay(vst.vals))))`
+# We will not go through how this works, but feel free to play around and see what 
+# happens if we don't scale the data
+pheatmap(t(scale(t(assay(vst.vals)))), annotation_col = ann, cluster_rows = FALSE, border_color = NA)
 
 ```
 
-### Analysis
+If we want to obtain DEGs that are specific to a subtype we could make pairwise comparisons between that 
+specific subtype and all other subtypes. Once we have our DE results we can select a gene of interest
+(with low p-value) and compare its expression with the other subtypes.
 
-#### Principal component analysis (PCA)
+This time we have to set the `contrast` argument differently. Now we need to provide a list instead of 
+a character vector where the first element of the list should be the name of the group of interest and 
+the second argument should be a cahcarter vector with the names of the remaining groups. Note that these 
+names need to be present in the output from `resultsNames(dds)`. Then we also need to add a `listValues` 
+argument to say that the subtype of interest should be weighted by 1 and the remaining groups should be 
+weighted by 1/4 because there are four groups that we want to weight equally.
 
-Let's use a standard go-to visualization method for high dimensional data as an exploratory look of our samples. 
+```{r DE_test_Basal-like}
 
+res_Her2_vs_all <- results(dds, 
+                           contrast = list("subtypeBasal.like", c("subtypeHer2", "subtypeLumA", "subtypeLumB", "subtypeNormal.like")), 
+                           listValues = c(1, -1/4),
+                           tidy = TRUE)
 
-```{r, eval=FALSE, echo=FALSE}
-# PCA
+# Print the top hits from our results data.frame and arrange the hits
+# based on p-value
+head(res_Her2_vs_all %>% arrange(pvalue))
 
-# set random seed for reproducibility
-set.seed(100)
-
-# conduct pca
-pca <- snpgdsPCA(genofile, sample.id = geno.sample.ids, 
-                 snp.id = snpset.ibd, num.thread = 1)
-
-# construct dataframe with the two first PC's
-pctab <- data.frame(sample.id = pca$sample.id,
-                    PC1 = pca$eigenvect[,1],
-                    PC2 = pca$eigenvect[,2],
-                    stringsAsFactors = F)
-
-# Subset and/or reorder origin accordingly
-origin <- origin[match(pca$sample.id, origin$sample.id),]
-
-pcaCol <- rep(rgb(0,0,0,.3), length(pca$sample.id)) # Set black for chinese
-pcaCol[origin$Country == "I"] <- rgb(1,0,0,.3) # red for indian
-pcaCol[origin$Country == "M"] <- rgb(0,.7,0,.3) # green for malay
-
-png("PCApopulation.png", width = 500, height = 500)
-plot(pctab$PC1, pctab$PC2, xlab = "PC1", ylab = "PC2", col = pcaCol, pch = 16)
-abline(h = 0, v = 0, lty = 2, col = "grey")
-legend("top", legend = c("Chinese", "Indian", "Malay"), col = 1:3, pch = 16, bty = "n")
-dev.off()
+# Select a DE gene of interest
+g <- data.frame(subtype = dds$subtype, val = assay(vst.data)["HORMAD1", ])
+ggplot(g, aes(subtype, val)) +
+ geom_boxplot() +
+  ggtitle("expression of HORMAD1")
 
 ```
 
-![PCA](gwas_lab_1.png)
+The example gene displayed above, HORMAD1, is clearly overexpressed in the Basal-like subtype 
+compared to the other subtypes.
 
 
-Q1: Explain the result
+We can also run apply the same test on all subtypes in a for loop like fashion (here we actually use a 
+function called `lapply()` which works similar to a for loop) to obtain a list of DEGs for each subtype.
+You don't need to understand every part of this next code block.
 
-```{r, eval=FALSE, echo=TRUE}
+```{r fig.width=15, fig.height=12, eval=TRUE, echo=TRUE}
 
+# Define a chacarter vector with the subtype ids
+subtypes <- c("subtypeBasal.like", "subtypeHer2", "subtypeLumA", "subtypeLumB", "subtypeNormal.like")
 
-#Add answer here
+# Here we apply the same text as before, but for one subtype at the time
+summarized_results <- do.call(rbind, lapply(subtypes, function(stype) {
+  res_Her2_vs_all <- results(dds, 
+                           contrast = list(stype, setdiff(subtypes, stype)), 
+                           listValues = c(1, -1/4),
+                           tidy = TRUE)
+  # We also add an additional column with the subtype 
+  # name to keep track of subtype the DE results belong to
+  res_Her2_vs_all$subtype <- stype 
+  return(res_Her2_vs_all)
+}))
 
+# Some data wrangling to filter out hits with a p-value > 0.01 and 
+# negative log foldchanges. We also select the top 20 hits based 
+# on adjusted p-value
+summarized_results_top10 <- summarized_results %>%
+  group_by(subtype) %>%
+  filter(padj < 0.01, log2FoldChange > 0) %>%
+  top_n(n = 20, wt = -padj)
 
-
-```
-
-#### GWAS
-
-Let's now perform our GWAS study. In the information we have 282 different lipids, lets choose to make the cholesterol levels our target of interest. 
-
-```{r, eval=FALSE, echo=TRUE}
-# Choose trait for association analysis, use colnames(genData$LIP) for listing
-# NOTE: Ignore the first column of genData$LIP (gender)
-target <- "Cholesterol"
- 
-phenodata <- data.frame("id" = rownames(genData$LIP),
-                        "phenotype" = scale(genData$LIP[,target]), 
-                        stringsAsFactors = F)
- 
-# Conduct GWAS (will take a long while)
-
-#If the GWAA command doesn't work, uncomment:
-#library(rstudioapi)
-#if (Sys.getenv("RSTUDIO") == "1" && !nzchar(Sys.getenv("RSTUDIO_TERM")) && 
-#    Sys.info()["sysname"] == "Darwin" && getRversion() >= "4.0.0") {
-#  if(versionInfo()$version < "1.3.1056"){
-#    parallel:::setDefaultClusterOptions(setup_strategy = "sequential")
-#  }  
-#}
-
-start <- Sys.time()
-GWAA(genodata = genData$SNP, phenodata = phenodata, filename = paste(target, ".txt", sep = ""))
-Sys.time() - start # benchmark
-```
-
-For visualization of our results, we will use a "Manhattan plot". 
-
-```{r, eval=FALSE, echo=TRUE}
-# Manhattan plot
-GWASout <- read.table(paste(target, ".txt", sep = ""), header = T, 
-                      colClasses = c("character", rep("numeric",4)))
-GWASout$type <- rep("typed", nrow(GWASout))
-GWASout$Neg_logP <- -log10(GWASout$p.value)
-GWASout <- merge(GWASout, genData$MAP[,c("SNP", "chr", "position")])
-GWASout <- GWASout[order(GWASout$Neg_logP, decreasing = T),]
- 
-png(paste(target, ".png", sep = ""), height = 500,width = 1000)
-GWAS_Manhattan(GWASout)
-dev.off()
-```
-
-![Manhattan plot](gwas_lab_2.png)
-
-Q2: How many significant SNPs do you see when the significance level of $5x10^{-6}$ is used? And if so, what chromosomes are those on?
-
-```{r, eval=FALSE, echo=TRUE}
-
-
-#Add answer here
-
+# Here we prep our results to build a heatmap
+ann <- data.frame(subtype = vst.data$subtype, row.names = colnames(vst.data))
+tsf <- t(scale(t(assay(vst.data))))[summarized_results_top10$row, vst.data$subtype %in% c("Basal-like", "Her2", "LumA", "LumB", "Normal-like")]
+tsf[tsf > 2] <- 2
+tsf[tsf < -2] <- -2
+colors <- viridis::viridis(n = 51)
+pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, color = colors, fontsize = 8, border_color = NA)
 
 ```
 
+*Q9* What conclusions you can make from this plots based on the differences bewteen subtypes? Write max 2 sentences. 
 
-Lets also include a little sanity check of our result by using a Q-Q plot. Here, we contrast the distribution of the resulting p-values against those expected by chance. If the two are identical, we get a x=y line. If our method to obtain our result is sound, we should in theory get a x=y line with a few deviating values suggestive of association. Otherwise, we might have confounding factors that cause problems for our approach. 
+Hint!: Look how clear the subtype specific genes are and variability between groups.
 
-```{r, eval=FALSE, echo=FALSE}
-
-# QQ plot using GenABEL estlambda function
-png(paste(target, "_QQplot.png", sep = ""), width = 500, height = 500)
-lambda <- estlambda(GWASout$t.value**2, plot = T, method = "median")
-dev.off()
-
+```{r, echo=TRUE}
+#Write the answer here!
 ```
 
-![Q-Q plot](gwas_lab_3.png)
+Cancer subtypes are heterogeneous and remember that these are bulk RNA-seq data which means that we are 
+investigating the averaged expression over a whole tissue piece. 
 
-Q3: What is your interpretation of the Q-Q plot?
+Cancer cells reside and proliferate within a microenvironment made up of "normal" cells. This could for 
+example be cells that build up connective tissues and blood vessels or immune cells that are trying to 
+fight and eliminate the tumor. Although cells in the tumor microenvironment are not malignant, they can 
+be manipulated by the cancer cells to suppress the immune response and promote disease progression. 
 
-```{r, eval=FALSE, echo=FALSE}
+Understanding the intricate details of cell-cell crosstalk and the architecture of the microenvironment 
+is important in the quest to find new therapeutic strategies. This limitation with bulk RNA-seq analysis 
+is to a large extent the reason why single-cell and spatial methods are starting to take over the field 
+of genomics and gained so much attention in the last decade.
 
-
-#Add answer here
-
-
-```
-
-
-### Functional interpretation
-
-Each SNP is identified via an ID, lets take a look at the identified significant variants. You can search e.g https://www.ncbi.nlm.nih.gov/snp/ with this ID as input to find out information about the variant. 
-
-Q4: Is there any variant that are within a gene? Can you find any potential biological association of interest with regards to cholesterol? 
-
-```{r, eval=FALSE, echo=TRUE}
-
-
-#Add answer here
-
-```
-
-## Acknowledgement 
-
-The GWAS tutorial is adapted from GWAStutorial by Francisco Lima. 
+Still, the capture efficiency of bulk RNA-seq very high and the data contains much less technical noise 
+compared with scRNA-seq and spatial transcriptomics methods. It is also much easier and cheaper to run. 
+For these and many other reasons, bulk RNA-seq is still considered a gold standard for transcriptomic 
+research. 
