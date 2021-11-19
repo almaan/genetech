@@ -40,7 +40,7 @@ Click on the link below that best corresponds to your OS:
 - Linux OS Download [LINK](https://docs.docker.com/engine/install/)
 
 and follow the instructions at respective page. If you find those instructions
-to technical, you'll find plenty of guides by simply googling "Install docker on
+too technical, you'll find plenty of guides by simply googling "Install docker on
 X" where X equals to your OS.
 
 To make sure that the installation was successful, open up a terminal window and enter:
@@ -95,7 +95,7 @@ to generate a container from it. To start a container from the downloaded image
 with access to the content from the cloned GitHub repository, run:
 
 ```sh
- sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --memory=6g --mount type=bind,source=GENETECH_PATH,target=/home/genetech/code -e ROOT=TRUE almaand/genetech:TAG
+ sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --memory=6g --mount type=bind,source=GENETECH_PATH,target=/home/genetech -e ROOT=TRUE almaand/genetech:TAG
 ```
 
 Where `GENETECH_PATH` is the path to the folder you created in the previous
@@ -139,3 +139,7 @@ ls -a` to list all started and stopped containers.
 
 To **remove** a container you can use the command `docker container rm
 CONTAINER_ID`.
+
+### Quick start
+If you struggle setting up the docker container, we also provide a quick walkthough in this video:
+[![]](https://user-images.githubusercontent.com/23736938/142621099-d2ce44a0-7a24-411f-b8b9-2f4dfc9ad457.mp4)
