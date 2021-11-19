@@ -199,9 +199,11 @@ When you hand in the modified lab, change the author field to your name(s).
 
 ## Contact Information
 
-* Sami Saarenpää : sami.saarenpaa [at] scilifelab.se
-* Ludvig Larsson : ludvig.larsson [at] scilifelab.se
-* Pontus Höjer : pontus.hojer [at] scilifelab.se
-* Markus Ekvall : markus.ekvall [at] scilifelab.se
-* Adelina Rabenius : adelina.rabenius [at] scilifelab.se
-* Marco Vicari : marco.vicari [at] scilifelab.se
+* Sami Saarenpää : sami.saarenpaa@scilifelab.se
+* Ludvig Larsson : ludvig.larsson@scilifelab.se
+* Pontus Höjer : pontus.hojer@scilifelab.se
+* Markus Ekvall : markus.ekvall@scilifelab.se
+* Adelina Rabenius : adelina.rabenius@scilifelab.se
+* Marco Vicari : marco.vicari@scilifelab.se
+
+
