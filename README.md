@@ -142,4 +142,5 @@ CONTAINER_ID`.
 
 ### Quick start
 If you struggle setting up the docker container, we also provide a quick walkthough in this video:
+
 [![]](https://user-images.githubusercontent.com/23736938/142621099-d2ce44a0-7a24-411f-b8b9-2f4dfc9ad457.mp4)
