@@ -437,7 +437,6 @@ se.corrected <- se
 se.corrected@assays$MNN <- readRDS(file = "data/MNN.assay")
 ```
 
-
 Now we will have access to a corrected version of our count matrix that we can use for downstream analysis. 
 To use this new, batch corrected assay, we need to switch our default assay to "MNN". Then we scale the data 
 and rerun the PCA.
@@ -746,7 +745,6 @@ cat(sprintf("Answer: %s", q13.answer))
 _______
 ## Hand In Guidelines
 _______
-
 **How :** Complete the code chunks after the questions marked with a ''Q'' in this .Rmd file. There are 13 of those. When you have completed these code chunks, you should knit this report into an html file and submit this in canvas under Computer Lab 3. Do not edit the top part of the code chunks except for adjusting the plot layout using fig.width and fig.height.
 
 **Deadline**: Your report is due 23:59, one week after the schedules lab session; if working in pairs - each of you should hand in (identical) reports where the names of both authors are clearly stated. For further information see the guidelines on the course web-page.
