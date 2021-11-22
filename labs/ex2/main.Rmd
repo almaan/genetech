@@ -462,7 +462,7 @@ that the 2D structures reflect the size and variability of cell type populations
 
 Let's see how the cells are organized in UMAP space before and after batch correction:
 
-```{r UMAP, warning=FALSE, message=FALSE, fig.width=10, fig.height=5}
+```{r UMAP2, warning=FALSE, message=FALSE, fig.width=10, fig.height=5}
 se <- RunUMAP(se, dims = 1:30, reduction = "pca")
 se.corrected <- RunUMAP(se.corrected, dims = 1:30, reduction = "pca")
 p1 <- DimPlot(se, reduction = "umap", group.by = "replicate")
@@ -487,7 +487,8 @@ When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some
 ```{r clean, message=FALSE, warning=FALSE}
 # Before we proceed with the second part of this lab, let's clean up our environment
 rm(list = ls())
-.rs.restartR()
+gc()
+Sys.sleep(time = 3)
 ```
 ```{r bc, warning=FALSE, message=FALSE}
 # Load the breast cancer scRNA-seq data set
@@ -496,7 +497,7 @@ bc <- readRDS("data/bc")
 
 Let's embed our cells in a 2D map using the UMAP method as before.
 
-```{r UMAP, warning=FALSE, message=FALSE}
+```{r UMAP1, warning=FALSE, message=FALSE}
 bc <- RunUMAP(bc, dims = 1:30)
 DimPlot(bc, reduction = "umap")
 ```
