@@ -13,7 +13,7 @@ ____
 ## Lab2 - Single cell RNA seq (scRNA-seq)
 ____
 
-Nowadays there is a plethora  of single cell methods available to obtain genomic information at cellular resolution.
+Nowadays there is a plethora of single cell methods available to obtain genomic information at cellular resolution.
 
 The most obvious advantages with single cell technologies is the fact that we're no longer measuring an average across a larger population of cells, and also the massive throughput (i.e. the number of cells that can be analyzed). This opens up for a number of possibilities to study tissues and organs at an
 unprecedented resolution. Today, researchers can collect millions of cells from a tissue to create whole atlases, a bit like a google earth for cell types. 
@@ -312,7 +312,7 @@ Now that we have this vector we can subset the "Seurat" object that we just crea
 but this time we'll apply the filter to the genes instead.
 
 ```{r subset_genes}
-se.subset <- subset(se.subset, features = keep.genes)
+#se.subset <- subset(se.subset, features = keep.genes)
 ```
 
 Now that we have filtered our object (`se.subset`), we should have fewer cells
@@ -418,7 +418,7 @@ Unfortunately, this approach is often not enough to correct for more severe batc
 
 To run mnnCorrect on our Seurat object we will use the wrapper function `RunFastMNN()`. This function takes a list of `Seurat` objects as input, one for each batch, so the first thing we need to do is to split our `Seurat` object into a list of objects.
 
-```{r sctransform_batch, warning=FALSE, message=FALSE}
+```{r sctransform_batch, eval=FALSE}
 se.list <- lapply(unique(se$replicate), function(r) {
   subset(se, subset = replicate %in% r)
 })
@@ -458,8 +458,7 @@ the cells into a 2D map that can be very useful for visualization purposes when 
 data. If you are interested, there are many good resources which explain the UMAP method, for example [here](https://pair-code.github.io/understanding-umap/). 
 
 In a UMAP plot, cells with similar gene expression are put close to together in space and the idea is 
-that the 2D structures reflect the size and variability of cell type populations. You shouldn't overanalyze 
-these plots, but at least you get a nice 2D map to point at when discussing your results which can be very handy!
+that the 2D structures reflect the size and variability of cell type populations. You shouldn't over analyze these plots, but at least you get a nice 2D map to point at when discussing your results which can be very handy!
 
 Let's see how the cells are organized in UMAP space before and after batch correction:
 
@@ -485,9 +484,14 @@ For the rest of this lab, we'll use a different data set with single-cell RNA-se
 
 When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional meta data included. The data set has already been normalized using `SCTransform()` subjected to principal component analysis (`RunPCA()`). 
 
+```{r clean, message=FALSE, warning=FALSE}
+# Before we proceed with the second part of this lab, let's clean up our environment
+rm(list = ls())
+.rs.restartR()
+```
 ```{r bc, warning=FALSE, message=FALSE}
+# Load the breast cancer scRNA-seq data set
 bc <- readRDS("data/bc")
-bc
 ```
 
 Let's embed our cells in a 2D map using the UMAP method as before.
@@ -505,12 +509,12 @@ _____
 ## 8) Clustering
 _____
 
-Clustering of scRNA-seq data refers to methods used to group samples (cells) based on gene expression similarity (https://www.nature.com/articles/nmeth.4299). The methods are typically unsupervised or semi-supervised, meaning that we can define group structures in the data with little or no prior knowledge about the data beforehand. It's important to understand that clustering methods will almost always be able to find structures in your data, but they don't tell you if the structures are truly representative of cell types or not. Cells can for example be differentiating, proliferating or adapting to their surroundings (microenvironment), therefore producing a spectrum of cell states without clear cut border. We often have to compromise and settle for a level of detail which is suitable for the vbiological questions of interest. Sometimes we might even wan to present groups of cells at several levels of detail. 
+Clustering of scRNA-seq data refers to methods used to group samples (cells) based on gene expression similarity (https://www.nature.com/articles/nmeth.4299). The methods are typically unsupervised or semi-supervised, meaning that we can define group structures in the data with little or no prior knowledge about the data beforehand. It's important to understand that clustering methods will almost always be able to find structures in your data, but they don't tell you if the structures are truly representative of cell types or not. Cells can for example be differentiating, proliferating or adapting to their surroundings (microenvironment), therefore producing a spectrum of cell states without clear cut border. We often have to compromise and settle for a level of detail which is suitable for the biological questions of interest. Sometimes we might even wan to present groups of cells at several levels of detail. 
 
-For example, consider a scRNA-seq dataset with tens of thousands of cells collected from a tissue with an ongoing inflammation, meaning a high infiltration of lymphocytes. In this dataset, you have identified a group of cell with memory B-cell gene signature. In a broader context when 
+For example, consider a scRNA-seq dataset with tens of thousands of cells collected from a tissue with an ongoing inflammation, meaning a high infiltration of lymphocytes. In this data set, you have identified a group of cell with memory B-cell gene signature. In a broader context when 
 looking at whole tissue sample, the memory B-cell would belong to the supergroup of immune cells (together with T-cells, macrophages, dendritic cells, granulocytes etc.). If you zoom in on the immune cells you can further subdivide them into lymphocytes and myeloids. Add another level of detail and you can divide the lymphocytes into B-cells, T-cells, ILCs and NK cells. Aaaaaand finally you might end up splitting the B-cells into naive B-cells, memory B-cells and plasma cells. But it doesn't even have to stop here! These memory B-cells might exist in different sub types or states depending on where they areand how they developed. This may seem a bit messy, but the fact that you can explore whole lineages of cell types is to a large extent what makes scRNA-seq methods so useful!!!
 
-Anyways, in standard scRNA-seq analysis workflow you have to start somewhere, and running a clustering algorithm with default settings is often a good place to start. What people usually do is to cluster the cells and then define (annotate) the clusters as different cell types based on their specific expression of "marker genes". Here, marker genes can be thought of as genes known to be highly expressed by a specific cell type compared to all other cell types. For example, CD19 is known to be expressed only by B-cells. Exploring marker genes in your dataset can also be a useful sanity check to see if your clusters make sense. 
+Anyways, in standard scRNA-seq analysis workflow you have to start somewhere, and running a clustering algorithm with default settings is often a good place to start. What people usually do is to cluster the cells and then define (annotate) the clusters as different cell types based on their specific expression of "marker genes". Here, marker genes can be thought of as genes known to be highly expressed by a specific cell type compared to all other cell types. For example, CD19 is known to be expressed only by B-cells. Exploring marker genes in your data set can also be a useful sanity check to see if your clusters make sense. 
 
 Let's try clustering our data using the default method provided by Seurat's `FindNeighbors()` and `FindClusters()` functions. The parameter called `resolution` can be tweaked to obtain a different number of clusters. Lowering this value will result in fewer clusters and increasing this value will result in more clusters. Here we will use a resolution of 0.6.
 
@@ -545,7 +549,7 @@ sprintf("Number of clusters detected at a resolution of 1.2: %s", nClusters.1.2)
 
 ```
 
-We have already provided a column in the meta data slot with celltype labels so you do not need to do the dirty work of defining clusters, identifying markers and annotating the clusters.
+We have already provided a column in the meta data slot with cell type labels so you do not need to do the dirty work of defining clusters, identifying markers and annotating the clusters.
 
 ```{r dimplot_celltypes, fig.width=8, fig.height=7}
 DimPlot(bc, group.by = "CellType", label = T)
@@ -576,7 +580,7 @@ Let's run `FindAllMarkers()` to get a table of differentially expressed genes pe
 
 ```{r findallmarkers}
 bc <- SetIdent(bc, value = "SCT_snn_res.0.6")
-bc.markers <- FindAllMarkers(bc, only.pos = TRUE)
+bc.markers <- FindAllMarkers(bc, logfc.threshold = 0.5, only.pos = TRUE, max.cells.per.ident = 50)
 
 # Here we will filter the data to keep only the top 2 genes based on avg_log2FC
 top2.markers <- bc.markers %>% 
@@ -585,7 +589,7 @@ top2.markers <- bc.markers %>%
 top2.markers
 ```
 
-In the `top2.markers` table you can find the top 2 most distinct marker genes per celltype based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_log2FC (short for average log-foldchange) that measures the expression in a celltype relative to its 
+In the `top2.markers` table you can find the top 2 most distinct marker genes per cell type based on adjusted p-value. In this table you can find some other metrics as well, e.g. avg_log2FC (short for average log-foldchange) that measures the expression in a cell type relative to its 
 background or p_val_adj (short for adjusted p-value) which gives you a MH-corrected p-value for each gene.
 
 *Q10:* Draw a new plot showing the expression of 1 marker (not 2!) per cell type on the UMAP embedding.
