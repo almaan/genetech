@@ -144,3 +144,14 @@ CONTAINER_ID`.
 If you struggle setting up the docker container, we also provide a quick walkthough in this video:
 
 [![]](https://user-images.githubusercontent.com/23736938/142621099-d2ce44a0-7a24-411f-b8b9-2f4dfc9ad457.mp4)
+
+### Mac users
+If you your R session crashes for no particular reason, you might have an issue with 
+the memory limit of your docker container. If you run `docker stats` in the terminal, 
+you will see the current memory limit for your container. For Mac, this is set to 2GB 
+default, which is probably too little to run some of the computations. From the Docker
+desktop application, you can increase the memory limit:
+![step1](https://user-images.githubusercontent.com/23736938/142879597-7a07c83f-9b6a-4a76-ad75-dda28e46bc2f.png)
+![step3](https://user-images.githubusercontent.com/23736938/142879604-753df433-195a-46ac-ae66-dc0437f8af4a.png)
+
+
