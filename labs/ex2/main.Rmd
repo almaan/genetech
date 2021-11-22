@@ -92,13 +92,15 @@ The `Seurat` object is an S4 class object and has a bunch of _methods_ associate
 If you have installed the Seurat package, the only thing you need to get going is an expression matrix with cells in columns and genes in rows. We will need to load a few other packages for this lab as well!
 
 ```{r load_seurat, warning=FALSE, message=FALSE}
-library(Seurat)
-library(SeuratWrappers)
-library(batchelor)
-library(gprofiler2)
-library(ggplot2)
-library(dplyr)
-library(magrittr)
+suppressPackageStartupMessages({
+  library(Seurat)
+  library(SeuratWrappers)
+  library(batchelor)
+  library(gprofiler2)
+  library(ggplot2)
+  library(dplyr)
+  library(magrittr)
+})
 ```
 
 Before we create our `Seurat` object, it can be useful to include some meta data as well. Meta data is typically a table with additional information about our cells, e.g. information about experimental batch, individual, gender etc. The meta data `data.frame` needs to have as many rows as there are cells in our count matrix (each cell should have some meta data associated with it), so it's good practice to check that the row names of the meta data matches the column names of the count matrix.
@@ -312,7 +314,7 @@ Now that we have this vector we can subset the "Seurat" object that we just crea
 but this time we'll apply the filter to the genes instead.
 
 ```{r subset_genes}
-#se.subset <- subset(se.subset, features = keep.genes)
+se.subset <- subset(se.subset, features = keep.genes)
 ```
 
 Now that we have filtered our object (`se.subset`), we should have fewer cells
@@ -376,11 +378,11 @@ In reality, a scRNA-seq data set represent many complex interactions between dif
 
 As the name implies, a dimensionality reduction method can be used to reduce a high dimensional data set into a representation with fewer dimensions. These new dimensions can pick up sources of variability in the data set, such as signalling pathways, immune functions, metabolic activity, apoptotic activity etc. 
 
-The most useful patterns are often the ones that represent some biological variability, but you can also find patterns which represent technical variability. An example of technical variability could be if you have doublet cells in your data. We are only interested in analyzing individual cells, but sometimes two or more "connected" cells slip through the experimental procedure because of technical limitations of the protocol. We can adress most of the technical variability using normalization and filtering procedures, but you should always keep an eye out for technical confounders!
+The most useful patterns are often the ones that represent some biological variability, but you can also find patterns which represent technical variability. An example of technical variability could be if you have doublet cells in your data. We are only interested in analyzing individual cells, but sometimes two or more "connected" cells slip through the experimental procedure because of technical limitations of the protocol. We can address most of the technical variability using normalization and filtering procedures, but you should always keep an eye out for technical confounders!
 
 The interpretation of dimensionality reduction vectors can be confusing, so it can be helpful to simply think of them as patterns representing some biological or technical variability. Also, for scRNA-seq data, dimensionality reduction methods have become crucial to visualize the data which we will see later in this lab! 
 
-First, let's have a look at the most widely used dimensionality reduction method called Pincipal Component Analysis (PCA). This method can be applied to our Seurat object using the `RunPCA` function.
+First, let's have a look at the most widely used dimensionality reduction method called Principal Component Analysis (PCA). This method can be applied to our Seurat object using the `RunPCA` function.
 
 Let's first compute a PCA representation of our data:
 
@@ -444,7 +446,7 @@ and rerun the PCA.
 ```{r scale_and_pca}
 DefaultAssay(se.corrected) <- "MNN" # Set default assay to the batch corrected assay
 se.corrected <- ScaleData(se.corrected) # Scale data
-se.corrected <- RunPCA(se.corrected) # Rerun PCA
+se.corrected <- RunPCA(se.corrected, verbose = FALSE) # Rerun PCA
 ```
 
 Now we should see that the separation of replicates along PC_3 is no longer present.
@@ -488,7 +490,6 @@ When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some
 # Before we proceed with the second part of this lab, let's clean up our environment
 rm(list = ls())
 gc()
-Sys.sleep(time = 3)
 ```
 ```{r bc, warning=FALSE, message=FALSE}
 # Load the breast cancer scRNA-seq data set
@@ -513,7 +514,7 @@ _____
 Clustering of scRNA-seq data refers to methods used to group samples (cells) based on gene expression similarity (https://www.nature.com/articles/nmeth.4299). The methods are typically unsupervised or semi-supervised, meaning that we can define group structures in the data with little or no prior knowledge about the data beforehand. It's important to understand that clustering methods will almost always be able to find structures in your data, but they don't tell you if the structures are truly representative of cell types or not. Cells can for example be differentiating, proliferating or adapting to their surroundings (microenvironment), therefore producing a spectrum of cell states without clear cut border. We often have to compromise and settle for a level of detail which is suitable for the biological questions of interest. Sometimes we might even wan to present groups of cells at several levels of detail. 
 
 For example, consider a scRNA-seq dataset with tens of thousands of cells collected from a tissue with an ongoing inflammation, meaning a high infiltration of lymphocytes. In this data set, you have identified a group of cell with memory B-cell gene signature. In a broader context when 
-looking at whole tissue sample, the memory B-cell would belong to the supergroup of immune cells (together with T-cells, macrophages, dendritic cells, granulocytes etc.). If you zoom in on the immune cells you can further subdivide them into lymphocytes and myeloids. Add another level of detail and you can divide the lymphocytes into B-cells, T-cells, ILCs and NK cells. Aaaaaand finally you might end up splitting the B-cells into naive B-cells, memory B-cells and plasma cells. But it doesn't even have to stop here! These memory B-cells might exist in different sub types or states depending on where they areand how they developed. This may seem a bit messy, but the fact that you can explore whole lineages of cell types is to a large extent what makes scRNA-seq methods so useful!!!
+looking at whole tissue sample, the memory B-cell would belong to the super group of immune cells (together with T-cells, macrophages, dendritic cells, granulocytes etc.). If you zoom in on the immune cells you can further subdivide them into lymphocytes and myeloids. Add another level of detail and you can divide the lymphocytes into B-cells, T-cells, ILCs and NK cells. Aaaaaand finally you might end up splitting the B-cells into naive B-cells, memory B-cells and plasma cells. But it doesn't even have to stop here! These memory B-cells might exist in different sub types or states depending on where they areand how they developed. This may seem a bit messy, but the fact that you can explore whole lineages of cell types is to a large extent what makes scRNA-seq methods so useful!!!
 
 Anyways, in standard scRNA-seq analysis workflow you have to start somewhere, and running a clustering algorithm with default settings is often a good place to start. What people usually do is to cluster the cells and then define (annotate) the clusters as different cell types based on their specific expression of "marker genes". Here, marker genes can be thought of as genes known to be highly expressed by a specific cell type compared to all other cell types. For example, CD19 is known to be expressed only by B-cells. Exploring marker genes in your data set can also be a useful sanity check to see if your clusters make sense. 
 
@@ -698,12 +699,14 @@ p1 - p2
 
 ```
 
-In the UMAP plot you can see that the cell cycle scores actually reflect the organization of cells within some of the clusters. For example, if we look at the macrophage and cDCs populations, we can see a gradient of S phase, G2M phase and fully differentiated cells. The cycling macrophages are still quite similar to differentiated macrophages in their expression profiles and therefore cluster together, but if we were to increase the clustering resolution we might very well be able to distinguish cycling macrophages from differentiated macrophages. The cell cycle phase can sometimes be so determinant of the overall cell state so that cycling cells from different cell types form their own cluster. If the cell cycle state is irrelevant for the bioloigical question of interest, it is common practice either regress out the effects of cell cycle phase in the normalization process or remove cycling cells from the analysis. 
+In the UMAP plot you can see that the cell cycle scores actually reflect the organization of cells within some of the clusters. For example, if we look at the macrophage and cDCs populations, we can see a gradient of S phase, G2M phase and fully differentiated cells. The cycling macrophages are still quite similar to differentiated macrophages in their expression profiles and therefore cluster together, but if we were to increase the clustering resolution we might very well be able to distinguish cycling macrophages from differentiated macrophages. The cell cycle phase can sometimes be so determinant of the overall cell state so that cycling cells from different cell types form their own cluster. If the cell cycle state is irrelevant for the biological question of interest, it is common practice either regress out the effects of cell cycle phase in the normalization process or remove cycling cells from the analysis. 
 
 *Q12:* 
   * Draw a plot showing the T-cell marker `CD3E` on the UMAP embedding and save it to a variable `p1`. 
-  * Draw a second plot showing the `Phase` labels in the UMAP embedding and save it to a variable `p2`. Combine these plots to show them side by side. 
+  * Draw a second plot showing the `Phase` labels in the UMAP embedding and save it to a variable `p2`. 
   * Draw a third plot showing the expression of the proliferation marker MKI67 in each CellType (VlnPlot)
+  
+Put p1 and p2 side by side in the top row and the p3 plot in the bottom row.
   
 The plot should look similar to this:
 ![](patchwork.png)
@@ -719,7 +722,7 @@ Hint2: You can visualize numerical data (e.g. gene expression, number of unique 
 
 The patchwork plot system in combination with ggplot2 makes it very easy to assemble nice figures for reports and even publications. While this plot in particular is not very meaningful for biological interpretation, it can be extremely useful to learn how this system works!
 
-Now that we have access to information about the cell cycle phase for each cell, it would be interesting to summarize what cell types are proliferating. Below is a bar chart showing the proportion of each cell cycle pahse for each cell type.
+Now that we have access to information about the cell cycle phase for each cell, it would be interesting to summarize what cell types are proliferating. Below is a bar chart showing the proportion of each cell cycle phase for each cell type.
 
 ```{r bar_chart, fig.width=8, fig.height=5}
 ggm <- as.data.frame(table(bc@meta.data[, c("Phase", "CellType")]))
@@ -744,7 +747,7 @@ Hint: The answer should be a character vector with 4 cell type names.
 ```{r q13}
 # Replace NA with the answer
 q13.answer <- NA
-cat(sprintf("Answer: %s", q13.answer))
+cat(sprintf("Answer: %s", paste(q13.answer, collapse = ", ")))
 ```
 
 _______
