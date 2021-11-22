@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ## as the last thing you do before
 ## knitting and hand in in the report
 
-GRADE_MODE <- FALSE
+GRADE_MODE <- TRUE
 ```
 
 # Lab 1
@@ -887,28 +887,24 @@ samples, genes are columns. Make all count values = 1
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Make sample 2 have double the amount of counts for _each_ gene
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Make sample 3 have the the following counts for each gene (32,16,8,4,2) 
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Cut the count values for gene 2 in half within sample 2 and 3, **and** add 3 counts to gene 4 for sample 1
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Calculate the mean value of each gene and store this as a vector named "vec"
@@ -951,8 +947,9 @@ contain, to be more specific:
 
 ```{r, echo = TRUE, eval = GRADE_MODE}
 
+# Possible long solution
 base_count <- function(...){
-  # code for base_count
+
 }
 
 ```
@@ -1004,6 +1001,7 @@ Answer with the specified format (e.g, a numeric), **not** a text or written ans
 ```{r, echo = TRUE, eval = GRADE_MODE}
 
 # WRITE CODE TO GENERATE ans_ex3 HERE
+
 
 # modify this vector
 ans_ex3 <- list(a1 = NA,
