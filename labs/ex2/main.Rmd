@@ -28,7 +28,7 @@ Short primer: what is scRNA-seq?
 
   * Experimental protocols that measure expression levels for thousands of genes across a population of cells
   
-  * Adresses biological questions in which cell-specific characteristics are important, e.g. cell type specific response to external stimuli, differentiation trajectories and cell-cell communication.
+  * Addresses biological questions in which cell-specific characteristics are important, e.g. cell type specific response to external stimuli, differentiation trajectories and cell-cell communication.
   
   * Currently, there are several different protocols in use, e.g. SMART-seq2, CELL-seq and Drop-seq.
   
