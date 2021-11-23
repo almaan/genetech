@@ -89,7 +89,7 @@ _genetech_.
    to as `GENETECH_PATH`.
 3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`
 4. Navigate to the newly created code/ folder and switch to the course specific branch (either bb2255 or cb2040):
-```
+```sh
 cd code
 git checkout bb2255
 ```
