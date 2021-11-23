@@ -88,6 +88,11 @@ _genetech_.
    the newly created _genetech_ folder. The path to this folder will be referred
    to as `GENETECH_PATH`.
 3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`
+4. Navigate to the newly created code/ folder and switch to the course specific branch (either bb2255 or cb2040):
+```
+cd code
+git checkout bb2255
+```
 
 ### Running a Container
 Now when you have a local copy of the image on your computer, the final step is
