@@ -496,6 +496,14 @@ gc()
 bc <- readRDS("data/bc")
 ```
 
+```{r curl, eval=FALSE, include=FALSE}
+# If you get an error loading the bc object, you might have to download it manually
+# To do this, you need to remove the comment for the following two lines and run the code chunk
+#curl::curl_download(url = "https://github.com/almaan/genetech/raw/bb2255/labs/ex2/data/bc", destfile = "data/bc", quiet = FALSE)
+#bc <- readRDS("data/bc")
+```
+
+
 Let's embed our cells in a 2D map using the UMAP method as before.
 
 ```{r UMAP1, warning=FALSE, message=FALSE}
