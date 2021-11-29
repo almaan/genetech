@@ -68,7 +68,8 @@ docker pull almaand/genetech:TAG
 ```
 
 Where `TAG` (at the end) should be replaced with the latest tagname listed
-[here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated).
+[here](https://hub.docker.com/repository/registry-1.docker.io/almaand/genetech/tags?page=1&ordering=last_updated). 
+For example, if you are taking the bb2255 course, use the `bb2255` tag.
 This might take a while, but once it completed you can check that the image
 download was successful by running:
 
