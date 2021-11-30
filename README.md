@@ -88,7 +88,7 @@ _genetech_.
 2. Open a terminal window (or use an already opened one) an orient yourself to
    the newly created _genetech_ folder. The path to this folder will be referred
    to as `GENETECH_PATH`.
-3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`
+3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`. If `git` is not available for these [installation instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 4. Navigate to the newly created code/ folder and switch to the course specific branch (either bb2255 or cb2040):
 ```sh
 cd code
@@ -101,7 +101,7 @@ to generate a container from it. To start a container from the downloaded image
 with access to the content from the cloned GitHub repository, run:
 
 ```sh
- sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --memory=6g --mount type=bind,source=GENETECH_PATH,target=/home/genetech -e ROOT=TRUE almaand/genetech:TAG
+sudo docker run -d -p 1337:8787 --name genetech -e USER='genetech' -e PASSWORD='genetech' --memory=6g --mount type=bind,source=GENETECH_PATH,target=/home/genetech -e ROOT=TRUE almaand/genetech:TAG
 ```
 
 Where `GENETECH_PATH` is the path to the folder you created in the previous
