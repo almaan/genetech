@@ -36,6 +36,7 @@ conda --version
 Virtual environments can be created by running:
 
 ```
+# DO NOT RUN
 conda create --name myenv
 ```
 
@@ -43,10 +44,11 @@ where `myenv` is the name of your virtual environment. Once this environment has
 you can activate it by running:
 
 ```
+# DO NOT RUN
 conda activate myenv
 ```
 
-Once the environment is activated, you can install a specific version of R which will just 
+Now that the environment is activated, you can install a specific version of R which will just 
 be accesible within this environment. Same for R packages, anything you install here will only 
 be accesible within the environment.
 
