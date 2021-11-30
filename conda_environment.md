@@ -78,8 +78,10 @@ application, otherwise you will not have access to the virtual environment from 
 
 ## Video walthrough
 
+### Create environment
 https://user-images.githubusercontent.com/23736938/144021428-c41a0c9d-49ba-420a-9020-67cf2ea8ed50.mp4
 
+### Activate environment and run RStudio
 https://user-images.githubusercontent.com/23736938/144021461-2f7dd2c3-f6b8-4561-a0d0-37f0419160ea.mp4
 
 
