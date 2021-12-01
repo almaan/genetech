@@ -301,7 +301,7 @@ ans2 <- NA
 ans3 <- NA
 ans4 <- NA
 
-cat(sprintf("No. Spots : %d \nNo genes: %d\n1306th gene : %s",ans1,ans2,ans3))
+cat(sprintf("No. Spots : %d \nNo genes: %d\n1306th gene : %s",ans1,ans2,ans4))
 q1.ans <- c(ans1,ans2,ans3,ans4)
 ```
 
@@ -938,7 +938,7 @@ us throw in a question! In the chunk below, answer the following two questions:
 q8.ans1 <- NA
 q8.ans2 <- NA
 # print answers
-print(sprintf("There are %d clusters\n Cluster %d overlaps with the DCIS regions",q8.ans1,q8.ans2))
+cat(sprintf("There are %d clusters\nCluster %d overlaps with the DCIS regions",q8.ans1,q8.ans2))
 ```
 
 But we are not done yet, now when we have these clusters to work with, the next
