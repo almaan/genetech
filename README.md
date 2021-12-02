@@ -61,6 +61,7 @@ Zoom link will follow.
 
 **Main Responsible TA:** Sami Saarenpää<br>
 **Lab Status:** Ready :+1: <br>
+**Working file:** [main.Rmd](labs/ex1/main.Rmd) <br>
 
 Here you will familiarize yourself with some of the basic syntax and
 documentation in R. This lab will lay the foundation for the two next labs,
@@ -74,7 +75,7 @@ Before Lab 1 starts make sure that you:
 1. Install Docker
 2. Download the Docker image
 
-information regarding this is found at the "master" branch of this repo.
+information regarding this is found at the ["master"](https://github.com/almaan/genetech/tree/master) branch of this repo.
 
 ### Rstudio in docker
 Once you've built and started your Docker image according to the instructions at
@@ -101,6 +102,7 @@ exercises correctly.
 ## :dna: Lab 2 | Single Cell RNA-seq analysis :dna:
 **Main Responsible TA:** Ludvig Larsson<br>
 **Lab Status:** Ready :+1: <br>
+**Working file:** [main.Rmd](labs/ex2/main.Rmd) <br>
 
 Single-cell RNA sequencing (or scRNA-seq) has become one of the most valuable tools 
 in genomics to to answer questions about molecular processes at the cellular level. 
@@ -119,6 +121,7 @@ reduction, unsupervised clustering and differential expression analysis.
 
 **Main Responsible TA:** Ludvig Larsson<br>
 **Lab Status:** Ready :+1: <br>
+**Working file:** [main.Rmd](labs/ex3/main.Rmd) <br>
 
 In this lab you will work with Visium data, the spatial gene expression of human
 breast cancer data! While similar to single cell data in some ways, there are
