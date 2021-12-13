@@ -124,11 +124,11 @@ fly. The `bash` code below takes care of this, all you need to do is to execute
 it.
 
 ```{bash,echo=F,eval=F}
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.tar.gz -O /home/genetech/code/labs/ex4/data/bc-data.tar.gz -nv
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.tar.gz -O /home/genetech/code/labs/ex3/data/bc-data.tar.gz -nv
 tar -xf data/bc-data.tar.gz -C data/
 rm data/bc-data.tar.gz
 
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz -O /home/genetech/code/labs/ex4/data/spatial.tar.gz -nv
+wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz -O /home/genetech/code/labs/ex3/data/spatial.tar.gz -nv
 tar -xf data/spatial.tar.gz -C data/
 rm data/spatial.tar.gz
 
