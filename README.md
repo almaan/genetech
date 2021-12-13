@@ -88,7 +88,7 @@ _genetech_.
 2. Open a terminal window (or use an already opened one) an orient yourself to
    the newly created _genetech_ folder. The path to this folder will be referred
    to as `GENETECH_PATH`.
-3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`. If `git` is not available for these [installation instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+3. In the terminal, execute the following command `git clone https://github.com/almaan/genetech.git code`. If `git` is not available follow these [installation instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 4. Navigate to the newly created code/ folder and switch to the course specific branch (either bb2255 or cb2040):
 ```sh
 cd code
