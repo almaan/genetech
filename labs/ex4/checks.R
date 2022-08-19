@@ -1,107 +1,146 @@
-PUBLIC_KEY <- c(187,3)
-
-source("encryption_code.R")
-
-check.q0 <- function(spatial.data,raw.data){
-  if (nrow(spatial.data) == ncol(raw.data)){
-    if (all(rownames(spatial.data) == colnames(raw.data))){
-      srtd <- sort(rownames(spatial.data))
-      checksums <- c("spatial.data" = "325545afefe2a8cc73a24e70e2d6413e",
-                     "raw.data" = "7c544dff94b49a683e78f0e0e517586e"
-                     )
-      
-      sd.status <- digest::digest(spatial.data[srtd,]) == checksums["spatial.data"]
-      rd.status <- digest::digest(raw.data[,srtd]) == checksums["raw.data"]
-      if (sd.status & rd.status){
-        print("Your objects are correctly formated. Feel free to proceed!")
-      } else {
-        print("Your row/colnames are fine and the sizes of the objects match, but the data is not correct! Have a look at it again!")
-      }
-    } else {
-      print("Your row/colnames are differently sorted in the two objects. Have a look at it again!")
-    }
-  } else{
-    print("Your spatial.data object differs in size from the raw.data object. Have a look at it again!")
+check_answer <- function (
+    ans, 
+    hash,
+    serialize = TRUE
+) {
+  success <- c("Fantastic!", "Great job!", "You are on fire!", "Hell yeah!", "Such wow!", "Awesome!")
+  failure <- c("Try again...", "Better luck next time...", "Incorrect...", "Nope...", "Not quite right...", "You're doing it wrong...")
+  if (digest::digest(ans, serialize = serialize) %in% hash) {
+    return(list(sample(x = success, size = 1), TRUE))
+  } else {
+    return(list(sample(x = failure, size = 1), FALSE))
   }
-} 
+}
 
-
-check.q1 <- function(ans){
-  enc.true <- list(ans1 = c(68,132,63,23),
-                   ans2 = c(68,10,10,75,26),
-                  ans3 = c(23,84,23,25,84,84,63,84),
-                  ans4 = c(87,57,133,67,75,26,68,10,75)
-                  )
- 
-  enc.ans <- sapply(ans,rsa_encrypt,public.key=PUBLIC_KEY)
+q1_check <- function (
+    ans
+) {
+  hashes <- c("33b1e01702aeb4ac9461279b50600522", "219870d1e5b7a069479ad227f916a47f", 
+              "704d6af0611c6d93d5b0fe5898bcd121", "68414ede506de2617b66af8260ae88d1")
+  checks <- c()
+  for (i in seq_along(ans)) {
+    txt <- check_answer(ans[[i]], hashes[[i]])
+    cat(paste(sprintf("Answer %s:", i), txt[[1]]), "\n")
+    checks <- c(checks, txt[[2]])
+  }
   
- if (length(enc.true) == length(ans)){
-  for (ii in 1:length(ans)){
-      status <- ifelse(all(enc.true[[ii]] == enc.ans[[ii]]),"correct","incorrect")
-      print(sprintf("Answer %d is %s",ii,status))
-   }
- } else {
-    print("To few or too many answers! Have a look at it again!")
-  }
-}
-
-check.q4 <-function(keep.spots){
-  checksum <- "4950cee1e0aedad7d2033db32b82bdc8"
-  if ( digest::digest(sort(keep.spots)) == checksum){
-    print("Your spot selection was successful! Good job!")
+  if (all(checks)) {
+    cat("\nYou have succeeded!\n")
   } else {
-    print("Something went wrong with your spot selection. Give it a second look")
+    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:4)[!checks], collapse = ", ")))
   }
 }
 
-check.q5 <-function(keep.genes){
-  checksum <- "ed448f3814b5815511d7d5babb8639e1"
-  if ( digest::digest(sort(keep.genes)) == checksum){
-    print("Your spot selection was successful! Fabulous!")
-  } else {
-    print("Something went wrong with your gene selection. Give it a second look.")
+q4_check <- function (
+    ans
+) {
+  hash <- "22c55dc705445bb530072d2f01d9d769"
+  txt <- check_answer(sort(ans), hash)
+  cat(txt[[1]], "\n")
+}
+
+
+q5_check <- function (
+    ans
+) {
+  hash <- "ed448f3814b5815511d7d5babb8639e1"
+  txt <- check_answer(sort(ans), hash)
+  cat(txt[[1]], "\n")
+}
+
+q7_check <- function (
+    ans
+) {
+  hashes <- c("eaca5f783323cd3a0ebe04f752c86e3d", "1b9595f8f162c53cb175888d3b9f2502")
+  checks <- c()
+  for (i in seq_along(ans)) {
+    txt <- check_answer(ans[[i]], hashes[[i]])
+    cat(paste(sprintf("Answer %s:", i), txt[[1]]), "\n")
+    checks <- c(checks, txt[[2]])
   }
-}
-
-check.q7 <- function(ans){
-  enc.true <- c(160,25)
-  enc.ans <- sapply(ans,rsa_encrypt,public.key = PUBLIC_KEY)
-  for (ii in 1:2){
-    status <- ifelse(enc.ans[[ii]] == enc.true[ii],"correct","incorrect")
-    print(sprintf("Answer %d is %s",ii,status))
-  }
-}
-
-
-check.q9 <-function(top.genes){
-  checksum <- "bc918bbb01ff45cc2ede888163f222c5"
-  if ( digest::digest(sort(top.genes)) == checksum){
-    print("You nailed them 5000 genes! Sweet!")
-  } else {
-    print("Doh!Something went wrong with your gene selection. Give it a second look.")
-  }
-}
-
-
-check.q12 <-function(ans.data){
-  tryCatch(
-    expr = {
-        colnames(ans.data) <-tolower(colnames(ans.data))
-        checksum <- "65873a4b6f2eaca04d3e5eb9743e56a0"
-        s.gn <- order(ans.data$gene)
-        m.data <- ans.data[s.gn,]
-        v.ans <- c(m.data$gene,m.data$prob,m.data$factor)
-        enc.ans <- digest::digest(v.ans)
-          
-        if (enc.ans == checksum){
-          print("Woop Woop! Excellent, your data frame looks just as it should!")
-        } else {
-          print("Foxtrot Uniform Charlie Kilo... that data frame was not correct")
-        }
-  },
-  error = function(e){print("I'm sorry but this answer is so wrong that we couldn't even run the test.., give it another go!")}
-  )
-}
-      
   
+  if (all(checks)) {
+    cat("\nYou have succeeded!\n")
+  } else {
+    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
+  }
+}
 
+"4a5d7d50676e6d0ea065f445d8a5539d"
+
+q8_check <- function (
+    ans
+) {
+  hashes <- c("4a5d7d50676e6d0ea065f445d8a5539d", "5e338704a8e069ebd8b38ca71991cf94")
+  checks <- c()
+  for (i in seq_along(ans)) {
+    txt <- check_answer(ans[[i]], hashes[[i]])
+    cat(paste(sprintf("Answer %s:", i), txt[[1]]), "\n")
+    checks <- c(checks, txt[[2]])
+  }
+  
+  if (all(checks)) {
+    cat("\nYou have succeeded!\n")
+  } else {
+    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
+  }
+}
+
+q9_check <- function (
+    ans
+) {
+  if (class(ans) != "character") cat(sprintf("Wrong format: '%s'", class(ans)), "\n")
+  hash <- "ad302d7ad8870a0462c8fb0b62f679d5"
+  txt <- check_answer(sort(ans), hash)
+  cat(txt[[1]], "\n")
+}
+
+q10_check <- function (
+    ans
+) {
+  hashes <- c("6dceff630cda09b9c89c61a8944b5223", "bd639ff1cd7fa3b0d5e8ccb9949bb90d")
+  checks <- c()
+  for (i in seq_along(ans)) {
+    txt <- check_answer(ans[[i]], hashes[[i]])
+    cat(paste(sprintf("Answer %s:", i), txt[[1]]), "\n")
+    checks <- c(checks, txt[[2]])
+  }
+  
+  if (all(checks)) {
+    cat("\nYou have succeeded!\n")
+  } else {
+    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
+  }
+}
+
+q12_check <- function (
+    ans
+) {
+  
+  if (class(ans) != "data.frame") {
+    stop(sprintf("Invalid class '%s'. The answer should be a 'data.frame'.", class(ans)))
+  }
+  
+  if (dim(ans) != c(20, 3)) {
+    stop(sprintf("Invalid dimensions %s, should be 20x3", paste(dim(ans), collapse = "x")))
+  }
+  
+  if (!all(colnames(ans) == c("gene", "weight", "factor"))) {
+    stop("Invalid column names. Should be 'gene', 'weight' and 'factor'")
+  }
+  
+  hashes <- c("dc64e67869e0d96edd717a1e190b2592", "a12d19bcace3651a80a3eb683f7159a2", "24406efdafd47e4d25082dce5b86cb52",
+              "47dd7308f67a890c1ef5894a1cec881d", "a12d19bcace3651a80a3eb683f7159a2", "5f13b719daef0d2f89e307afee966f93")
+  checks <- c()
+  for (i in seq_along(ans)) {
+    txt <- check_answer(as.character(ans[, i]), hashes)
+    checks <- c(checks, txt[[2]])
+  }
+  
+  if (all(checks)) {
+    cat("\nYou have succeeded!\n")
+  } else {
+    cat(sprintf("Column(s) '%s'", paste0(c("gene", "weight", "factor")[!checks], collapse = ", ")), ifelse(sum(!checks) > 1, "are wrong.", "is wrong."))
+    cat("\nPlease revise the answer.\n")
+  }
+}
