@@ -1,10 +1,11 @@
 check_answer <- function (
     ans, 
-    hash
+    hash,
+    serialize = TRUE
 ) {
   success <- c("Fantastic!", "Great job!", "You are on fire!", "Hell yeah!", "Such wow!", "Awesome!")
   failure <- c("Try again...", "Better luck next time...", "Incorrect...", "Nope...", "Not quite right...", "You're doing it wrong...")
-  if (digest::digest(ans) == hash) {
+  if (digest::digest(ans, serialize = serialize) %in% hash) {
     return(list(sample(x = success, size = 1), TRUE))
   } else {
     return(list(sample(x = failure, size = 1), FALSE))
@@ -89,7 +90,7 @@ q9_check <- function (
     ans
 ) {
   if (class(ans) != "character") cat(sprintf("Wrong format: '%s'", class(ans)), "\n")
-  hash <- "4197b9a263b6beab76570e8503dcaf53"
+  hash <- "ad302d7ad8870a0462c8fb0b62f679d5"
   txt <- check_answer(sort(ans), hash)
   cat(txt[[1]], "\n")
 }
@@ -97,7 +98,7 @@ q9_check <- function (
 q10_check <- function (
     ans
 ) {
-  hashes <- c("3602474f97c62de6d9d831fa7e497bab", "35e2f440809fcc4e703876eb592746c2")
+  hashes <- c("6dceff630cda09b9c89c61a8944b5223", "bd639ff1cd7fa3b0d5e8ccb9949bb90d")
   checks <- c()
   for (i in seq_along(ans)) {
     txt <- check_answer(ans[[i]], hashes[[i]])
@@ -115,8 +116,31 @@ q10_check <- function (
 q12_check <- function (
     ans
 ) {
-  if (class(ans) != "data.frame") cat(sprintf("Wrong format: '%s'", class(ans)), "\n")
-  hash <- "1c44f01e2086d437a31a6e020fe69388"
-  txt <- check_answer(ans, hash)
-  cat(txt[[1]], "\n")
+  
+  if (class(ans) != "data.frame") {
+    stop(sprintf("Invalid class '%s'. The answer should be a 'data.frame'.", class(ans)))
+  }
+  
+  if (dim(ans) != c(20, 3)) {
+    stop(sprintf("Invalid dimensions %s, should be 20x3", paste(dim(ans), collapse = "x")))
+  }
+  
+  if (!all(colnames(ans) == c("gene", "weight", "factor"))) {
+    stop("Invalid column names. Should be 'gene', 'weight' and 'factor'")
+  }
+  
+  hashes <- c("dc64e67869e0d96edd717a1e190b2592", "a12d19bcace3651a80a3eb683f7159a2", "24406efdafd47e4d25082dce5b86cb52",
+              "47dd7308f67a890c1ef5894a1cec881d", "a12d19bcace3651a80a3eb683f7159a2", "5f13b719daef0d2f89e307afee966f93")
+  checks <- c()
+  for (i in seq_along(ans)) {
+    txt <- check_answer(as.character(ans[, i]), hashes)
+    checks <- c(checks, txt[[2]])
+  }
+  
+  if (all(checks)) {
+    cat("\nYou have succeeded!\n")
+  } else {
+    cat(sprintf("Column(s) '%s'", paste0(c("gene", "weight", "factor")[!checks], collapse = ", ")), ifelse(sum(!checks) > 1, "are wrong.", "is wrong."))
+    cat("\nPlease revise the answer.\n")
+  }
 }

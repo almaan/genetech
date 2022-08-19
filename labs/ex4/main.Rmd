@@ -3,7 +3,9 @@ title: "Lab4 - Spatial Transcriptomics"
 author: "Alma Andersson and Ludvig Larsson"
 date: 2022-10-13
 output:
-  tufte::tufte_html: default 
+  html_document:
+    toc: true
+    toc_depth: 2
 
 ---
 
@@ -66,7 +68,7 @@ the knitted file. Do not change this code chunk.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
-                      eval=TRUE,
+                      eval = TRUE,
                       message = FALSE,
                       warning = FALSE)
 
@@ -75,10 +77,6 @@ knitr::opts_chunk$set(echo = TRUE,
 Next, let us load some the libraries that we will use in this lab. 
 
 ```{r, echo = FALSE, eval = TRUE}
-# This chunk will:
-# 1. Check if a package is installed
-# 2. Install the package if it's missing
-# 3. load the package
 
 library(STutility)
 library(ggplot2)
@@ -86,19 +84,7 @@ library(dplyr)
 library(rjson)
 library(RColorBrewer)
 library(magrittr)
-
-# "Seurat" = "cran",
-# "sctransform"="cran",
-# "ggplot2"="cran",
-# "png"="cran",
-# "grid"="cran",
-# "topicmodels"="cran",
-# "gridExtra" = "cran",
-# "tm" = "cran",
-# "gridExtra" = "cran",
-# "dplyr" = "cran",
-# "RColorBrewer"="cran",
-# "rjson"="cran"
+library(pheatmap)
 
 ```
 
@@ -137,9 +123,16 @@ sprintf("Spatial data available: %s", dir.exists("./data/spatial"))
 As you might remember, the expression data is only *one component* of the ST and
 Visium assays, we also have an *image* of the very same (stained with
 Hematoxylin and Eosin) tissue section to use as a reference and aid in our
-analysis. The HE-image for our data is shown below.
+analysis. You can visualize the HE-image by running the code chunk below.
 
-![HE-image of the Breast Cancer Section](data/spatial/tissue_hires_image.png)
+```{r fig.width=8, fig.height=8}
+
+im <- png::readPNG("data/spatial/tissue_hires_image.png") %>% as.raster()
+par(mar = c(0,0,0,0))
+plot(im)
+
+```
+
 
 Now when we know what our tissue looks like, let us continue with the expression
 data. Just as for most data generated from sequencing experiments, the raw data
@@ -197,6 +190,9 @@ head(se.HER2[[]])
 3. How many UMI's in total do we have, i.e., total amount of observed transcripts?
 4. What is the name of the 1306th gene?
 
+_hint_ : You can use the function `GetAssayData()` to retrieve to expression 
+matrix (i.e. UMI counts).
+
 Give your answers below
 
 ```{r}
@@ -205,10 +201,10 @@ Give your answers below
 # by assigning the values (answers) to
 # the variables ans1,ans2 and ans3
 
-ans1 <- 3798
-ans2 <- 24923
-ans3 <- 8285229
-ans4 <- "AL445231.1"
+ans1 <- NA
+ans2 <- NA
+ans3 <- NA
+ans4 <- NA
 
 cat(sprintf("No. Spots : %d \nNo genes: %d\n1306th gene : %s", ans1, ans2, ans3))
 
@@ -223,13 +219,6 @@ q1_check(ans = list(ans1, ans2, ans3, ans4))
 
 ```
 
-
-```{r}
-
-coordinates <- spatial.data[[]][, c("x", "y", "pixel_x", "pixel_y")]
-
-```
-
 Let us now make some use of this data that we worked so hard for to obtain! A
 good first task, and also a sanity check to make sure that everything went as
 expected, is to plot the spots according to their spatial coordinates, which you 
@@ -240,13 +229,13 @@ which is automatically added to your Seurat object when it is created.
 
 ```{r fig.width=6, fig.height=5}
 
-ST.FeaturePlot(se.HER2, features = "orig.ident")
+# You can adjust the point size by changing the value for pt.size
+ST.FeaturePlot(se.HER2, features = "orig.ident", pt.size = 2)
 
 ```
 
 In the top left corner we can see the name of the feature that we selected ("orig.ident"),
 above the image we see a number that tells us what section we're looking at (here we only have 1),
-there is a small scale bar above the tissue that helps you to figure out distances in the plot,
 and on the right hand side you can see the content of our selected feature which the spots are 
 colored by (here we only have 1 category, so we get one color).
 
@@ -261,7 +250,7 @@ an argument palette = "Spectral" to get a more fancy color scale.
 
 ```{r, fig.width=6, fig.height=5}
 
-# ST.FeaturePlot(se.HER2, features = "nFeature_RNA", palette = "Spectral")
+# Write the code below
 
 ```
 
@@ -280,7 +269,9 @@ Thanks to the setup of the Visium platform, the spots can (seamlessly) be
 overlaid on the tissue.
 
 First, we need to load the H%E image(s) into the Seurat object using the `LoadImages()` 
-function. We can then plot our H%E image(s) with the `ImagePlot()` function.
+function. We can then plot our H&E image(s) with the `ImagePlot()` function. It's way 
+easier and faster to work with small images, so we will downscale the image to have a 
+width of 600 pixels by setting `xdim = 600`.
 
 ```{r, fig.width= 7, fig.height= 7}
 
@@ -308,9 +299,11 @@ see this property in action, we will visualize the expression of a gene called
 _ERBB2_  (a marker gene for HER2-positive breast cancer). 
 
 
-```{r fig.width=8, fig.height=7}
+```{r fig.width=7, fig.height=6}
 
-FeatureOverlay(se.HER2, features = "ERBB2", pt.size = 1.5)
+# You can play around with the pt.size and pt.alpha (opacity) to make the background more 
+# visible
+FeatureOverlay(se.HER2, features = "ERBB2", pt.size = 1.5, pt.alpha = 0.5)
 
 ```
 
@@ -327,14 +320,22 @@ example we can inspect which genes that are up-regulated in these regions. Below
 you have such annotations (rough, but still decent) of the same tissue as we are
 working with.
 
-![Annotation of HE-image](img/annot.png)
+Run the code chunk below to see the annotations:
+
+```{r fig.width=8, fig.height=8}
+
+im_ann <- png::readPNG("img/annot.png") %>% as.raster()
+par(mar = c(0,0,0,0))
+plot(im_ann)
+
+```
 
 * Blue - Fibrous Tissue
 * Pink - Invasive Carcinoma
 * Green - Ductal Cancer _in situ_ (DCIS)
 
 
-*Q3*: Armed with the `spatial.plot` function, it's now up to you to find out which (choose one) 
+*Q3*: Armed with the `FeatureOverlay()` function, it's now up to you to find out which (choose one) 
 of these genes below, that are highly expressed in in one or more of the _DCIS_ regions while 
 less prominently expressed in the remaining part of the tissue.
 
@@ -348,11 +349,10 @@ less prominently expressed in the remaining part of the tissue.
 Use the `FeatureOverlay()` function inspect the spatial distribution of these genes and to plot 
 your answer!
 
-```{r fig.width=6, fig.height=5}
+```{r fig.width=7, fig.height=6}
+
 # Plot the gene highly expressed in the DCIS region here
 # using the FeatureOverlay() function
-
-# FeatureOverlay(se.HER2, features = "MGP")
 
 ```
 
@@ -372,14 +372,14 @@ the tissue (but still were - falsely - identified as such by the 10x
 bioinformatics software).
 
 To get a better sense of what spots we should remove, we will look at the
-histograms of the meta data `nCount_spRNA` and `nFeatures_spRNA`. The former
+histograms of the meta data `nCount_RNA` and `nFeatures_RNA`. The former
 informs us of the total number of observed transcript in each spot, while the
 latter is informative of how many _different_ genes that we observe in
 respective spot.
 
 ```{r, fig.width = 14, fig.height = 5}
 
-# generate hisograom of UMI counts
+# generate histograom of UMI counts
 h1 <- ggplot(se.HER2[[]], aes(nCount_RNA)) +
   geom_histogram(fill = "red", alpha = 0.7, bins = 60) +
   geom_vline(xintercept = 2000, color = "black", linetype = "dashed") +
@@ -391,8 +391,8 @@ h2 <- ggplot(se.HER2[[]], aes(nFeature_RNA)) +
   geom_histogram(fill = "blue", alpha = 0.7, bins = 60) +
   geom_vline(xintercept = 800, color = "black", linetype = "dashed") +
   labs(x = "No. Spots",
-       y = "No. Features",
-       title = "Histogram | Features")
+       y = "No. Genes",
+       title = "Histogram | Genes")
 
 h1 + h2
 
@@ -413,8 +413,6 @@ _Comment_ : Do *not* make any changes to your Seurat object yet.
 ```{r}
 
 # Enter code to create the keep.spots vector here
-keep.spots <- intersect(colnames(se.HER2)[se.HER2$nCount_RNA >= 2000],
-                        colnames(se.HER2)[se.HER2$nFeature_RNA >= 800])
 
 ```
 
@@ -426,8 +424,6 @@ source("checks.R")
 q4_check(ans = keep.spots)
 
 ```
-
-
 
 Naturally, the next step is to identify which genes we want to keep and discard.
 To guide us in the procedure we will plot histograms of: (i) the total number of
@@ -441,9 +437,15 @@ work with infinite numbers...
 
 ```{r fig.width=14, fig.height=5}
 
-# compute total transcripts over all spots
+# Compute total transcripts over all spots, which
+# is equal to the row sums of our expression matrix
 nCount.UMI <- Matrix::rowSums(GetAssayData(se.HER2))
-# compute number of spots each gene has been observed at
+
+# Compute number of spots each gene has been observed at.
+# What we do here is to first create a logical matrix 
+# which tells us if the expression is larger than 0. 
+# Then we can simply compute the row sums to get 
+# the number of spots each gene is detected in.
 nObs.genes <- Matrix::rowSums(GetAssayData(se.HER2) > 0)
 
 # construct new data frame with the information extracted above
@@ -469,14 +471,14 @@ h3 + h4
 criteria:
 
 1. Total expression across all spots is larger or equal to $300$
-2. The gene should be observed (i.e., have a non-zero count) in _at least_ 5 spots (about 0.2% of )
+2. The gene should be observed (i.e., have a non-zero count) in 
+_at least_ 5 spots (about 0.2% of the data)
 
 _Comment_ : do **not** make any modifications to your Seurat object yet.
 
-```{r,eval = GRADE_MODE}
+```{r}
 
 # Enter code to create the keep.genes vector here
-keep.genes <- rownames(se.HER2)[gene.data$nCounts >= 300 & gene.data$nObs >= 4]
 
 ```
 
@@ -511,7 +513,7 @@ keep.genes <- keep.genes[!grepl("^(MT-|RPL|RPS)", keep.genes)]
 
 
 _Q6_: Subset your Seurat object `se.HER2` using the vectors `keep.spots` and
-`keep.genes` using the `SubsetSTData()` function. The subsetted Seurat object 
+`keep.genes` with the `SubsetSTData()` function. The subsetted Seurat object 
 should still be named `se.HER2` (i.e., you should overwrite the old one). 
 `SubsetSTData()` is a function provided in `STUtility` which can take a vector 
 of spots that should be passed to the `spots=` argument and a vector of genes
@@ -525,7 +527,6 @@ You can find more information in the `SubsetSTData()` documentation by typing
 ```{r}
 
 # enter code to subset your Seurat object here
-se.HER2 <- SubsetSTData(se.HER2, spots = keep.spots, features = keep.genes)
 
 # inspect Seurat object
 se.HER2
@@ -538,10 +539,11 @@ _Q7_: Now please answer these to questions below:
 1. How many genes were *removed* in the filtering?
 2. How many spots were *removed* in the filtering?
 
-```{r, eval = GRADE_MODE}
+```{r}
 
-ans.q7.1 <- ans2 - nrow(se.HER2)
-ans.q7.2 <- ans1 - ncol(se.HER2)
+# Replace the NA values with your answers
+ans.q7.1 <- NA
+ans.q7.2 <- NA
 
 cat(sprintf("Removed genes : %s\nRemoved spots %s", ans.q7.1, ans.q7.2))
 
@@ -676,8 +678,9 @@ us throw in a question! In the chunk below, answer the following two questions:
 ```{r}
 
 # Enter the answers to question 9 here
-q8.ans1 <- 8
-q8.ans2 <- 5
+q8.ans1 <- NA
+q8.ans2 <- NA
+
 # print answers
 cat(sprintf("There are %d clusters\nCluster %d overlaps with the DCIS regions", q8.ans1, q8.ans2))
 
@@ -707,7 +710,7 @@ significance threshold of `0.01` by setting the parameter `return.thresh` to
 `0.01`.
 
 
-```{r,warnings=FALSE,echo=FALSE}
+```{r, warnings=FALSE, echo=FALSE}
 
 # conduct a DGE analysis
 de.markers <- FindAllMarkers(se.HER2, logfc.threshold = 1, only.pos = TRUE, return.thresh = 0.01)
@@ -786,7 +789,7 @@ normalization step with `SCTransform()` and we can get those by running
 
 ```{r}
 
-factorization.genes <- VariableFeatures(se.HER2)[1:1000]
+# Enter the code here
 
 ```
 
@@ -846,7 +849,7 @@ spot that originates from the respective factor.
 Let's visualize our factors on the tissue to understand what this means.
 
 
-```{r,  spatially.fig.width=12, fig.height=10}
+```{r  fig.width=12, fig.height=8}
 
 ST.DimPlot(se.HER2, reduction = "NMF", dims = 1:10, grid.ncol = 4, center.zero = FALSE, palette = "Spectral", show.sb = FALSE) &
   theme(strip.text = element_blank())
@@ -857,7 +860,7 @@ before we look further into them, let's make sure you are on board with what we
 are doing!
 
 **Q10**: 
-What are the 10 spots with the highest contribution to factor 7? 
+What are the 10 spots with the highest contribution to factor 10? 
 What are the 10 genes with the highest contribution to factor 3?
 
 Give your answers as comments in the code chunk below, they should be short and concise, 
@@ -868,8 +871,8 @@ not more than a sentence or two.
 # Write code here
 
 # Enter the answers to question 10 here
-q10.ans1 <- rownames(H)[order(H[, 7], decreasing = T)[1:10]]
-q10.ans2 <- rownames(W)[order(W[, 3], decreasing = T)[1:10]]
+q10.ans1 <- NA
+q10.ans2 <- NA
 
 # print answers
 cat(sprintf("The spots with the highest contribution to factor 7 are: \n%s", paste(q10.ans1, collapse = "\n")), "\n\n")
@@ -887,14 +890,14 @@ q10_check(list(q10.ans1, q10.ans2))
 ```
 
 
-Factor 8 looks kinda interesting, almost as if it's surrounding the DCIS
+Factor 7 looks kinda interesting, almost as if it's surrounding the DCIS
 regions, let us have a closer look at which genes that are most strongly
 associated with this factor.
 
 
 ```{r}
 
-FactorGeneLoadingPlot(se.HER2, factor = 8)
+FactorGeneLoadingPlot(se.HER2, factor = 7)
 
 ```
 
@@ -905,7 +908,7 @@ arbitrary letters or numbers).
 kind of biological process(es) each factor could represent. And, evaluation of
 results are just as important as obtaining them. Thus your task is to -- with
 the help of the internet if you like -- pick the biological process from the
-ones listed below that you consider most likely that factor 1 is associated
+ones listed below that you consider most likely that factor 7 is associated
 with.
 
 Processes
@@ -921,7 +924,7 @@ Processes
 # Answer Q11 with the number of the process you think is the right one
 ans.q11 <- NA
 
-print(sprintf("Factor 6 is associated with process %d", ans.q11))
+print(sprintf("Factor 7 is associated with process %d", ans.q11))
 
 ```
 
@@ -943,17 +946,12 @@ must, there are multiple ways of solving this exercise!
 _Hint 3_: If you want append an element to a vector, you simply do 
 `my.vector <- c(my.vector, new.element)`
 
+_Hint 4_: The `data.frame` should look something like this:
+![](./img/data_frame.png)
+
 ```{r}
 
 # code to produce the top.2.genes data frame
-top.2.genes <- data.frame()
-genes <- rownames(W)
-
-for (i in 1:10) {
-  top.genes <- genes[order(W[, i], decreasing = TRUE)][1:2]
-  top.scores <- sort(W[, i], decreasing = TRUE)[1:2]
-  top.2.genes <- rbind(top.2.genes, data.frame(gene = top.genes, weight = top.scores, factor = paste0("factor_", i)))
-}
 
 ```
 
@@ -970,9 +968,8 @@ q12_check(top.2.genes)
 ## Single Cell Integration
 
 The idea of factor decomposition is attractive, but there are still some
-challenges to this approach. The factors (a more general term than topic), do
-not necessarily represent specific cell types and we have no immediate
-biological interpretation of them.
+challenges to this approach. The factors do not necessarily represent specific 
+cell types and we have no immediate biological interpretation of them. 
 
 What if we wanted to know where a specific type of T-cells or B-cells are
 located in our spatial data; then we would have to hope that some of our factors
@@ -987,7 +984,7 @@ But from where would be obtain such information? The answer comes in the form of
 a different type of data, namely _single cell RNA-seq_. 
 
 In single cell experiments, each data point corresponds to one individual cell
-(once duoublets have been removed). This means that if we assign an identity
+(once doublets have been removed). This means that if we assign an identity
 (e.g., cell type or cluster), we can learn the expression profiles and then
 deconvolve our spatial data with them.
 
@@ -995,7 +992,7 @@ Multiple strategies exists to "map" single cell information onto the spatial
 data, but we will use output from a tool called `stereoscope` (from the paper
 _"single-cell and spatial transcriptomics enables probabilistic inference of cell type topography"_
 in Nature Communications Biology), the software is found at
-[github](https://github.com/almaan/stereoscope). In short this method models
+[github](https://github.com/almaan/stereoscope). In short, this method models
 both single cell and spatial data as _Negative Binomial_ (NB) distributed, then
 for every gene infers the parameters of each cell type's distribution, to finally
 find the optimal combination of cell types in each spot based on Maximum a
@@ -1016,23 +1013,26 @@ Therefore you will load the output of `stereoscope` when applying it to the
 aforementioned single cell data set and our spatial data.
 
 ```{r}
-# Load stereoscope analysis results
 
+# Load stereoscope analysis results
 # get data from file
 stsc <- read.table("data/stereoscope-proportions.tsv.gz",
                    sep = '\t',
                    row.names = 1,
                    header = 1)
+
 # transpose to have features as rows and spots as columns
 stsc <- t(stsc)
+
 # ad a new assay called stereoscope to our se object
-stsc <- stsc[,colnames(se)]
-se[["stereoscope"]] <- CreateAssayObject(counts = stsc)
+stsc <- stsc[, colnames(se.HER2)]
+se.HER2[["stereoscope"]] <- CreateAssayObject(counts = stsc)
 
 # set the default assay to stereoscope
-DefaultAssay(se) <- "stereoscope"
+DefaultAssay(se.HER2) <- "stereoscope"
+
 # inspect data
-GetAssayData(se)[1:5,1:5]
+GetAssayData(se.HER2)[1:5, 1:5]
 
 ```
 
@@ -1042,7 +1042,7 @@ certain cell type. The cell types present in our data are:
 
 ```{r}
 
-cat(paste(rownames(se), collapse = ", "))
+cat(paste(rownames(se.HER2), collapse = ", "))
 
 ```
 
@@ -1052,33 +1052,16 @@ Now how about having a look at the spatial distribution of the celltypes:
 * T-cells
 * Epithelial 
 
-our beloved `spatial.plot` comes in handy again
+our beloved `FeatureOverlay()` comes in handy again
 
-```{r}
+```{r fig.width=12, fig.height=4}
 
 # specify cell types to plot
-plot.types <- c("B.cells",
+selected.cell.types <- c("B.cells",
                 "T.cells",
                 "Epithelial")
-# list to hold our plots
-plot.list <- list()
 
-# iterate over each specified cell type
-for (cell.type in plot.types){
-  # get vector of cell type proportion values
-  color.vector <- GetAssayData(se)[cell.type,]
-  # generate plot
-  plot.list[[cell.type]] <- spatial.plot(se,
-                            color.vector = color.vector,
-                            plot.title = cell.type,
-                            legend.title = "proportion"
-                            )
-  
-}
-# arrange plots in grid
-grid.arrange(grobs = plot.list,
-             ncol = 3)
-
+FeatureOverlay(se.HER2, features = selected.cell.types, ncols = 3, pt.size = 1)
 
 ```
 
@@ -1102,23 +1085,23 @@ We will compute these correlation values - cast as a correlation matrix - and
 then visualize them in a heatmap.
 
 
-```{r, fig.width=10,fig.height=10}
+```{r fig.width=10, fig.height=10}
+
 # generate a color palette
-color.pal <- rev(colorRampPalette(brewer.pal(11,"RdBu"))(nrow(se)))
+color.pal <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(50))
+
 # compute pearson correlation of cell types across spots
-cors <- cors <- GetAssayData(se) %>%
+cors <- GetAssayData(se.HER2) %>%
   as.matrix() %>%
   t() %>% 
   cor()
+
 # set diagonal to NA
 diag(cors) <- NA
-# generate heatmap and plot it
-heatmap(cors,
-        col = color.pal,
-        scale = "none",
-        verbose = F,
-        breaks=seq(-1, 1, length.out=length(color.pal) +1)
-        )
+
+# Plot heatmap
+pheatmap::pheatmap(cors, color = color.pal)
+
 ```
 
 Here, the more dark blue a square is the more negative the associated value is,
@@ -1134,18 +1117,19 @@ _Comment_ use the following cell type names when answering below: "T-cells",
 "B-cells", "Epithelial", "SMCs","Myeloid", "Endothelial","CAFs", and
 "Plasmablasts"
 
-```{r,eval =GRADE_MODE}
+```{r}
 
+# Replace the NA values with your answers below
 ans.q13.1 <- NA
 ans.q13.2 <- NA
-cat(sprintf("Myeloid cells strongly anticorrelate with: %s\nT-cells strongly spatially co-localize with %s cells",ans.q13.1,ans.q13.2))
+cat(sprintf("Myeloid cells strongly anticorrelate with %s cells\nT-cells strongly spatially co-localize with %s", ans.q13.1, ans.q13.2))
+
 ```
 
 ## Hand In Guidelines
 
 
-**How :**  First, go to the top of this document and set `GRADE_MODE = TRUE`.
-Next, knit this document, and hand in the resulting html-file on Canvas. Make
+**How :**  Knit this document, and hand in the resulting html-file on Canvas. Make
 sure you have solved all the questions. If the document doesn't compile, there
 is something wrong with the code.
 
