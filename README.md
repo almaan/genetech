@@ -30,7 +30,7 @@ bioinformaticians.
 
 * **Why use R?:** The usefulness of a language is to a large
 extent dependent on the community, and people contributing with libraries.
-Whilst R as an language in no way is superior to for example Python or Julia, as
+Whilst R as a language in no way is superior to for example Python or Julia, as
 of now the set of available tools for bioinformatic analysis in R by far exceeds
 the others. This allows you to conduct advanced analyses with just a few lines
 of code rather than several hundreds or thousands. Popular machine learning
@@ -50,7 +50,7 @@ preferred ways of learning.
 
 ## :dna: Lab 1 | Basic R programming and markdown :dna:
 
-**Main Responsible TA:** Alma Andersson<br>
+**Main Responsible TA:** TBA<br>
 **Lab Status:** Ready :+1: <br>
 
 Here you will familiarize yourself with some of the basic syntax and
@@ -62,25 +62,14 @@ how to orient yourself in R.
 ### Preparatory work
 Before Lab 1 starts make sure that you:
 
-1. Install Docker
-2. Download the Docker image
-
-information regarding this is found at the "master" branch of this repo.
-
-### Rstudio in docker
-Once you've built and started your Docker image according to the instructions at
-the landing page, simply go to your favorite web-browser and enter:
-_localhost:1337_ as the address. This will take you to the interactive Rstudio,
-as also mentioned on the landing page, the credentials to login are:
-* Username : _genetech_
-* Password : _genetech_
+*TBA: Sami do we need some instructions here for RStudio cloud?*
 
 ### Hand-in
 
 In addition to changing the author information (see Guidelines section below),
 also change the variable `GRADE_MODE` from `FALSE` to `TRUE` before handing in
 the lab, if your lab knitts without any complications, you have solved all the
-exercises correctly.
+exercises correctly. Note that this is only necessary for lab 1.
 
 ### Resources
 
@@ -90,7 +79,7 @@ exercises correctly.
 
 
 ## :dna: Lab 2 | Data visualization and Bulk RNA-seq analysis :dna:
-**Main Responsible TA:** Sami Saarenpää<br>
+**Main Responsible TA:** TBA<br>
 **Lab Status:**  Ready :+1: <br> 
 
 RNA sequencing (RNA-seq or bulk RNA-seq) has been a golden standard in life sciences for more than a decade. 
@@ -130,7 +119,7 @@ reduction, unsupervised clustering and differential expression analysis.
 
 ## :dna: Lab 4 | Spatial Transcriptomics analysis :dna:
 
-**Main Responsible TA:** Alma Andersson<br>
+**Main Responsible TA:** TBA<br>
 **Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2021-10-05</span>:hourglass_flowing_sand:<br> 
 
 In this lab you will work with Visium data, the spatial gene expression of human
@@ -148,7 +137,7 @@ concepts, still these concepts will be briefly explained in the lab:
 * Spatial Transcriptomics (The method presented [here](https://science.sciencemag.org/content/353/6294/78))
 * Dimensionality Reduction (Focus on PCA) 
 * Clustering
-* Latent Dirichlet Allocation (LDA)
+* Matrix Factorization
 * Single cell and spatial transcriptomics data integration (The method we are using is presented [here](https://www.nature.com/articles/s42003-020-01247-y))
 
 ## Guidelines
@@ -165,10 +154,10 @@ All labs will start with something similar to this:
 ```{yaml}
 ---
 title: "Lab 1 - Introduction to R"
-author: "Alma Andersson"
-date: "11-09-2020"
+author: "John Doe"
+date: "10-13-2022"
 output:
-  tufte::tufte_html: default 
+  html_document
 /---
 ```
 When you hand in the modified lab, change the author field to your name(s).
@@ -215,7 +204,9 @@ copy of the report (identical).
 
 ## Contact Information
 
-* Alma Andersson : almaan [at] kth.se
-* Sami Saarenpää : sami.saarenpaa [at] scilifelab.se
-* Ludvig Larsson : ludvig.larsson [at ] scilifelab.se
+* Sami Saarenpää : sami.saarenpaa@scilifelab.se
+* Ludvig Larsson : ludvig.larsson@scilifelab.se
+* Nayanika Bhalla : nayanika.bhalla@scilifelab.se
+* Pontus Höjer : pontus.hojer@scilifelab.se
+* Marco Vicari : marco.vicari@scilifelab.se
 
