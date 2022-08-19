@@ -102,7 +102,7 @@ concept, still it will be briefly explained in the lab:
 
 ## :dna: Lab 3 | Single Cell RNA-seq analysis :dna:
 **Main Responsible TA:** Ludvig Larsson<br>
-**Lab Status:** Being Proofread :hourglass_flowing_sand: <br>
+**Lab Status:** Ready :+1: <br>
 
 Single-cell RNA sequencing (or scRNA-seq) has become one of the most valuable tools 
 in genomics to to answer questions about molecular processes at the cellular level. 
@@ -120,7 +120,7 @@ reduction, unsupervised clustering and differential expression analysis.
 ## :dna: Lab 4 | Spatial Transcriptomics analysis :dna:
 
 **Main Responsible TA:** TBA<br>
-**Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2021-10-05</span>:hourglass_flowing_sand:<br> 
+**Lab Status:** <span style="color:red"> Being Proofread | Final release @ 2022-10-13</span>:hourglass_flowing_sand:<br> 
 
 In this lab you will work with Visium data, the spatial gene expression of human
 breast cancer data! While similar to single cell data in some ways, there are
