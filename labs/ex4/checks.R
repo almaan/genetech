@@ -15,8 +15,13 @@ check_answer <- function (
 q1_check <- function (
     ans
 ) {
-  hashes <- c("33b1e01702aeb4ac9461279b50600522", "219870d1e5b7a069479ad227f916a47f", 
-              "704d6af0611c6d93d5b0fe5898bcd121", "68414ede506de2617b66af8260ae88d1")
+  hashes <- list(
+    # There are multiple hashes for ans 1, 2 and 3  as the type might be numeric or integer
+    c("33b1e01702aeb4ac9461279b50600522", "e866442adfc27e602e85fc539e54b2a2"),
+    c("219870d1e5b7a069479ad227f916a47f", "0275d8a1a76528d5a9c4372664cb73cb"), 
+    c("704d6af0611c6d93d5b0fe5898bcd121", "b24bd50a679ef9f43c714b29bd513600"), 
+    c("68414ede506de2617b66af8260ae88d1")
+  )
   checks <- c()
   for (i in seq_along(ans)) {
     txt <- check_answer(ans[[i]], hashes[[i]])
@@ -74,7 +79,7 @@ q8_check <- function (
   hashes <- c("4a5d7d50676e6d0ea065f445d8a5539d", "5e338704a8e069ebd8b38ca71991cf94")
   checks <- c()
   for (i in seq_along(ans)) {
-    txt <- check_answer(ans[[i]], hashes[[i]])
+    txt <- check_answer(as.numeric(ans[[i]]), hashes[[i]])
     cat(paste(sprintf("Answer %s:", i), txt[[1]]), "\n")
     checks <- c(checks, txt[[2]])
   }
@@ -121,7 +126,7 @@ q12_check <- function (
     stop(sprintf("Invalid class '%s'. The answer should be a 'data.frame'.", class(ans)))
   }
   
-  if (dim(ans) != c(20, 3)) {
+  if (any(dim(ans) != c(20, 3))) {
     stop(sprintf("Invalid dimensions %s, should be 20x3", paste(dim(ans), collapse = "x")))
   }
   
@@ -129,11 +134,10 @@ q12_check <- function (
     stop("Invalid column names. Should be 'gene', 'weight' and 'factor'")
   }
   
-  hashes <- c("dc64e67869e0d96edd717a1e190b2592", "a12d19bcace3651a80a3eb683f7159a2", "24406efdafd47e4d25082dce5b86cb52",
-              "47dd7308f67a890c1ef5894a1cec881d", "a12d19bcace3651a80a3eb683f7159a2", "5f13b719daef0d2f89e307afee966f93")
+  hashes <- c("5f13b719daef0d2f89e307afee966f93", "7c3d82ed3a0329c8e7108fcdf8fb0746", "6d84f15dc4e2029bc5585a85a381ac8b")
   checks <- c()
   for (i in seq_along(ans)) {
-    txt <- check_answer(as.character(ans[, i]), hashes)
+    txt <- check_answer(as.array(ans[, i]), hashes)
     checks <- c(checks, txt[[2]])
   }
   
