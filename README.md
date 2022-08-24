@@ -155,7 +155,7 @@ All labs will start with something similar to this:
 ---
 title: "Lab 1 - Introduction to R"
 author: "John Doe"
-date: "10-13-2022"
+date: "2022-10-13"
 output:
   html_document
 /---
