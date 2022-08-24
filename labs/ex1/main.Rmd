@@ -1,9 +1,14 @@
 ---
 title: "Lab 1 - Introduction to R"
 author: "Alma Andersson"
-date: "17-09-2021"
+date: "2022-09-16"
 output:
-  tufte::tufte_html: default 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float:
+      collapse: false
+    theme: "readable"
 ---
 
 ```{r setup, include=FALSE}
@@ -17,8 +22,6 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 
 GRADE_MODE <- FALSE
 ```
-
-# Lab 1
 
 Welcome to the first lab! The objective here is to get you _familiar_ with the
 programming language `R` and thus prepare you for the more advanced labs. If you
@@ -284,9 +287,9 @@ a_list <- list(19660206,
                "you")
 
 a_vector <- c("wind",
-              "A1",
+              "1A",
               "earth",
-              "B2",
+              "3B",
               "flat",
               "water",
               "5G",
@@ -882,33 +885,28 @@ for some exercises. To pass the lab, all exercises must be correctly completed.
 
 ### Exercise 1
 
-Create a data frame (named `count.data`) with 3 samples and 5 genes. Rows are
-samples, genes are columns. Make all count values = 1
+Create a data frame (named `count.data`) with 3 samples and 5 genes. Rows are samples, genes are columns. Make all count values = 1
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Make sample 2 have double the amount of counts for _each_ gene
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Make sample 3 have the the following counts for each gene (32,16,8,4,2) 
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Cut the count values for gene 2 in half within sample 2 and 3, **and** add 3 counts to gene 4 for sample 1
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
-
 ```
 
 Calculate the mean value of each gene and store this as a vector named "vec"
@@ -925,7 +923,7 @@ print(round(vec %*% c(1337,69,42,666,80085)) == 151677)
 
 ### Exercise 2
 
-In the code chunk below, a vector represesenting a genomic sequence is
+In the code chunk below, a vector representing a genomic sequence is
 generated, each element in the vector is one base in the sequence. You do
 not have to pay attention to this particular code but should **run it**.
 
@@ -939,9 +937,7 @@ sequence <- as.vector(sequence)
 print(sprintf("the sequence is : %s",paste0(sequence,collapse = "")))
 ```
 
-your task is to **write a function** called `base_count` that counts the number
-of occurances of each base, i.e., how many A,C,T and G's does `sequence`
-contain, to be more specific:
+your task is to **write a function** called `base_count` that counts the number of occurrences of each base, i.e., how many A,C,T and G's does `sequence` contain, to be more specific:
 
 `base_count(sequence)` should return a vector where the elements are named
 "A,C,T,G" and their associated value represents the number of each base in
@@ -951,8 +947,9 @@ contain, to be more specific:
 
 ```{r, echo = TRUE, eval = GRADE_MODE}
 
+# Possible long solution
 base_count <- function(...){
-  # code for base_count
+
 }
 
 ```
@@ -985,9 +982,14 @@ counts <- read.table("reads.tsv", sep = "\t")
 
 You could now answer the following questions:
 
-*Q1:* How many different genes have data been collected from? (help : use `nrow`)
-*Q2 * How many patients have data been collected from? (help : use `dim`)
-*Q3:* Which **5 genes** are most highly expressed across all samples? (help : use `sort` or `order`)
+#### Q1
+> How many different genes have data been collected from? (help : use `nrow`)
+
+#### Q2
+> How many patients have data been collected from? (help : use `dim`)
+
+#### Q3
+>Which **5 genes** are most highly expressed across all samples? (help : use `sort` or `order`)
 
 Put your answers into a list `ans_ex3` with the following structure:
 
@@ -1004,6 +1006,7 @@ Answer with the specified format (e.g, a numeric), **not** a text or written ans
 ```{r, echo = TRUE, eval = GRADE_MODE}
 
 # WRITE CODE TO GENERATE ans_ex3 HERE
+
 
 # modify this vector
 ans_ex3 <- list(a1 = NA,
@@ -1147,7 +1150,7 @@ You can also store meta data for the entire data set, type `metadata(se)` to vie
 
 ## Hand In Guidelines
 
-**How :**  First, go to the top of this document, on line 18 set
+**How**:  First, go to the top of this document, on line 23 set
 `GRADE_MODE = TRUE`. Next, knit this document, and hand in the resulting html-file
 on Canvas. Make sure you have solved all the questions. If the document doesn't
 compile, there is something wrong with the code.
