@@ -2,8 +2,9 @@
 
 Hello and welcome to the Gene Technology lab course landing page! This GitHub
 repository contains all the instructions and material for the computer labs for
-the two courses CB2040 and BB2255. Since the two aforementioned courses have a
-large overlap in content we store it at the same place.
+the two courses [CB2040](https://github.com/almaan/genetech/tree/cb2040) and 
+[BB2255](https://github.com/almaan/genetech/tree/bb2255). Since the two 
+aforementioned courses have a large overlap in content we store it at the same place.
 
 We highly recommend you to use the Docker image that we have assembled
 (accessible here :
