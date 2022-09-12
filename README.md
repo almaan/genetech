@@ -65,3 +65,15 @@ and get documentation for certain R packages and functions. This is also where p
 executing code in the console. 
 
 ![rstudio-ide](imgs/RStudio_server_highlighted.png)
+
+## Handing in reports
+
+When you have written your answers in the rmarkdown document, you need "knit" the document into an HTML 
+file. First, you click on the Knit button and chose "Knit to HTML" which will trigger the knitting process. 
+When the process has finished, you should see a file called "main.html" in the file explorer. To download 
+this file, you can click on it and select "View in Web Browser" which will open up a new tab in your browser.
+Then you right click on the page and save the webpage as a .html file on your own system. This is the file that
+you will upload on Canvas! Just make sure that you can open the file and that you can see the content of it before 
+uploading.
+
+![knitr](imgs/knit.png)
