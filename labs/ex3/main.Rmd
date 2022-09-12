@@ -349,7 +349,7 @@ To make the expression levels comparable across cells, we can adress confounding
 
 In this course, we will use a method called variance stabilizing transformation ([VST](https://www.biorxiv.org/content/10.1101/576827v2)), a method which is provided by the `SCTransform` function from the `Seurat` package:
 
-NOTE: Normally you would of course continue to work on the filtered object (`se.subset`), but here we will use the unfiltered so that you can continue with this lab even if you didn't finish the filtering step yet. If you use the `se.subset`, the remaining steps will look a bit different so please stick to using the unfiltered `se`.
+NOTE: Normally you would of course continue to work on the filtered object (`se.subset`), but here we will use the unfiltered object so that you can continue with this lab even if you didn't finish the filtering step yet. If you use the `se.subset`, the remaining steps will look a bit different so please stick to using the unfiltered `se`.
 
 ```{r sctransform}
 # can take up to a few minutes to run
@@ -394,7 +394,7 @@ se <- RunPCA(se, verbose = FALSE)
 
 We can then plot the transformed data by using the function `DimPlot()` and specify the reduction that we want to use:
 
-```{r pcaplot1, fig.width=6, fig.height=6}
+```{r pcaplot1, fig.width=7, fig.height=6}
 DimPlot(se, reduction = "pca", dims = c(1, 2))
 ```
 
@@ -402,7 +402,7 @@ Here we have plotted the first two PCA vectors (1 and 2) by setting `dims = c(1,
 
 We can also color the cells using information from our meta data table. Let's color the cells based on replicate:
 
-```{r pcaplot2, fig.width=6, fig.height=6}
+```{r pcaplot2, fig.width=7, fig.height=6}
 DimPlot(se, reduction = "pca", dims = c(1, 2), group.by = "replicate")
 ```
 
@@ -479,7 +479,7 @@ Take the Tung data set that we just used for example. If the individuals were pr
 
 For the rest of this lab, we'll use a different data set with single-cell RNA-seq data obtained from breast cancer tissue. You can find the article [here](https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-021-00885-z). The total data set consists of approximately 120k cells but here we have down sampled this to about 4% to speed up computations. We should also mention that the data set have been modified to simplify the analysis workflow and you will therefore find that some cell types are missing compared to the results presented in the article.
 
-When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional meta data included. 
+When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional meta data included. The object has already been subjected to normalization with `SCTransform()` and dimensionality reduction by PCA.
 
 ```{r clean, message=FALSE, warning=FALSE}
 # Before we proceed with the second part of this lab, let's clean up our environment
@@ -490,17 +490,6 @@ gc()
 ```{r bc, warning=FALSE, message=FALSE}
 # Load the breast cancer scRNA-seq data set
 bc <- readRDS("data/bc")
-```
-
-Before we proceed, we will normalize the data with `SCTransform()` and run principal component analysis. This step might take a minute or two.
-
-```{r bc_norm_and_pca, message=FALSE, warning=FALSE}
-
-bc <- bc %>% 
-  SCTransform(verbose = FALSE) %>%
-  RunPCA(verbose = FALSE)
-bc
-
 ```
 
 Let's embed our cells in a 2D map using the UMAP method as before.
