@@ -33,6 +33,19 @@ branch that corresponds to your course code (see image below):
 
 **Note**: read through this page before switching to your course specific page.
 
-## Getting started with RStudio
+## Getting started with RStudio cloud
 
-TBA
+Before you start working, you should have received an invite from the TAs. If
+you click on the invite you will be redirected to this page where you can setup 
+a new account:
+
+![join-rstudio-cloud](imgs/join.png)
+
+When you have created an account and is logged in to RStudio cloud, you should 
+see something like this:
+
+![assignment-contributor](imgs/assignmentContributor.png)
+
+If it's the first time you log in, you press the start button which will create 
+a copy of the "genetech" project that will be your own. If you already have created a copy, 
+you will see a continue button to access your project.
