@@ -1081,7 +1081,7 @@ hist(log(rowSums(counts)),
 
 ```
 
-## R/Bioconductor (Skip if already done)
+## R/Bioconductor
 
 Bioconductor is a repository of R-packages specifically for biological analyses.
 It has relatively strict requirements for submission, including installation on
@@ -1090,12 +1090,6 @@ vignette) explaining how the package should be used. **You will need this in the
 upcoming labs**.
 
 TLDR: "Bioconductor is a collection of bioinformatic tools".
-
-If you haven't already installed Bioconductor, run this in R:
-
-```{r, eval=FALSE, echo = TRUE}
-install.packages("BiocManager")
-```
 
 There are **a lot** of "packages" within bioconductor that you can install and
 use. To install a package from bioconductor use
