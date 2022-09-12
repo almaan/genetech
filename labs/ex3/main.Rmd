@@ -479,7 +479,7 @@ Take the Tung data set that we just used for example. If the individuals were pr
 
 For the rest of this lab, we'll use a different data set with single-cell RNA-seq data obtained from breast cancer tissue. You can find the article [here](https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-021-00885-z). The total data set consists of approximately 120k cells but here we have down sampled this to about 4% to speed up computations. We should also mention that the data set have been modified to simplify the analysis workflow and you will therefore find that some cell types are missing compared to the results presented in the article.
 
-When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional meta data included. The data set has already been normalized using `SCTransform()` subjected to principal component analysis (`RunPCA()`).
+When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional meta data included. 
 
 ```{r clean, message=FALSE, warning=FALSE}
 # Before we proceed with the second part of this lab, let's clean up our environment
@@ -492,16 +492,20 @@ gc()
 bc <- readRDS("data/bc")
 ```
 
-```{r curl, eval=FALSE, include=FALSE}
-# If you get an error loading the bc object, you might have to download it manually
-# To do this, you need to remove the comment for the following two lines and run the code chunk
-#curl::curl_download(url = "https://github.com/almaan/genetech/raw/dev-ex3/labs/ex3/data/bc", destfile = "data/bc", quiet = FALSE)
-#bc <- readRDS("data/bc")
+Before we proceed, we will normalize the data with `SCTransform()` and run principal component analysis. This step might take a minute or two.
+
+```{r bc_norm_and_pca, message=FALSE, warning=FALSE}
+
+bc <- bc %>% 
+  SCTransform(verbose = FALSE) %>%
+  RunPCA(verbose = FALSE)
+bc
+
 ```
 
 Let's embed our cells in a 2D map using the UMAP method as before.
 
-```{r UMAP1, fig.width=6, fig.height=6}
+```{r UMAP1, fig.width=7, fig.height=6}
 bc <- RunUMAP(bc, dims = 1:30)
 DimPlot(bc, reduction = "umap")
 ```
@@ -526,7 +530,7 @@ Let's try clustering our data using the default method provided by Seurat's `Fin
 >
 > *Hint*: note that the first cluster is always called "0", not "1"
 
-```{r clustering, fig.width=6, fig.height=6}
+```{r clustering, fig.width=7, fig.height=6}
 
 bc <- FindNeighbors(bc, dims = 1:30, reduction = "pca")
 bc <- FindClusters(bc, resolution = 0.6)
@@ -557,7 +561,7 @@ sprintf("Number of clusters detected at a resolution of 1.2: %s", nClusters.1.2)
 
 We have already provided a column in the meta data slot with cell type labels so you do not need to do the dirty work of defining clusters, identifying markers and annotating the clusters.
 
-```{r dimplot_celltypes, fig.width=6, fig.height=6}
+```{r dimplot_celltypes, fig.width=8, fig.height=6}
 DimPlot(bc, group.by = "CellType", label = T)
 ```
 
@@ -643,7 +647,7 @@ head(res$result, 10)
 
 ```
 
-In the result data.frame we can find quite a lot of information, but the most important thing to look at are the term names and p-values. We find quite a few significant terms related to epithelial development and cell differentiation which makes somewhat sense since we are looking at epithelial derived cancer cells.
+In the result `data.frame` we can find quite a lot of information, but the most important thing to look at are the term names and p-values. We find quite a few significant terms related to epithelial development and cell differentiation which makes somewhat sense since we are looking at epithelial derived cancer cells.
 
 ### Q11
 
