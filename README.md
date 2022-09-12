@@ -49,3 +49,19 @@ see something like this:
 If it's the first time you log in, you press the start button which will create 
 a copy of the "genetech" project that will be your own. If you already have created a copy, 
 you will see a continue button to access your project.
+
+When you have opened the project, you should see the RStudio IDE.
+
+1. __Text editor__ - This is where you will be able to modify files. We will be working with
+the rmarkdown format where you can combine text and code.
+2. __Console__ - Here you can run code outside of the rmarkdown file. All the code you run, either
+in the rmarkdown file or in the console, share the same environment. This means that if you modify 
+an object in the console, it might overwrite objects that you work on in the rmarkdown file and 
+vice versa.
+3. __Environment__ - Here you can see a list of all the variables created in your current environment. 
+You can get infomation about properties of the variables and you can explore also expore their content.
+4. __Files/Plots/Packages/Help/Viewer__ - Here you can access and interact with files stored locally 
+and get documentation for certain R packages and functions. This is also where plots show up when 
+executing code in the console. 
+
+![rstudio-ide](imgs/RStudio_server_highlighted.png)
