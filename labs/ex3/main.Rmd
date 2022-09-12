@@ -745,7 +745,7 @@ Here it becomes quite clear what cell types are proliferating and what cell type
 ```{r q13}
 # Replace NA with the answer
 q13.answer <- NA
-cat(sprintf("Answer: %s", q13.answer))
+cat(sprintf("Answer: %s", paste(q13.answer, collapse = ", ")))
 ```
 
 ## Hand In Guidelines
