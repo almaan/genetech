@@ -50,7 +50,7 @@ If it's the first time you log in, you press the start button which will create
 a copy of the "genetech" project that will be your own. If you already have created a copy, 
 you will see a continue button to access your project.
 
-When you have opened the project, you should see the RStudio IDE.
+When you have opened the project, you should see the RStudio IDE (see image below).
 
 1. __Text editor__ - This is where you will be able to modify files. We will be working with
 the rmarkdown format where you can combine text and code.
