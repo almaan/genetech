@@ -68,8 +68,8 @@ executing code in the console.
 
 ## Handing in reports
 
-When you have written your answers in the rmarkdown document, you need "knit" the document into an HTML 
-file. First, you click on the Knit button and chose "Knit to HTML" which will trigger the knitting process. 
+When you have written your answers in the rmarkdown document, you need to "knit" the document into an HTML 
+file. First, you click on the Knit button and choose "Knit to HTML" which will trigger the knitting process. 
 When the process has finished, you should see a file called "main.html" in the file explorer. To download 
 this file, you can click on it and select "View in Web Browser" which will open up a new tab in your browser.
 Then you right click on the page and save the webpage as a .html file on your own system. This is the file that
