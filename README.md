@@ -77,3 +77,10 @@ you will upload on Canvas! Just make sure that you can open the file and that yo
 uploading.
 
 ![knitr](imgs/knit.png)
+
+## FAQ
+> My Rmarkdown code snippet won't run on RStudio Cloud. I just get a :clock1: symbol where its waiting to run the code. 
+
+- Try to restart the current environment. Go to the `Session` dropdown menu and click `Restart R`. 
+- If you have an Adblocker running, disable it for the RStudio Cloud webpage. 
+
