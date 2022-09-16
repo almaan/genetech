@@ -79,7 +79,7 @@ exercises correctly. Note that this is only necessary for lab 1.
 
 
 ## :dna: Lab 2 | Data visualization and Bulk RNA-seq analysis :dna:
-**Main Responsible TA:** Pontu Höjer<br>
+**Main Responsible TA:** Pontus Höjer<br>
 **Lab Status:**  Ready :+1: <br> 
 
 RNA sequencing (RNA-seq or bulk RNA-seq) has been a golden standard in life sciences for more than a decade. 
