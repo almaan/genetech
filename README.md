@@ -50,7 +50,7 @@ preferred ways of learning.
 
 ## :dna: Lab 1 | Basic R programming and markdown :dna:
 
-**Main Responsible TA:** TBA<br>
+**Main Responsible TA:** Marco Vicari<br>
 **Lab Status:** Ready :+1: <br>
 
 Here you will familiarize yourself with some of the basic syntax and
@@ -62,7 +62,7 @@ how to orient yourself in R.
 ### Preparatory work
 Before Lab 1 starts make sure that you:
 
-*TBA: Sami do we need some instructions here for RStudio cloud?*
+Have access to RStudio cloud!
 
 ### Hand-in
 
@@ -79,7 +79,7 @@ exercises correctly. Note that this is only necessary for lab 1.
 
 
 ## :dna: Lab 2 | Data visualization and Bulk RNA-seq analysis :dna:
-**Main Responsible TA:** TBA<br>
+**Main Responsible TA:** Pontu Höjer<br>
 **Lab Status:**  Ready :+1: <br> 
 
 RNA sequencing (RNA-seq or bulk RNA-seq) has been a golden standard in life sciences for more than a decade. 
