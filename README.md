@@ -70,13 +70,16 @@ executing code in the console.
 
 When you have written your answers in the rmarkdown document, you need to "knit" the document into an HTML 
 file. First, you click on the Knit button and choose "Knit to HTML" which will trigger the knitting process. 
-When the process has finished, you should see a file called "main.html" in the file explorer. To download 
-this file, you can click on it and select "View in Web Browser" which will open up a new tab in your browser.
+When the process has finished, you should see a file called "main.html" in the file explorer. 
+
+![knitr](imgs/knit.png)
+
+To download this file, you can click on it and select "View in Web Browser" which will open up a new tab in your browser.
 Then you right click on the page and save the webpage as a .html file on your own system. This is the file that
 you will upload on Canvas! Just make sure that you can open the file and that you can see the content of it before 
 uploading.
 
-![knitr](imgs/knit.png)
+![image](https://user-images.githubusercontent.com/27061883/192314278-7dc71f81-6889-4979-a684-77a3a1da53f3.png)
 
 ## FAQ
 > My Rmarkdown code snippet won't run on RStudio Cloud. I just get a :clock1: symbol where its waiting to run the code. 
