@@ -83,6 +83,13 @@ When the process has finished, you should see a file called "main.html" in the f
 To download this file, you can check the box next to it, press the cog wheel icon above and select Export... 
 Now you can chose a file name and download the file to your computer. This is the file that you will upload 
 on Canvas! Just make sure that you can open the file and that you can see the content of it before 
-uploading.
+![knit](imgs/knit.png)
 
-![knitr](imgs/knit.png)
+![image](https://user-images.githubusercontent.com/27061883/192314278-7dc71f81-6889-4979-a684-77a3a1da53f3.png)
+
+## FAQ
+> My Rmarkdown code snippet won't run on RStudio Cloud. I just get a :clock1: symbol where its waiting to run the code. 
+
+- Try to restart the current environment. Go to the `Session` dropdown menu and click `Restart R`. 
+- If you have an Adblocker running, disable it for the RStudio Cloud webpage. 
+
