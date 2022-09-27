@@ -10,8 +10,8 @@ repo, such as guidelines regarding the execution of the labs, contact
 information, deadlines and brief descriptions of the labs with links to material
 that might be of help to you.
 
-Make sure that you have Docker installed and the latest imaged pulled from the
-Docker repo, as described on the "master" page of this repository.
+Make sure that you have RStudio Cloud setup, as described on the "master" page 
+of this repository.
 
 The slides from the first lecture (introduction) can be found
 [here](https://almaan.github.io/genetech).
@@ -79,7 +79,7 @@ exercises correctly. Note that this is only necessary for lab 1.
 
 
 ## :dna: Lab 2 | Data visualization and Bulk RNA-seq analysis :dna:
-**Main Responsible TA:** Pontu Höjer<br>
+**Main Responsible TA:** Pontus Höjer<br>
 **Lab Status:**  Ready :+1: <br> 
 
 RNA sequencing (RNA-seq or bulk RNA-seq) has been a golden standard in life sciences for more than a decade. 
