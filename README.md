@@ -68,12 +68,21 @@ executing code in the console.
 
 ## Handing in reports
 
+Before you proceed, please make sure that you are not printing the content of any large objects. 
+For example, do not print the content of expression matrices as tis will fill up the notebook:
+
+````
+# DO NOT DO THIS
+print(counts)
+````
+
 When you have written your answers in the rmarkdown document, you need to "knit" the document into an HTML 
 file. First, you click on the Knit button and choose "Knit to HTML" which will trigger the knitting process. 
-When the process has finished, you should see a file called "main.html" in the file explorer. To download 
-this file, you can click on it and select "View in Web Browser" which will open up a new tab in your browser.
-Then you right click on the page and save the webpage as a .html file on your own system. This is the file that
-you will upload on Canvas! Just make sure that you can open the file and that you can see the content of it before 
+When the process has finished, you should see a file called "main.html" in the file explorer. 
+
+To download this file, you can check the box next to it, press the cog wheel icon above and select Export... 
+Now you can chose a file name and download the file to your computer. This is the file that you will upload 
+on Canvas! Just make sure that you can open the file and that you can see the content of it before 
 uploading.
 
 ![knitr](imgs/knit.png)
