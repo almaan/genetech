@@ -87,9 +87,9 @@ all(colnames(counts) == rownames(metadata))
 
 > One of the most important aspect doing data analysis is to understand what kind of data formats you are using and the dimensions of these data modalities.
 >
-> 1.  What data types you have here?
+> 1.  What data types do you have here?
 >
-> 2.  What dimensions the data has?
+> 2.  What dimensions does the data have?
 >
 > *Hint*: Use commands from lab 1.
 
@@ -146,7 +146,7 @@ But let's go through the code for drawing the bar chart one step at the time:
 
 You have probably noticed that a function called `aes()` slipped into the code. `aes()` (short for "aesthetic mappings") is used to tell `ggplot()` how variables in the data are mapped to visual properties of geoms. In our example above, `geom_bar()` is a "geom" that takes some group variable, summarizes the count for each group and draws a bar chart. So by including `aes(subtype)` we told `ggplot()` that the group variable "subtype" should be pulled out from our metadata `data.frame`.
 
-Geoms are functions used to draw specific types of plots, for example: `geom_bar()` -\> bar chart `geom_point()` -\> points `geom_line()` -\> lines `geom_histogram()` -\> histogram
+Geoms are functions used to draw specific types of plots, for example: `geom_bar()` -> bar chart `geom_point()` -> points `geom_line()` -> lines `geom_histogram()` -> histogram
 
 Geoms have quite intuitive names but you will often need to search the web for a geom that suits your needs. The [tidyverse](https://ggplot2.tidyverse.org/) is a great resource to look into to get started with ggplot2 (and a bunch of other great R packages as well). You should also note that a geom takes different variables as input, for example `geom_histogram()` requires at least a numeric vector to draw a histogram whereas `geom_point()` requires two vectors with x and y coordinates to draw points. It's always a good idea to look at examples for how to use these geoms! If you type `?geom_point()` in your console you will get the documentation for `geom_point()`. In the bottom part of this documentation (if it's a well documented package) you will usually find examples.
 
@@ -317,13 +317,28 @@ ggplot(counts_long, aes(sample_id, log10_count)) +
 
 Below is a suggested workflow for bulk RNA-seq data processing and analysis.
 
-Pre-processing of raw fastq data: \* Check quality of raw reads and filter out reads with poor quality \* Filter raw reads to remove artifacts (e.g. Illumina primer sequences and adapters) \* Align reads to a reference genome (or construct a *de novo* genome assembly if a reference is unavailable) \* Annotate aligned reads to gene loci \* Quantify read counts per gene loci
+Pre-processing of raw fastq data: 
+
+* Check quality of raw reads and filter out reads with poor quality 
+* Filter raw reads to remove artifacts (e.g. Illumina primer sequences and adapters) 
+* Align reads to a reference genome (or construct a *de novo* genome assembly if a reference is unavailable) 
+* Annotate aligned reads to gene loci 
+* Quantify read counts per gene loci
 
 These steps are typically done using command line tools and will not be covered in this lab. The data that we will be working on in this lab is an expression matrix with genes in rows and samples in columns. We have essentially just collected files with read counts per gene for a number of samples and merged them into a matrix.
 
-Quality control: \* Check quality of samples and filter out outliers \* Filter out low abundant genes or other potentially confounding genes \* Adjust for other confounding factors, e.g. gender specific expression, experimental date and age
+Quality control: 
 
-Analysis: \* Differential gene expression analysis \* Data transformations for visualization and clustering \* Clustering \* Gene regulatory networks
+* Check quality of samples and filter out outliers 
+* Filter out low abundant genes or other potentially confounding genes 
+* Adjust for other confounding factors, e.g. gender specific expression, experimental date and age
+
+Analysis: 
+
+* Differential gene expression analysis 
+* Data transformations for visualization and clustering 
+* Clustering 
+* Gene regulatory networks
 
 In this lab, we will only explore a few of these steps with a focus on quality control and differential expression analysis.
 
@@ -405,7 +420,6 @@ To obtain the normalized data you can run `counts(dds, normalized = T)`.
 ```{r boxplot_normalized, fig.width=12, fig.height=5}
 
 #Write your code here!
-
 
 ```
 
@@ -596,7 +610,7 @@ pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, 
 
 > What conclusions you can make from this plot based on the differences between subtypes? Write max 2 sentences.
 >
-> *Hint*!\_: Look how clear the subtype specific genes are and variability between groups.
+> *Hint*!: Look how clear the subtype specific genes are and variability between groups.
 
 ```{r, echo=TRUE}
 #Write the answer here!
