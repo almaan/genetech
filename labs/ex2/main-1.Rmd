@@ -85,19 +85,19 @@ all(colnames(counts) == rownames(metadata))
 
 #### Q1
 
-> One of the most important aspect doing data analysis is to understand what kind of data formats you are using and the dimensions of these data modalities.
+> One of the most important aspect doing data analysis is to understand what kind of data types you are using and the dimensions of these data modalities.
 >
-> 1.  What data types you have here?
+> 1.  What value type do you have in `counts`?
 >
-> 2.  What dimensions the data has?
+> 2.  What is the dimensions of `counts`?
 >
 > *Hint*: Use commands from lab 1.
 
 ```{r Q1}
-#Write the answer here!
+# Replace NA with correct answer
 
 q1.ans1 <- NA
-q1.ans2 <- NA
+q1.ans2 <- c(rows = NA, cols = NA)
 
 cat(sprintf("Data types: %s\nDimensions: %s", q1.ans1, q1.ans2))
 
@@ -166,7 +166,7 @@ Just like geom_bar, geom_histogram takes one variable as input but this time it 
 
 #### Q2
 
-> Add a new column to the `gg` data.frame with log10-transformed gene expression values for COL1A1 and use it to draw a new histogram with these values.
+> Add a new column to the existing `gg` data.frame with log10-transformed gene expression values for the gene `COL1A1`. Use it to plot a new histogram with these values.
 
 ```{r COL1A1_histogram, fig.width=7, fig.height=5}
 
@@ -339,7 +339,7 @@ Note that when your run a DE test using DESeq2, a more strict filtering is autom
 
 #### Q5
 
-> Exclude all genes in `counts` that have a total count across all samples less then of equal to 100. Use the skills you learned in Lab 1.
+> Filter the existing `counts` matrix to exclude all genes in that have a total count across all samples of less than or equal to 100. Use the skills you learned in Lab 1.
 >
 > *Hint*: You should apply the filter to the `counts` matrix and overwrite it.
 
@@ -505,6 +505,8 @@ head(res_summarized)
 #### Q8
 
 > Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values from the `res_summarized` data.frame. You should be able to solve this problem programatically.
+> 
+> _Hint_: You should see very distinct difference in the heatmap between the the samples in `basal` versus those in `normal` for both the up- and down-regulated genes.
 
 ```{r select_des}
 
@@ -594,12 +596,15 @@ pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, 
 
 #### Q9
 
-> What conclusions you can make from this plot based on the differences between subtypes? Write max 2 sentences.
+> This heatmap showes the top 20 differentially upregulated genes for each cancer subtype. What conclusions you can make from this plot based on the differences between subtypes? Write max 2 sentences.
 >
 > *Hint*!\_: Look how clear the subtype specific genes are and variability between groups.
 
 ```{r, echo=TRUE}
-#Write the answer here!
+# Write the answer here!
+
+
+
 ```
 
 Cancer subtypes are heterogeneous and remember that these are bulk RNA-seq data which means that we are investigating the averaged expression over a whole tissue piece.
