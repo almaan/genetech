@@ -886,12 +886,14 @@ for some exercises. To pass the lab, all exercises must be correctly completed.
 ### Exercise 1
 
 Create a data frame (named `count.data`) with 3 samples and 5 genes. Rows are samples, genes are columns. Make all count values = 1
+_Hint_: One way is to generate a `matrix` with the value one for all positions and then convert it to a `dataframe`.
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 ```
 
-Make sample 2 have double the amount of counts for _each_ gene
+Make sample 2 have double the amount of counts for _each_ gene. Note that you 
+should update the existing `count.data` object here not generate a new dataframe.
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
@@ -909,16 +911,17 @@ Cut the count values for gene 2 in half within sample 2 and 3, **and** add 3 cou
 #INSERT CODE HERE
 ```
 
-Calculate the mean value of each gene and store this as a vector named "vec"
+Calculate the mean value of each gene and store this as a vector named `vec`
 
 ```{r,echo = TRUE,eval = TRUE}
 #INSERT CODE HERE
 ```
 
-Test run the code below (if TRUE -> continue with lab)
+Test run the code below (if no error/warning -> continue with lab)
 
 ```{r,echo = TRUE,eval = GRADE_MODE}
-print(round(vec %*% c(1337,69,42,666,80085)) == 151677)
+source("checks.R")
+check_exercise_1(vec)
 ```
 
 ### Exercise 2
@@ -950,7 +953,7 @@ your task is to **write a function** called `base_count` that counts the number 
 # Possible long solution
 base_count <- function(...){
 
-}
+      }
 
 ```
 
