@@ -76,7 +76,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 Next, let us load some the libraries that we will use in this lab. 
 
-```{r, echo = FALSE, eval = TRUE}
+```{r load_libs, echo = FALSE, eval = TRUE}
 
 library(STutility)
 library(ggplot2)
@@ -99,7 +99,7 @@ Rather than storing the data in the GitHub repository, we'll download it on the
 fly. The `bash` code below takes care of this, all you need to do is to execute
 it. 
 
-```{r, echo=FALSE, eval=FALSE}
+```{r download_files, echo=FALSE, eval=FALSE}
 
 download.file("https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5", "./data/filtered_feature_bc_matrix.h5")
 download.file("https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz", "./data/spatial.tar.gz")
@@ -111,7 +111,7 @@ file.remove("./data/spatial.tar.gz")
 As a sanity check, you can run the code chunk below to see if you have the files available.
 If not, either something went wrong or you need to rerun the previous code chunk.
 
-```{r}
+```{r sanity_check}
 
 sprintf("Expression matrix available: %s", file.exists("./data/filtered_feature_bc_matrix.h5"))
 sprintf("Spatial data available: %s", dir.exists("./data/spatial"))
@@ -123,7 +123,7 @@ Visium assays, we also have an *image* of the very same (stained with
 Hematoxylin and Eosin) tissue section to use as a reference and aid in our
 analysis. You can visualize the HE-image by running the code chunk below.
 
-```{r fig.width=8, fig.height=8}
+```{r load_img, fig.width=8, fig.height=8}
 
 im <- png::readPNG("data/spatial/tissue_hires_image.png") %>% as.raster()
 par(mar = c(0,0,0,0))
@@ -147,7 +147,7 @@ just slightly modified by `STUtility` to hold the additional spatial information
 With `STUtility`, we will also have access to a bunch of useful functions designed 
 to work with spatial data. 
 
-```{r}
+```{r load_data}
 
 # Here we create a data.frame pointing to various files that will be used
 # by STUtility to create our Seurat object
@@ -164,7 +164,7 @@ se.HER2 <- InputFromTable(infoTable)
 If we execute the code chunk below we will get some basic information about 
 our Seurat object, i.e. we have 24923 genes (features) and 3798 spots (samples)
 
-```{r}
+```{r view_data}
 
 se.HER2
 
@@ -174,7 +174,7 @@ We can also easily extract meta data from our Seurat object by running
 `se.HER2[[]]`. So far, we have five columns named "orig.ident", "nCount_RNA", 
 "nFeature_RNA", "id" and "labels".
 
-```{r}
+```{r head_data}
 
 head(se.HER2[[]])
 
@@ -194,7 +194,7 @@ head(se.HER2[[]])
 
 Give your answers below
 
-```{r}
+```{r q1}
 
 # Give the answers to the questions above
 # by assigning the values (answers) to
@@ -211,7 +211,7 @@ cat(sprintf("No. spots: %d \nNo genes: %d\nTotal no. UMIs: %d\n1306th gene: %s",
 
 You can now check the answers by running the code chunk below!
 
-```{r}
+```{r q1_check, warning=TRUE}
 
 source("checks.R")
 q1_check(ans = list(ans1, ans2, ans3, ans4))
@@ -226,7 +226,7 @@ can do with the `ST.FeaturePlot()` function.
 Note that requires a `feature` value to draw on the plot. Here we use "orig.ident" 
 which is automatically added to your Seurat object when it is created.
 
-```{r fig.width=6, fig.height=6}
+```{r plot_outline, fig.width=6, fig.height=6}
 
 # You can adjust the point size by changing the value for pt.size
 ST.FeaturePlot(se.HER2, features = "orig.ident", pt.size = 2)
@@ -248,7 +248,7 @@ may proceed to prepare the data (and ourselves) for some fun analysis.
 > Use `ST.FeaturePlot()` to visualize the number of unique genes ("nFeature_RNA") per
 > spot. Add an argument palette = "Spectral" to get a more fancy color scale.
 
-```{r, fig.width=6, fig.height=6}
+```{r q2, fig.width=6, fig.height=6}
 
 # Write the code below
 
@@ -283,7 +283,7 @@ ImagePlot(se.HER2, method = "raster")
 Then, if we want to plot features on top of our H%E image(s), we use the
 `FeatureOverlay()` function instead of `ST.FeaturePlot()`.
 
-```{r fig.width=6, fig.height=6}
+```{r plot_counts, fig.width=6, fig.height=6}
 
 FeatureOverlay(se.HER2, features = "nFeature_RNA", palette = "heat")
 
@@ -298,7 +298,7 @@ locations, i.e., each spot has an associated expression value for every gene. To
 see this property in action, we will visualize the expression of a gene called
 _ERBB2_  (a marker gene for HER2-positive breast cancer). 
 
-```{r fig.width=6, fig.height=6}
+```{r plot_erbb2, fig.width=6, fig.height=6}
 
 # You can play around with the pt.size and pt.alpha (opacity) to make the background more 
 # visible
@@ -321,7 +321,7 @@ working with.
 
 Run the code chunk below to see the annotations:
 
-```{r fig.width=6, fig.height=6}
+```{r load_annot_img, fig.width=6, fig.height=6}
 
 im_ann <- png::readPNG("img/annot.png") %>% as.raster()
 par(mar = c(0,0,0,0))
@@ -336,7 +336,7 @@ plot(im_ann)
 ### Q3
 
 > Armed with the `FeatureOverlay()` function, it's now up to you to find out which
-> (choose one) of these genes below, that are highly expressed in in one or more of the
+> **one** of these genes below, that are highly expressed in in one or more of the
 > *DCIS* regions while less prominently expressed in the remaining part of the tissue.
 >
 > -   ESR1
@@ -345,16 +345,28 @@ plot(im_ann)
 > -   MALAT1
 > -   ACTA1
 >
-> Use the `FeatureOverlay()` function inspect the spatial distribution of these genes
-> and to plot your answer!
+> Use the `FeatureOverlay()` function inspect the spatial distribution of these genes 
+> and compare to pathologists annotated image above. Once you have your answer, plot 
+> that gene only!
 
-```{r fig.width=7, fig.height=6}
+```{r q3, fig.width=7, fig.height=6}
 
-# Plot the gene highly expressed in the DCIS region here
+# Plot the gene expressed mainly in the DCIS region here
 # using the FeatureOverlay() function
 
 ```
 
+Write down the gene expressed mainly in the DCIS region and check your answer.
+
+```{r check_q3, warning=TRUE}
+# Replace NA with the gene highly expressed in the DCIS region here
+ans.q3 <- NA
+
+source("checks.R")
+q3_check(ans.q3)
+
+```
+ 
 Having access to some new tools and gained more understanding of the data, we will now
 move on to even more exciting stuff!
 
@@ -376,7 +388,7 @@ informs us of the total number of observed transcript in each spot, while the
 latter is informative of how many _different_ genes that we observe in
 respective spot.
 
-```{r, fig.width = 14, fig.height = 5}
+```{r plot_hist, fig.width = 14, fig.height = 5}
 
 # generate histograom of UMI counts
 h1 <- ggplot(se.HER2[[]], aes(nCount_RNA)) +
@@ -411,7 +423,7 @@ however chosen somewhat arbitrary.
 >
 > *Comment* : Do *not* make any changes to your Seurat object yet.
 
-```{r}
+```{r q4}
 
 # Enter code to create the keep.spots vector here
 
@@ -419,7 +431,7 @@ however chosen somewhat arbitrary.
 
 Now you can check your answer below before you proceed!
 
-```{r}
+```{r check_q4, warning=TRUE}
 
 source("checks.R")
 q4_check(ans = keep.spots)
@@ -436,7 +448,7 @@ _Comment_ : A pseudocount is added to make sure we never end up with having to
 do $\log(0)$ which is equal to the negative infinity, and we don't like to
 work with infinite numbers...
 
-```{r fig.width=14, fig.height=5}
+```{r log_hist, fig.width=14, fig.height=5}
 
 # Compute total transcripts over all spots, which
 # is equal to the row sums of our expression matrix
@@ -478,7 +490,7 @@ h3 + h4
 >
 > *Comment* : do **not** make any modifications to your Seurat object yet.
 
-```{r}
+```{r q5}
 
 # Enter code to create the keep.genes vector here
 
@@ -486,7 +498,7 @@ h3 + h4
 
 Again, you can check whether your answers are correct with the next code chunk!
 
-```{r}
+```{r check_q5, warning=TRUE}
 
 source("checks.R")
 q5_check(keep.genes)
@@ -505,7 +517,7 @@ certain pattern. The pattern we are using here `^(MT-|RPL|RPS)` translates to:
 negates the match from `grepl`, meaning we only keep genes that do not start
 their names with "MT-", "RPL" or "RPS".
 
-```{r}
+```{r filt_genes}
 
 # remove rp and mt genes
 keep.genes <- keep.genes[!grepl("^(MT-|RPL|RPS)", keep.genes)]
@@ -525,7 +537,7 @@ keep.genes <- keep.genes[!grepl("^(MT-|RPL|RPS)", keep.genes)]
 > You can find more information in the `SubsetSTData()` documentation by typing
 > `?SubsetSTData` in the console.
 
-```{r}
+```{r q6}
 
 # enter code to subset your Seurat object here
 
@@ -541,7 +553,7 @@ se.HER2
 > 1.  How many genes were *removed* in the filtering?
 > 2.  How many spots were *removed* in the filtering?
 
-```{r}
+```{r q7}
 
 # Replace the NA values with your answers
 ans.q7.1 <- NA
@@ -553,7 +565,7 @@ cat(sprintf("Removed genes: %s\nRemoved spots: %s", ans.q7.1, ans.q7.2))
 
 Run the code chunk below to check your answers.
 
-```{r}
+```{r check_q7, warning=TRUE}
 
 source("checks.R")
 q7_check(list(ans.q7.1, ans.q7.2))
@@ -568,7 +580,7 @@ the `SCTransform` function will be used for this purpose.
 _Comment_: This might take some time, so don't worry if you have to wait for a
 couple of minutes!
 
-```{r echo=FALSE, eval=TRUE}
+```{r sctrans, echo=FALSE, eval=TRUE}
 
 se.HER2 <- SCTransform(se.HER2, verbose = FALSE)
 se.HER2
@@ -605,7 +617,7 @@ function. One way to interpret it is: whatever is on the left hand side of `%>%`
 the first argument in the function on the right hand side. 
 For example: `se.HER2 <- se.HER2 %>% RunPCA()` is equivalent to `se.HER2 <- RunPCA(se.HER2)` 
 
-```{r echo=FALSE}
+```{r clust, echo=FALSE}
 
 se.HER2 <- se.HER2 %>% 
   RunPCA(verbose = FALSE) %>% # run pca on data
@@ -619,7 +631,7 @@ se.HER2
 
 To visualize the results in UMAP-space, we may use the `DimPlot()` function.
 
-```{r}
+```{r plot_umap}
 
 # get the number of clusters
 n_clusters <- length(unique(se.HER2$seurat_clusters))
@@ -641,7 +653,7 @@ however, this column will only keep the latest clustering result. On other words
 rerun `FindCLusters()` with a different resolution, "seurat_clusters" will store those 
 results instead.
 
-```{r fig.width=6, fig.height=6}
+```{r plot_clust, fig.width=6, fig.height=6}
 
 # plot clusters spatially
 FeatureOverlay(se.HER2, features = "seurat_clusters", pt.size = 1.5) &
@@ -679,7 +691,7 @@ it's a win-win!
 > 1.  How many clusters do we have in the data?
 > 2.  Which cluster (number) overlaps well with the DCIS region?
 
-```{r}
+```{r q8}
 
 # Enter the answers to question 9 here
 q8.ans1 <- NA
@@ -692,7 +704,7 @@ cat(sprintf("There are %d clusters\nCluster %d overlaps with the DCIS regions", 
 
 You can now check the answers before you proceed.
 
-```{r}
+```{r check_q8, warning=TRUE}
 
 source("checks.R")
 q8_check(list(q8.ans1, q8.ans2))
@@ -714,7 +726,7 @@ significance threshold of `0.01` by setting the parameter `return.thresh` to
 `0.01`.
 
 
-```{r, warnings=FALSE, echo=FALSE}
+```{r find_markers}
 
 # conduct a DGE analysis
 de.markers <- FindAllMarkers(se.HER2, logfc.threshold = 1, only.pos = TRUE, return.thresh = 0.01)
@@ -729,7 +741,7 @@ overlap with the actual clusters they are supposed to represent. For a quick
 assessment, let us plot _one_ marker gene associated with each cluster using the
 `spatial.plot` function.
 
-```{r,fig.width = 10, fig.height=9}
+```{r plot_markers,fig.width = 10, fig.height=9}
 
 # grab the name of the first marker gene for each cluster
 de.markers.one <- de.markers %>%
@@ -791,7 +803,7 @@ that capture most of the variability in our data.
 > *Comment* : The top variable genes were already identified during the normalization
 > step with `SCTransform()` and we can get those by running `Variablefeatures(se.HER2)`.
 
-```{r}
+```{r q9}
 
 # Enter the code here
 
@@ -799,7 +811,7 @@ that capture most of the variability in our data.
 
 Answer check.
 
-```{r}
+```{r check_q9, warning=TRUE}
 
 source("checks.R")
 q9_check(factorization.genes)
@@ -809,7 +821,7 @@ q9_check(factorization.genes)
 Now we can run the NNMF using the `RunNMF()` function. At this step, we also need
 to decide how many factors to use for the factorization. Here we will use 10.
 
-```{r}
+```{r run_nnmf}
 
 se.HER2 <- RunNMF(se.HER2, features = factorization.genes, nfactors = 10)
 
@@ -820,7 +832,7 @@ our `Seurat` object. We can actually think of NNMF as a dimensionality reduction
 method, i.e. we go from our high dimensional gene expression data to a low 
 dimensional representation. Perhaps this is easiest to grasp by looking at the results:
 
-```{r}
+```{r view_nnmf}
 
 nnmf <- se.HER2[["NMF"]]
 
@@ -851,7 +863,7 @@ spot that originates from the respective factor.
 
 Let's visualize our factors on the tissue to understand what this means.
 
-```{r  fig.width=12, fig.height=8}
+```{r plot_nnmf, fig.width=12, fig.height=8}
 
 ST.DimPlot(se.HER2, reduction = "NMF", dims = 1:10, grid.ncol = 4, center.zero = FALSE, palette = "Spectral", show.sb = FALSE) &
   theme(strip.text = element_blank())
@@ -869,7 +881,7 @@ are doing!
 > Give your answers as comments in the code chunk below, they should be short and
 > concise, not more than a sentence or two.
 
-```{r}
+```{r q10}
 
 # Write code here
 
@@ -885,7 +897,7 @@ cat(sprintf("The genes with the highest contribution to factor 3 are: \n%s", pas
 
 Now you can check you answers.
 
-```{r}
+```{r check_q10, warning=TRUE}
 
 source("checks.R")
 q10_check(list(q10.ans1, q10.ans2))
@@ -897,7 +909,7 @@ regions, let us have a closer look at which genes that are most strongly
 associated with this factor.
 
 
-```{r}
+```{r plot_fctr7}
 
 FactorGeneLoadingPlot(se.HER2, factor = 7)
 
@@ -921,7 +933,7 @@ So what we see here is *a lot* of genes whose names start with *IG*.
 > 4.  ERBB2 signaling pathway
 > 5.  embryonic process involved in female pregnancy
 
-```{r}
+```{r q11}
 
 # Answer Q11 with the number of the process you think is the right one
 ans.q11 <- NA
@@ -954,7 +966,7 @@ print(sprintf("Factor 7 is associated with process %d", ans.q11))
 > *Hint 4*: The `data.frame` should look something like this: 
 > ![](./img/data_frame.png)
 
-```{r}
+```{r q12}
 
 # code to produce the top.2.genes data frame
 
@@ -962,7 +974,7 @@ print(sprintf("Factor 7 is associated with process %d", ans.q11))
 
 And you guessed it, you can check your answers with the chunk below!
 
-```{r}
+```{r check_q12, warning=TRUE}
 
 source("checks.R")
 q12_check(top.2.genes)
@@ -1016,7 +1028,7 @@ fit, and you usually need GPU resources for it to run in reasonable time.
 Therefore you will load the output of `stereoscope` when applying it to the
 aforementioned single cell data set and our spatial data.
 
-```{r}
+```{r load_stereoscope}
 
 # Load stereoscope analysis results
 # get data from file
@@ -1044,7 +1056,7 @@ The values in the output from `stereoscope` represent proportion values, that
 is: the proportion of cells at each spot that is estimated to belong to a
 certain cell type. The cell types present in our data are:
 
-```{r}
+```{r cell_proportions}
 
 cat(paste(rownames(se.HER2), collapse = ", "))
 
@@ -1058,12 +1070,14 @@ Now how about having a look at the spatial distribution of the celltypes:
 
 our beloved `FeatureOverlay()` comes in handy again
 
-```{r fig.width=12, fig.height=4}
+```{r plot_cells, fig.width=12, fig.height=4}
 
 # specify cell types to plot
-selected.cell.types <- c("B.cells",
-                "T.cells",
-                "Epithelial")
+selected.cell.types <- c(
+  "B.cells",
+  "T.cells",
+  "Epithelial"
+)
 
 FeatureOverlay(se.HER2, features = selected.cell.types, ncols = 3, pt.size = 1)
 
@@ -1088,7 +1102,7 @@ to populate different regions.
 We will compute these correlation values - cast as a correlation matrix - and
 then visualize them in a heatmap.
 
-```{r fig.width=6, fig.height=6}
+```{r plot_correlation, fig.width=6, fig.height=6}
 
 # generate a color palette
 color.pal <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(50))
@@ -1119,8 +1133,10 @@ while the same is true for red and positive values.
 >
 > *Comment* use the following cell type names when answering below: "T-cells",
 > "B-cells", "Epithelial", "SMCs","Myeloid", "Endothelial","CAFs", and "Plasmablasts"
+> *Hint*: Look at the colorscale, which end represents correlation versus anticorrelation?
+> *Hint2*: For 2, we are not interested in "T-cells" although they perfectly co-localize for some "strange" reason ;)
 
-```{r}
+```{r q13}
 
 # Replace the NA values with your answers below
 ans.q13.1 <- NA

@@ -36,12 +36,26 @@ q1_check <- function (
   }
 }
 
+q3_check <- function (ans) {
+  txt <- check_answer(as.character(ans), "135dd680a3af7fdafbe66f3417c9cba2")
+  if (txt[[2]]) {
+    cat(paste("Answer", dQuote(ans), "is correct.", txt[[1]], "\n"))
+  } else {
+    warning(paste("Answer", dQuote(ans), "is wrong.", txt[[1]]))
+  }
+}
+
 q4_check <- function (
     ans
 ) {
   hash <- "22c55dc705445bb530072d2f01d9d769"
   txt <- check_answer(sort(ans), hash)
-  cat(txt[[1]], "\n")
+  if (txt[[2]]) {
+    cat(txt[[1]], "\n")
+  } else {
+    warning(paste(txt[[1]], "\n"))
+  }
+  
 }
 
 
@@ -67,11 +81,9 @@ q7_check <- function (
   if (all(checks)) {
     cat("\nYou have succeeded!\n")
   } else {
-    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
+    warning(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
   }
 }
-
-"4a5d7d50676e6d0ea065f445d8a5539d"
 
 q8_check <- function (
     ans
@@ -87,7 +99,7 @@ q8_check <- function (
   if (all(checks)) {
     cat("\nYou have succeeded!\n")
   } else {
-    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
+    warning(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
   }
 }
 
@@ -97,7 +109,11 @@ q9_check <- function (
   if (class(ans) != "character") cat(sprintf("Wrong format: '%s'", class(ans)), "\n")
   hash <- "ad302d7ad8870a0462c8fb0b62f679d5"
   txt <- check_answer(sort(ans), hash)
-  cat(txt[[1]], "\n")
+  if (txt[[2]]) {
+    cat(txt[[1]], "\n")
+  } else {
+    warning(paste(txt[[1]], "\n"))
+  }
 }
 
 q10_check <- function (
@@ -114,7 +130,7 @@ q10_check <- function (
   if (all(checks)) {
     cat("\nYou have succeeded!\n")
   } else {
-    cat(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
+    warning(sprintf("\nPlease revise the following answer(s): %s", paste((1:2)[!checks], collapse = ", ")))
   }
 }
 
@@ -123,28 +139,39 @@ q12_check <- function (
 ) {
   
   if (class(ans) != "data.frame") {
-    stop(sprintf("Invalid class '%s'. The answer should be a 'data.frame'.", class(ans)))
+    warning(sprintf("Invalid class '%s'. The answer should be a 'data.frame'.", class(ans)))
   }
   
   if (any(dim(ans) != c(20, 3))) {
-    stop(sprintf("Invalid dimensions %s, should be 20x3", paste(dim(ans), collapse = "x")))
+    warning(sprintf("Invalid dimensions %s, should be 20x3", paste(dim(ans), collapse = "x")))
   }
   
   if (!all(colnames(ans) == c("gene", "weight", "factor"))) {
-    stop("Invalid column names. Should be 'gene', 'weight' and 'factor'")
+    warning("Invalid column names. Should be 'gene', 'weight' and 'factor'")
   }
   
-  hashes <- c("5f13b719daef0d2f89e307afee966f93", "7c3d82ed3a0329c8e7108fcdf8fb0746", "6d84f15dc4e2029bc5585a85a381ac8b")
+  hashes <- c(
+    gene="da1fbe2034e56944a7f74a6281894291", 
+    weight="39819a727a1bb0da2f0e17b0776b3b55", 
+    factor="c79c0f4fef754277307807afc6deb1f1"
+  )
   checks <- c()
   for (i in seq_along(ans)) {
-    txt <- check_answer(as.array(ans[, i]), hashes)
+    name <- names(hashes)[i]
+
+    # Normalize data to sorted array
+    arr <- as.array(ans[,name])
+    arr <- arr[order(arr)]
+    hash <- hashes[name]
+
+    txt <- check_answer(arr, hash)
     checks <- c(checks, txt[[2]])
   }
   
   if (all(checks)) {
     cat("\nYou have succeeded!\n")
   } else {
-    cat(sprintf("Column(s) '%s'", paste0(c("gene", "weight", "factor")[!checks], collapse = ", ")), ifelse(sum(!checks) > 1, "are wrong.", "is wrong."))
-    cat("\nPlease revise the answer.\n")
+    warning(sprintf("Column(s) '%s'", paste0(c("gene", "weight", "factor")[!checks], collapse = ", ")), ifelse(sum(!checks) > 1, "are wrong.", "is wrong."))
+    warning("\nPlease revise the answer.\n")
   }
 }
