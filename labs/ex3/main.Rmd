@@ -153,6 +153,12 @@ number.of.cells <- NA
 cat(sprintf("Number of genes: %s\nNumber of cells: %s", number.of.genes, number.of.cells))
   
 ```
+Lets check if the answer is correct.
+
+```{r check_q1, warning = TRUE}
+source("checks.R")
+check_q1(number.of.genes, number.of.cells)
+```
 
 Single-cell data typically contain a large number of "samples" (cells). Due to the size of the count matrix and the high frequency of 0 values, `Seurat` stores the data in a "sparse matrix" format to save memory.
 
@@ -336,6 +342,14 @@ nGenes <- NA
 sprintf("Number of cells after filtering: %s", nCells)
 sprintf("Number of genes after filtering: %s", nGenes)
 ```
+
+Let's check that everything is correct before we proceed.
+
+```{r check_q6, warning = TRUE}
+source("checks.R")
+check_q6(nGenes, nCells)
+```
+
 
 ## 5) Normalization
 
@@ -553,6 +567,13 @@ sprintf("Number of clusters detected at a resolution of 1.2: %s", nClusters.1.2)
 
 ```
 
+Now let's confirm that you got the correct number of clusters.
+
+```{r clusters_q, warning=TRUE}
+source("checks.R")
+check_q8(nClusters.0.3, nClusters.1.2)
+```
+
 We have already provided a column in the meta data slot with cell type labels so you do not need to do the dirty work of defining clusters, identifying markers and annotating the clusters.
 
 ```{r dimplot_celltypes, fig.width=8, fig.height=6}
@@ -650,21 +671,10 @@ In the result `data.frame` we can find quite a lot of information, but the most 
 > *Hint*: T-cells are the same as cluster 2.
 
 ```{r fea_T_cells, eval=FALSE}
-
-t_cell_markers <- subset(bc.markers, cluster == "2") %>%
-  filter(p_val_adj < 0.01, avg_log2FC > 0.5) %>%
-  pull(gene)
-
-# Run FEA
-res <- gost(query = t_cell_markers, 
-            organism = "hsapiens", 
-            significant = TRUE, 
-            sources = "GO:BP")
-
-# Check results
-head(res$result, 10)
-
+# Write your code here
 ```
+
+Report the `term_name` and `p_value` below.
 
 ```{r fea_ans1}
 
@@ -743,14 +753,21 @@ Here it becomes quite clear what cell types are proliferating and what cell type
 
 ### Q13
 
-> What are the four cell types with the fewest cycling cells?
+> What are the four cell types with the fewest cycling cells? The answer should be a character vector with 4 cell type names.
 >
-> *Hint*: The answer should be a character vector with 4 cell type names.
+> _Hint_: Cells in the S, G2 and M phase are considered cycling. More information about cell cycling can be found on [this seurat vingette](https://satijalab.org/seurat/archive/v3.1/cell_cycle_vignette.html).
 
 ```{r q13}
-# Replace NA with the answer
+# Replace the NAs with your answer
 q13.answer <- c(NA, NA, NA, NA)
 cat(sprintf("Answer: %s", paste(q13.answer, collapse = ", ")))
+```
+
+Now let's check if your answer is correct.
+
+```{r check_q13, warning=TRUE}
+source("checks.R")
+check_q13(q13.answer)
 ```
 
 ## Hand In Guidelines
