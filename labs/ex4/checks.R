@@ -73,7 +73,7 @@ q7_check <- function (
   hashes <- c("eaca5f783323cd3a0ebe04f752c86e3d", "1b9595f8f162c53cb175888d3b9f2502")
   checks <- c()
   for (i in seq_along(ans)) {
-    txt <- check_answer(ans[[i]], hashes[[i]])
+    txt <- check_answer(as.numeric(ans[[i]]), hashes[[i]])
     cat(paste(sprintf("Answer %s:", i), txt[[1]]), "\n")
     checks <- c(checks, txt[[2]])
   }
