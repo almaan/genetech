@@ -64,8 +64,8 @@ patient. The spots in your data cover both malignant and benign tissue.
 There’s a large corpus of scientific material regarding this disease and you
 find two genes of interest upon searching within the literature:
 
-• Gene A – associated to the tumor proliferation.
-• Gene B – suggested to be a key component of the tumor micro environment (the area adjacent to the periphery of the tumor regions).
+- Gene A – associated to the tumor proliferation.
+- Gene B – suggested to be a key component of the tumor micro environment (the area adjacent to the periphery of the tumor regions).
 
 Briefly describe how you can use the spatial data to quickly assess whether
 the presumed properties of these genes seem to be correct or not.
