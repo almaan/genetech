@@ -1,15 +1,16 @@
 ---
 title: "Lab2 - Single Cell RNAseq"
-author: "Original : Ludvig Larsson"
-date: "2022-10-07"
+author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
   html_document:
     toc: true
     toc_depth: 3
     toc_float: true
+      collapse: false
     theme: "readable"
 ---
-
+<!-- Lab creator: Ludvig Larsson -->
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       eval = TRUE,
