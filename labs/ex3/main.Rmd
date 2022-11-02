@@ -3,8 +3,11 @@ title: "Lab3 - Spatial Transcriptomics"
 author: "Alma Andersson"
 date: 2021-10-14
 output:
-  tufte::tufte_html: default 
-
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: "readable"
 ---
 
 # Lab3 - Spatial Transcriptomics
@@ -12,15 +15,15 @@ output:
 
 ## Introduction
 
-Welcome to Lab 3, where we will explore spatial transcriptomics data. While it
+Welcome to Lab 4, where we will explore spatial transcriptomics data. While it
 is a different type of data from what we've worked with before, many of the
 ideas and concepts presented in our analysis of single cell RNA-seq data will be
 revisited in this lab.
 
-
-The field of spatial transcriptomics has grown rapidly, and multiple techniques
+The field of spatial transcriptomics, sometimes also called spatially resolved 
+transcriptomics, has grown rapidly in the last decade, and multiple techniques
 to obtain information of spatial gene expression exists. Some examples are:
-MERFISH, ISS, osmFISH, seqFISH, HDST, baristaSeq, Slide-seq, and GeoMx. We will
+MERFISH, ISS, seqFISH, HDST, Stereo-seq, Seq-Scope, Slide-seq and GeoMx. We will
 however be focusing on spatial data generated from the _Visium_ platform (provided
 by 10x Genomics). Visium is the successor to the technique - somewhat
 confusingly - named Spatial Transcriptomics (commonly referred to as ST).
@@ -29,28 +32,33 @@ ST was developed at SciLifeLab and presented to the world in 2016 when the
 publication _Visualization and analysis of gene expression in tissue sections by
 spatial transcriptomics_  was published in the journal Science. In December
 2018, 10x Genomics aquired the IP rights to the ST-technique, they then launched
-the Visium platform in late 2019.
+the Visium platform in late 2019. In 2020, spatially resolved transcriptomics was 
+awarded with "method of the year" in the journal Nature Methods.
 
 Links for more information: 
 
-* [Spatial Transcriptomics](https://science.sciencemag.org/content/353/6294/78)
+* [2016 Spatial Transcriptomics method developed at SciLifeLab](https://science.sciencemag.org/content/353/6294/78)
+* [Spatially Resolved Trabscriptomics](https://www.nature.com/articles/s41592-020-01042-x)
 * [Visium](https://www.10xgenomics.com/products/spatial-gene-expression): 
 
-Both ST and Visium utilize a solid array onto which oligonucleotide with
-spatial barcodes have been printed at locations (spots) arranged in a regular
-grid. These oligonucleotide all have a poly-T sequence, allowing them to
-capture mRNA's by their poly-A tails. By reverse transcription, the barcodes of
-the oligonucleotides will be embedded in a cDNA molecule synthesized from the
-captured mRNAs; hence, we know at which spatial location (spot) that each
-transcript was captured. Once the cDNA molecules are sequenced, we can backmap
-them to their spatial position - using the barcodes - and by doing so obtain
-spatial gene expression information. The "old" ST arrays had 1000 spots printed
-on the array, while the newer Visium slides has 5000 spots.
+In this lab, we will explore a dataset generated with the 10x Genomics Visium technology. 
+Visium utilize a solid array onto which oligonucleotide with spatial barcodes have been 
+printed at locations (spots) arranged in a hexagonal grid. These oligonucleotides all have 
+a poly-T sequence, allowing them to capture mRNA's by their poly-A tails. 
+A thin tissue slice, collected either from a fresh frozen of FFPE tissue block, is placed 
+on top of this array followed by enzymatic permeabilization to open up the cells in the tissue.
+mRNA moleculas can diffuse freely from the cells and a fraction of these molecules 
+reach the barcoded surface where they can hybridize to the poly-T sequences.
+By reverse transcription, the barcodes of the oligonucleotides will be embedded in a cDNA 
+(complementary DNA) molecule synthesized from the captured mRNAs; hence, we know at which 
+spatial location (spot) that each transcript was captured. Once the cDNA molecules are sequenced, 
+we can map them back to their spatial position - using the spatial barcodes - and by doing so obtain
+spatial gene expression information. The Visium slide arrays have 5000 printed spots, but the 
+tissue section usually cover only a few thousand of these.
 
-One *key* fact that should be emphasized is how none of these methods (ST and
-Visium) operate on a single cell level yet. The gene expression data associated
-with each spot is really *a mixture of contributions from multiple cells*, not all
-necessarliy of the same cell type.
+One *key* fact that should be emphasized is that Visium does not operate on a single cell level yet. 
+The gene expression data associated with each spot is really *a mixture of contributions from multiple cells*, 
+not all necessarliy of the same cell type.
 
 
 ## Configure Rmarkdown and load packages
@@ -61,61 +69,30 @@ the knitted file. Do not change this code chunk.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
-                      eval=TRUE,
+                      eval = TRUE,
                       message = FALSE,
                       warning = FALSE)
 
 ```
 
-When handing in you report, set the variable `GRADE_MODE` to `TRUE`
-```{r}
-GRADE_MODE <- TRUE
-```
+Next, let us load some the libraries that we will use in this lab. 
 
-Next, let us load some the libraries that we will use in this lab. The code
-chunk has been written as to first check whether you have the libraries
-installed, and if not then install them before loading them. You do not have to
-pay attention to what's going on in this chunk unless you want to.
+```{r load_libs, echo = FALSE, eval = TRUE}
 
-```{r, echo = FALSE, eval = TRUE}
-# This chunk will:
-# 1. Check if a package is installed
-# 2. Install the package if it's missing
-# 3. load the package
+library(STutility)
+library(ggplot2)
+library(dplyr)
+library(rjson)
+library(RColorBrewer)
+library(magrittr)
+library(pheatmap)
 
-load.pkgs <- c("Seurat" = "cran",
-               "sctransform"="cran",
-               "ggplot2"="cran",
-               "png"="cran",
-               "grid"="cran",
-               "topicmodels"="cran",
-               "gridExtra" = "cran",
-               "tm" = "cran",
-               "gridExtra" = "cran",
-               "dplyr" = "cran",
-               "RColorBrewer"="cran",
-               "rjson"="cran"
-               )
-
-installed.pkgs <- installed.packages()[,1]
-
-for (pkg in names(load.pkgs) ) {
-  if (!(pkg %in% installed.pkgs) ) {
-    print(sprintf("Installing : %s",pkg))
-    if (load.pkgs[pkg] == "cran") {
-      install.packages(pkg)
-    } else if (load.pkgs[pkg] == "bioc") {
-          BiocManager::install(pkg)
-    }
-  }
-  do.call("library",list(pkg))
-}
 ```
 
 ## Loading Data
 
 In this lab, we will be examining  _one_ tissue section of human HER2-positive
-breast cancer, a disease claiming several thousand lives every year. 10x - the
+breast cancer, a disease claiming several thousand lives every year. 10x Genomics - the
 company behind Visium - kindly provide some "example" datasets on their
 webpage, which is where this sample is taken from.
 
@@ -123,245 +100,193 @@ Rather than storing the data in the GitHub repository, we'll download it on the
 fly. The `bash` code below takes care of this, all you need to do is to execute
 it.
 
-```{bash,echo=F,eval=F}
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.tar.gz -O /home/genetech/code/labs/ex3/data/bc-data.tar.gz -nv
-tar -xf data/bc-data.tar.gz -C data/
-rm data/bc-data.tar.gz
+```{r download_files, echo=FALSE, eval=FALSE}
 
-wget https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz -O /home/genetech/code/labs/ex3/data/spatial.tar.gz -nv
-tar -xf data/spatial.tar.gz -C data/
-rm data/spatial.tar.gz
+download.file("https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5", "./data/filtered_feature_bc_matrix.h5")
+download.file("https://cf.10xgenomics.com/samples/spatial-exp/1.1.0/V1_Breast_Cancer_Block_A_Section_1/V1_Breast_Cancer_Block_A_Section_1_spatial.tar.gz", "./data/spatial.tar.gz")
+untar(tarfile = "./data/spatial.tar.gz", exdir = "./data")
+file.remove("./data/spatial.tar.gz")
 
 ```
+
+As a sanity check, you can run the code chunk below to see if you have the files available.
+If not, either something went wrong or you need to rerun the previous code chunk.
+
+```{r sanity_check}
+
+sprintf("Expression matrix available: %s", file.exists("./data/filtered_feature_bc_matrix.h5"))
+sprintf("Spatial data available: %s", dir.exists("./data/spatial"))
+
+```
+
 As you might remember, the expression data is only *one component* of the ST and
 Visium assays, we also have an *image* of the very same (stained with
 Hematoxylin and Eosin) tissue section to use as a reference and aid in our
-analysis. The HE-image for our data is shown below.
+analysis. You can visualize the HE-image by running the code chunk below.
 
-![HE-image of the Breast Cancer Section](data/spatial/tissue_hires_image.png)
+```{r load_img, fig.width=8, fig.height=8}
+
+im <- png::readPNG("data/spatial/tissue_hires_image.png") %>% as.raster()
+par(mar = c(0,0,0,0))
+plot(im)
+
+```
 
 Now when we know what our tissue looks like, let us continue with the expression
 data. Just as for most data generated from sequencing experiments, the raw data
 is stored as `FASTQ` files. However, the `FASTQ` files are about as useful to us
 as a concrete parachute would be to a skydiver. Just as for the single cell
 data, a bioinformatics pipeline is applied to the `FASTQ` files generated from a
-Visium experiement, this time called `spaceranger`. The `spaceranger` pipeline
+Visium experiment, this time called `spaceranger`. The `spaceranger` pipeline
 will output an expression matrix and meta-data with information regarding how
 the spot coordinates relate to the pixel coordinates in the HE-image (i.e.,
 pairing expression data and image data).
 
-Below we will load the expression data, from the `.mtx` files that we just
-downloaded.
+Below we will use the `STUtility` R package to load all the data we need for the lab. 
+The data will be stored in a `Seurat` object, just like the ones we used in lab 3,
+just slightly modified by `STUtility` to hold the additional spatial information.
+With `STUtility`, we will also have access to a bunch of useful functions designed 
+to work with spatial data. 
 
-```{r}
-# code adapted from: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/matrices
-library(Matrix)
-matrix_dir = "data/filtered_feature_bc_matrix/"
-barcode.path <- paste0(matrix_dir, "barcodes.tsv.gz")
-features.path <- paste0(matrix_dir, "features.tsv.gz")
-matrix.path <- paste0(matrix_dir, "matrix.mtx.gz")
-raw.data <- readMM(file = matrix.path)
-feature.names = read.delim(features.path,
-                           header = FALSE,
-                           stringsAsFactors = FALSE)
+```{r load_data}
 
-barcode.names = read.delim(barcode.path,
-                           header = FALSE,
-                           stringsAsFactors = FALSE)
+# Here we create a data.frame pointing to various files that will be used
+# by STUtility to create our Seurat object
+infoTable <- data.frame(samples = "./data/filtered_feature_bc_matrix.h5",
+                        imgs = "./data/spatial/tissue_hires_image.png",
+                        spotfiles = "./data/spatial/tissue_positions_list.csv",
+                        json = "./data/spatial/scalefactors_json.json")
 
-colnames(raw.data) = barcode.names$V1
-rownames(raw.data) = feature.names$V2
-
-raw.data[1:5,1:5]
-```
-
-**IMPORTANT**: The data is loaded in a sparse format, to not eat all of your
-memory. Remember this when trying to manipulate your data later on.
-
-
-As you can see in from the small excerpt above, we have `spots` along one
-dimension (columns), and `genes` along the other dimension (rows). But, we note
-one important thing: _There's no spatial information yet in this matrix!_. 
-
-Lucky for us, the data we just downloaded provides a _mapping_ between the spot
-_barcodes_ (the colnames) and their spatial location. This mapping is found in a
-file located at `data/spatial/tissue_positions_list.csv`. Let us briefly inspect
-this file:
-
-```{bash}
-head data/spatial/tissue_positions_list.csv -n 10
-```
-
-Excellent! As you can see, the rownames of this file are similar to the colnames of our expression data. Having inspected the file, you are now ready for the first task!
-
-*Q0*: Load the file containing the spatial information, and create a
-`data.frame` object called `spatial.data` with the two columns `x`and `y` holding the _x_ and _y_ coordinates of your data. Some tips to help you with this quest are:
-
-1. The second-to-last and last columns in `tissue_positions_list.csv` represent the _x_ and _y_ coordinates respectively. You can ignore all other columns except the barcodes of course.
-
-2. There are **more entries in the file than there are spots in the expression data**, the entries are also **differently sorted**, make sure to adjust for this and that the rownames and colnames match once you've loaded the data.
-
-3. To find _common elements_ in two sets of vectors, there's a nifty command called _intersect_.
-
-
-```{r,eval=T,echo=T}
-# Insert code to create the "spatial.data" data frame here
-
-raw.data[1:5,1:5]
-```
-
-
-The code chunk below let's you check whether your work in the previous chunk is correct.
-
-```{r}
-source("checks.R")
-check.q0(spatial.data,raw.data)
+# Here we create a Seurat object from our newly created infoTable data.frame
+se.HER2 <- InputFromTable(infoTable)
 
 ```
 
+If we execute the code chunk below we will get some basic information about 
+our Seurat object, i.e. we have 24923 genes (features) and 3798 spots (samples)
 
-Let us now make some use of this data that we worked so hard for to obtain! A
-good first task, and also a sanity check to make sure that everything went as
-expected, is to plot the spots according to their spatial coordinates, which the
-chunk below will do for you.
+```{r view_data}
 
+se.HER2
 
-```{r}
-g <- ggplot(data = spatial.data) +
-  geom_point(mapping = aes(x = y, y = -x),
-             size = 0.8
-             ) +
-  theme_void() +
-  theme(plot.margin = unit(c(0.05, 0.05, 0.05, 0.05), "npc"))+
-  coord_fixed()
-
-print(g)
 ```
 
-If you scroll back to the HE-image above, you can clearly see how the spots
-resemble the tissue outlines. This is positive, at least we now know that our
-data isn't a complete mess, i.e., so far so good. With these affirimations, we
-may proceed to prepare the data (and ourselves) for some fun analysis. Similar
-to what we did in the single cell lab, we will use the `Seurat` suite, hence the
-next thing for us is to create a Seurat object.
+We can also easily extract meta data from our Seurat object by running 
+`se.HER2[[]]`. So far, we have five columns named "orig.ident", "nCount_RNA", 
+"nFeature_RNA", "id" and "labels".
 
-*Q1*: Create a Seurat object named `se` using the `CreateSeuratObject` function with
-the following parameters:
+```{r head_data}
 
-* counts - `raw.data`
-* meta.data - `spatial.data`
-* project - `"BreastCancer"`
-* assay - `spRNA`
+head(se.HER2[[]])
 
-
-_Comment1_ : Note how we set the `spatial.data` as meta data in our Seurat object.
-That gives us easy access to the coordinates.
-
-_Comment2_ : The assay name "spRNA" is short for "spatial RNA"
-
-
-```{r,warning=FALSE}
-# Create the Seurat object se here
-
-se <- NA
-
-se
 ```
 
+### Q1
 
-We can now remove the `raw.data` object, since we've transferred all of it's
-information to the Seurat object. This will free up some of the memory.
-
-```{r}
-remove(raw.data)
-```
-
-
-*Q2*: Now when the Seurat object is formed, please answer the questions below:
-
-1. How many spots do we have?
-2. How many genes do we have?
-3. How many UMI's in total do we have, i.e., total amount of observed transcripts?
-4. What is the name of the 1306th gene?
+> Now when the Seurat object is formed, please answer the questions below:
+>
+> 1.  How many spots do we have?
+> 2.  How many genes do we have?
+> 3.  How many UMI's in total do we have, i.e., total amount of observed transcripts?
+> 4.  What is the name of the 1306th gene?
+>
+> *hint* : You can use the function `GetAssayData()` to retrieve to expression matrix
+> (i.e. UMI counts).
 
 Give your answers below
-```{r,eval = GRADE_MODE}
+
+```{r q1}
 
 # Give the answers to the questions above
 # by assigning the values (answers) to
-# the variables ans1,ans2 and ans3
+# the variables ans1, ans2, ans3 and ans4
 
 ans1 <- NA
 ans2 <- NA
 ans3 <- NA
 ans4 <- NA
 
-cat(sprintf("No. Spots : %d \nNo genes: %d\n1306th gene : %s",ans1,ans2,ans3))
-q1.ans <- c(ans1,ans2,ans3,ans4)
+cat(sprintf("No. spots: %d \nNo genes: %d\nTotal no. UMIs: %d\n1306th gene: %s", ans1, ans2, ans3, ans4))
+
 ```
 
-The code below will allow you to check whether your answer is correct or not.
+You can now check the answers by running the code chunk below!
 
-```{r}
+```{r q1_check, warning=TRUE}
+
 source("checks.R")
-check.q1(q1.ans)
+q1_check(ans = list(ans1, ans2, ans3, ans4))
+
 ```
+
+Let us now make some use of this data that we worked so hard for to obtain! A
+good first task, and also a sanity check to make sure that everything went as
+expected, is to plot the spots according to their spatial coordinates, which you 
+can do with the `ST.FeaturePlot()` function. 
+
+Note that requires a `feature` value to draw on the plot. Here we use "orig.ident" 
+which is automatically added to your Seurat object when it is created.
+
+```{r plot_outline, fig.width=6, fig.height=6}
+
+# You can adjust the point size by changing the value for pt.size
+ST.FeaturePlot(se.HER2, features = "orig.ident", pt.size = 2)
+
+```
+
+In the top left corner we can see the name of the feature that we selected ("orig.ident"),
+above the image we see a number that tells us what section we're looking at (here we only have 1),
+and on the right hand side you can see the content of our selected feature which the spots are 
+colored by (here we only have 1 category, so we get one color).
+
+If you scroll back to the HE-image above, you can clearly see how the spots
+resemble the tissue outlines. This is positive, at least we now know that our
+data isn't a complete mess, i.e., so far so good. With these affirmations, we
+may proceed to prepare the data (and ourselves) for some fun analysis. 
+
+### Q2
+
+> Use `ST.FeaturePlot()` to visualize the number of unique genes ("nFeature_RNA") per
+> spot. Add an argument palette = "Spectral" to get a more fancy color scale.
+
+```{r q2, fig.width=6, fig.height=6}
+
+# Write the code below
+
+```
+
+How neat is that! Now we can see exactly where in the tissue we obtain higher numbers
+of unique genes. You have already seen the H%E image for the tissue section, so by 
+now you might have a clue about why some regions have higher numbers of genes than others.
+As so often in science, the answer is that it depends. For example, certain parts of the 
+tissue might be harder to permeabilize than others, which would result in lower mRNA capture.
+However, as a rule of thumb we expect to see higher numbers in more _cell dense_ regions.
+Information about cell density is easy to get from the H&E image where cell dens regions are
+tightly packed with dark blue nuclei (stained by the hematoxylin).
 
 So far we plotted the spots and then compared them to the tissue image, but
 scrolling back and forth is tedious and cumbersome, we can do better than that!
 Thanks to the setup of the Visium platform, the spots can (seamlessly) be
 overlaid on the tissue.
 
-The code below will do exactly this - overlay the spots on the tissue - for you.
-You do not have to pay too much attention to the code, but it has been annotated
-to inform you of what is going on in case you are interested.
+First, we need to load the H%E image(s) into the Seurat object using the `LoadImages()` 
+function. We can then plot our H&E image(s) with the `ImagePlot()` function. It's way 
+easier and faster to work with small images, so we will downscale the image to have a 
+width of 600 pixels by setting `xdim = 600`.
 
-```{r, fig.width= 7, fig.height= 7}
+```{r, fig.width=6, fig.height=6}
 
-# load image
-img <- readPNG("data/spatial/tissue_hires_image.png")
-scalefactor <- rjson::fromJSON(file='data/spatial/scalefactors_json.json')
-scalefactor <- scalefactor$tissue_hires_scalef
+se.HER2 <- LoadImages(se.HER2, time.resolve = FALSE, xdim = 600)
+ImagePlot(se.HER2, method = "raster")
 
-# make a raster object from the image
-# this is needed to plot the image together with
-# the data
-img.grob <- rasterGrob(img,
-                       width = unit(1, "npc"),
-                       height = unit(1, "npc"),
-                       interpolate = TRUE)
+```
 
+Then, if we want to plot features on top of our H%E image(s), we use the
+`FeatureOverlay()` function instead of `ST.FeaturePlot()`.
 
-se@meta.data[,c("_x","_y")] <-se@meta.data[,c("x","y")]
-se@meta.data$x <- nrow(img.grob$raster) - se@meta.data$x * scalefactor
-se@meta.data$y <- se@meta.data$y * scalefactor
+```{r plot_counts, fig.width=6, fig.height=6}
 
-# create a ggplot object
-g <- ggplot(data = se@meta.data) +
-  # add the image as a background
-  annotation_custom(img.grob,
-                    xmin = -Inf,
-                    xmax = Inf,
-                    ymin = -Inf,
-                    ymax = Inf) +
-  # plot the spots 
-  geom_point(mapping = aes(x = y, y = x),
-             size = 0.7,
-             color = "red") +
-  # adjust x-axis scaling
-  scale_x_continuous(limits = c(0, dim(img)[2]),
-                     expand = c(0, 0)) +
-  # adjust y-axis scaling 
-  scale_y_continuous(limits = c(0, dim(img)[1]),
-                     expand = c(0, 0)) +
-  # remove uneccesary stuff (ticks and axes) from the plot
-  theme_void() +
-  # configure margin settings
-  theme(plot.margin = unit(c(0.05, 0.05, 0.05, 0.05), "npc"))+
-  # fix plot aspect ratio
-  coord_fixed()
-
-print(g)
+FeatureOverlay(se.HER2, features = "nFeature_RNA", palette = "heat")
 
 ```
 
@@ -372,228 +297,78 @@ a bit more with our data.
 The whole **purpose** of using Visium is to associate gene expression to spatial
 locations, i.e., each spot has an associated expression value for every gene. To
 see this property in action, we will visualize the expression of a gene called
-_ERBB2_  (a marker gene for HER2-positive breast cancer). In short, this will be done in
-three steps, namely:
+_ERBB2_  (a marker gene for HER2-positive breast cancer). 
 
-1. create a vector called `color.vector` which holds the expression values of _ERBB2_ at each spot
-2. plot the image as a background (same as before)
-3. plot the spots **but** let their color intensity be proportional to the gene expression values of _ERBB2_ (using `color.vector`)
+```{r plot_erbb2, fig.width=6, fig.height=6}
 
-```{r}
-
-# create vector holding expression values for ERBB2
-color.vector <- as.numeric(se$spRNA["ERBB2",])
-# create image grob
-img.grob <- rasterGrob(img,
-                       width = unit(1, "npc"),
-                       height = unit(1, "npc"),
-                       interpolate = TRUE)
-
-# create ggplot object
-g <- ggplot(data = se@meta.data) +
-  # add image as background 
-  annotation_custom(img.grob,
-                    xmin = -Inf,
-                    xmax = Inf,
-                    ymin = -Inf,
-                    ymax = Inf) +
-  
-  # add spots, color by expression
-  geom_point(mapping = aes(x = y, y = x,
-                           color = color.vector),
-             pch = 20,
-             alpha = 0.3
-             ) +
-  # choose color gradient for spots
-  scale_color_gradient(low = "white",
-                        high = "red"
-                       ) +
-  # set labels of plot
-  labs(colour = "Expression Level",
-       title = "ERBB2 expression"
-       ) +
-  
-  # adjust x-axis scaling
-  scale_x_continuous(limits = c(0, dim(img)[2]),
-                     expand = c(0, 0)) +
-  # adjust y-axis scaling
-  scale_y_continuous(limits = c(0, dim(img)[1]),
-                     expand = c(0, 0)) +
-  # get rid of unnecessary stuff
-  theme_void() +
-  # add margins
-  theme(plot.margin = unit(c(0.05, 0.05, 0.05, 0.05), "npc"))+
-  # fix plot ratio
-  coord_fixed()
-
-print(g)
+# You can play around with the pt.size and pt.alpha (opacity) to make the background more 
+# visible
+FeatureOverlay(se.HER2, features = "ERBB2", pt.size = 1.5, pt.alpha = 0.7)
 
 ```
 
 Interesting indeed! What we see here is how the gene expression of _ERBB2_ is
 elevated in the darker regions (=more cells --> more likely to be a cancerous
-region). This result is in concordance what we expect, hence we can conclude that:
+region). This result is in concordance what we expect, hence we can conclude that 
+the data we have collected seems to be of descent quality, nothing weird 
+(like mixing up the spatial barcodes) has happened to it.
 
-1. The data we have collected seems to be of descent quality, nothing weird (like mixing up the spatial barcodes) has happened to it.
-2. Our code for plotting also seems to be correct!
-
-
-Before we proceed, note how we have already used the "plot-spots-on-image"
-procedure twice, and probably will do it again. There is also quite a lot of
-code involved every time we do this, and we only make small changes to it (like
-adjusting the color of our spots). To avoid loads of repetitive code and make
-things easier for us, we will therefore define a _function_ called
-`spatial.plot` that will take care of the plotting for us. This function will be
-designed to take the following parameters:
-
-* se - a Seurat object with coordinates in the metadata
-* img - [optional] an image (corresponding to the se data)
-* alpha - [optional] transparency of the spots
-* size - [optional] spot size
-* color.vector - [optional] a vector of length n_spots with values to color spots by
-* plot.title - [optional] title of the plot
-* legend.tile - [optional] title of legend
-* color.type - [optional] if colors are continuous values or categorical variables
-
-Again, you don't have to spend tons of time on the code here, but give it a look
-and see if you follow the workflow.
-
-```{r}
-
-spatial.plot <- function(se,
-                         img = NULL,
-                         alpha = 1,
-                         size = 1,
-                         color.vector = NULL,
-                         plot.title = "",
-                         legend.title = "",
-                         color.type = "continous"
-                         ) {
-  
-  
-  if (is.null(color.vector)) {
-    gp <- geom_point(mapping = aes(x = y,
-                                    y = x
-                                   ),
-                     color = "black",
-                     pch = 20,
-                     size = size,
-                     alpha = alpha
-                     )
-  } else {
-      gp <- geom_point(mapping = aes(x = y,
-                                     y = x,
-                                    color = color.vector
-                                   ),
-                     pch = 20,
-                     size = size,
-                     alpha = alpha
-                     )
-  }
-  
-  g <- ggplot(data = se@meta.data )
-  
-  if (!(is.null(img))) {
-    
-     img.grob <- rasterGrob(img,
-                       width = unit(1, "npc"),
-                       height = unit(1, "npc"),
-                       interpolate = TRUE)
-     
-     g <- g +  annotation_custom(img.grob,
-                              xmin = -Inf,
-                              xmax = Inf,
-                              ymin = -Inf,
-                              ymax = Inf) +
-       
-    scale_x_continuous(limits = c(0, dim(img)[2]),
-                       expand = c(0, 0)) +
-     
-    scale_y_continuous(limits = c(0, dim(img)[1]),
-                       expand = c(0, 0))
-    
-   }
-           
-  g <- g + gp
-  
-  if (!(is.null(color.vector))) {
-    if (color.type == "categorical") {
-        n_col = length(unique(color.vector))
-        g <- g+ scale_colour_manual(values = rainbow(n_col))
-        
-    } else {
-      g <- g+ scale_color_gradient(low = ifelse(is.null(img),
-                                                "yellow",
-                                                "white"),
-                                     high = "red"
-                                    )
-    }
-  }
-  
-  g <- g+       labs(colour = legend.title,
-                title = plot.title
-                ) +
-    
-    theme_void() +
-    theme(plot.margin = unit(c(0.05, 0.05, 0.05, 0.05), "npc"))+
-    coord_fixed()
-  
-  return(g)
-}
-
-```
-
-Of course, we now want to test our new function. We use `spatial.plot` to
-create the same plot as before, using the `color.vector` from earlier (expression of _ERBB2_)
-to color our spots.
-
-```{r, fig.width= 5, fig.height=5}
-gg <- spatial.plot(se,
-                   img = img,
-                   color.vector = color.vector
-                   )
-
-print(gg)
-
-```
-
-As you can see, this is **a bit** more convenient to use than typing $~50$ lines of
-code each time we want to plot something.
-
-What's really cool with having an HE-image associated with the expression data,
+What's really cool with having an H&E image associated with the expression data,
 is that pathologists can annotate regions of interest with labels such as
 "cancer" or "benign". These annotations can then be used in our analysis, for
 example we can inspect which genes that are up-regulated in these regions. Below
 you have such annotations (rough, but still decent) of the same tissue as we are
 working with.
 
-![Annotation of HE-image](img/annot.png)
+Run the code chunk below to see the annotations:
+
+```{r load_annot_img, fig.width=6, fig.height=6}
+
+im_ann <- png::readPNG("img/annot.png") %>% as.raster()
+par(mar = c(0,0,0,0))
+plot(im_ann)
+
+```
 
 * Blue - Fibrous Tissue
 * Pink - Invasive Carcinoma
 * Green - Ductal Cancer _in situ_ (DCIS)
 
+### Q3
 
-*Q3*: Armed with the `spatial.plot` function, it's now up to you to find out which (choose one) of these genes below, that are highly expressed in in one or more of the _DCIS_ regions while less prominently expressed in the remaining part of the tissue.
+> Armed with the `FeatureOverlay()` function, it's now up to you to find out which
+> **one** of these genes below, that are highly expressed in in one or more of the
+> *DCIS* regions while less prominently expressed in the remaining part of the tissue.
+>
+> -   ESR1
+> -   FSCN1
+> -   MGP
+> -   MALAT1
+> -   ACTA1
+>
+> Use the `FeatureOverlay()` function inspect the spatial distribution of these genes 
+> and compare to pathologists annotated image above. Once you have your answer, plot 
+> that gene only!
 
+```{r q3, fig.width=7, fig.height=6}
 
-* ESR1
-* FSCN1
-* MGP
-* MALAT1
-* ACTA1
-
-Use the `spatial.plot` function to both inspect the spatial distribution of these genes and to plot your answer!
-
-
-```{r,fig.width=5, fig.height=5}
-# Plot the gene highly expressed in the DCIS region here
-# using the spatial.plot function
-
+# Plot the gene expressed mainly in the DCIS region here
+# using the FeatureOverlay() function
 
 ```
 
-Having crafted some tools and gained more understanding of the data, we will now
+Write down the gene expressed mainly in the DCIS region and check your answer.
+
+```{r check_q3, warning=TRUE}
+# Replace NA with the gene highly expressed in the DCIS region here
+ans.q3 <- NA
+
+source("checks.R")
+q3_check(ans.q3)
+
+```
+
+Having access to some new tools and gained more understanding of the data, we will now
 move on to even more exciting stuff!
 
 ## Data Pre-processing
@@ -609,72 +384,60 @@ the tissue (but still were - falsely - identified as such by the 10x
 bioinformatics software).
 
 To get a better sense of what spots we should remove, we will look at the
-histograms of the meta data `nCount_spRNA` and `nFeatures_spRNA`. The former
+histograms of the meta data `nCount_RNA` and `nFeatures_RNA`. The former
 informs us of the total number of observed transcript in each spot, while the
 latter is informative of how many _different_ genes that we observe in
 respective spot.
 
-```{r, fig.widht = 14, fig.height = 5}
-# Plot histograms over nCounts_spRNA and nFeatures_spRNA
+```{r plot_hist, fig.width = 14, fig.height = 5}
 
-# generate hisograom of nCount_spRNA
-h1 <- ggplot(se@meta.data,
-            aes(x = nCount_spRNA)) +
-  geom_histogram(color = "black",
-                 fill = "red",
-                 alpha = 0.7
-                 ) +
-  geom_vline(xintercept = 2000,
-             color = "black",
-             linetype = "dashed"
-             )+
-  labs(title = "Histogram | Total Counts") +
-  ylab("No. Spots") +
-  xlab("No. Transcripts")
+# generate histograom of UMI counts
+h1 <- ggplot(se.HER2[[]], aes(nCount_RNA)) +
+  geom_histogram(fill = "red", alpha = 0.7, bins = 60) +
+  geom_vline(xintercept = 2000, color = "black", linetype = "dashed") +
+  labs(x = "No. Spots",
+       y = "No. Transcripts",
+       title = "Histogram | Total counts")
 
-# generate hisograom of nFeature_spRNA
-h2 <- ggplot(se@meta.data,
-            aes(x = nFeature_spRNA)) +
-  geom_histogram(color = "black",
-                 fill = "blue"
-                 )+
-  geom_vline(xintercept = 800,
-             color = "black",
-             linetype = "dashed"
-             )+
-  labs(title = "Histogram | Features") +
-  ylab("No. Spots") +
-  xlab("No. Features")
+h2 <- ggplot(se.HER2[[]], aes(nFeature_RNA)) +
+  geom_histogram(fill = "blue", alpha = 0.7, bins = 60) +
+  geom_vline(xintercept = 800, color = "black", linetype = "dashed") +
+  labs(x = "No. Spots",
+       y = "No. Genes",
+       title = "Histogram | Genes")
 
-h <- h1 - h2
-print(h)
+h1 + h2
+
 ```
 
-Dashed black lines have been added at the values 2000 (`nCount_spRNA`) and 800
-(`nFeature_spRNA`), these are the limits which we will settle on - these are
+Dashed black lines have been added at the values 2000 (`nCount_RNA`) and 800
+(`nFeature_RNA`), these are the limits which we will settle on - these are
 however chosen somewhat arbitrary.
 
-*Q4*: Create a vector named `keep.spots` which contains the _names_ of all spots
-with **both** of the following criteria satisfied:
+### Q4
 
-1. `nCount_spRNA` should be larger or equal to $2000$
-2. `nFeature_spRNA` should be larger or equal to $800$
+> Create a vector named `keep.spots` which contains the *names* of all spots with
+> **both** of the following criteria satisfied:
+>
+> 1.  `nCount_RNA` should be larger or equal to $2000$
+> 2.  `nFeature_RNA` should be larger or equal to $800$
+>
+> *Comment* : Do *not* make any changes to your Seurat object yet.
 
-_Comment_ : Do *not* make any changes to your Seurat object yet.
+```{r q4}
 
-```{r,eval = GRADE_MODE}
 # Enter code to create the keep.spots vector here
+
 ```
 
-Execute the code below to check whether your `keep.spots` vector is constructed
-correctly.
+Now you can check your answer below before you proceed!
 
-```{r,echo=TRUE,eval=TRUE}
+```{r check_q4, warning=TRUE}
+
 source("checks.R")
-check.q4(keep.spots)
+q4_check(ans = keep.spots)
 
 ```
-
 
 Naturally, the next step is to identify which genes we want to keep and discard.
 To guide us in the procedure we will plot histograms of: (i) the total number of
@@ -686,70 +449,62 @@ _Comment_ : A pseudocount is added to make sure we never end up with having to
 do $\log(0)$ which is equal to the negative infinity, and we don't like to
 work with infinite numbers...
 
-```{r}
+```{r log_hist, fig.width=14, fig.height=5}
 
-# compute total transcripts over all spots
-nCount.UMI <- Matrix::rowSums(GetAssayData(se))
-# log transform total transcript count
-nCount.UMI.log10 <- log10(nCount.UMI +1)
-# compute number of spots each gene has been observed at
-nObs.genes <- Matrix::rowSums(GetAssayData(se) > 0)
+# Compute total transcripts over all spots, which
+# is equal to the row sums of our expression matrix
+nCount.UMI <- Matrix::rowSums(GetAssayData(se.HER2))
 
-# construct new data frame with the information
-# extracted above
-gene.data <- data.frame(nCounts = nCount.UMI.log10,
-                        nObs = nObs.genes )
+# Compute number of spots each gene has been observed at.
+# What we do here is to first create a logical matrix 
+# which tells us if the expression is larger than 0. 
+# Then we can simply compute the row sums to get 
+# the number of spots each gene is detected in.
+nObs.genes <- Matrix::rowSums(GetAssayData(se.HER2) > 0)
+
+# construct new data frame with the information extracted above
+gene.data <- data.frame(nCounts = nCount.UMI, nObs = nObs.genes)
 
 # generate histogram of total transcript counts
-h3 <- ggplot(gene.data,
-              aes(x = nCounts)) +
-  
-  geom_histogram(color = "black",
-                 fill = "lightblue"
-                 )+
-  
-  labs(title = "i) Total Expression") +
-  ylab("No. Genes") +
-  xlab("Total UMI ")
+h3 <- ggplot(gene.data, aes(x = nCounts)) +
+  scale_x_log10() +
+  geom_histogram(color = "black", fill = "lightblue") +
+  labs(x = "Total UMI [log10 scaled]", y = "No. Spots", title = "i) Total Expression")
 
 # generate histogram of gene prevalance
-h4 <- ggplot(gene.data,
-              aes(x = nObs)) +
-  geom_histogram(color = "black",
-                 fill = "pink",
-                 binwidth = 50
-                 )+
+h4 <- ggplot(gene.data, aes(x = nObs)) +
+  geom_histogram(color = "black", fill = "pink", binwidth = 50) +
+  labs(x = "No. Genes", y = "No. Spots", title = "ii) Prevalence")
 
-  labs(title = "ii) Prevalence") +
-  ylab("No. Genes") +
-  xlab("No. Spots")
+h3 + h4
 
-h <- h3 + h4
-
-print(h)
 ```
 
-*Q5* : We will apply a fairly stringent filtering; create an additional vector named
-`keep.genes` with the **names** of the genes that satisfy both the following
-criteria:
+### Q5
 
-1. Total expression across all spots is larger or equal to $300$
-2. The gene should be observed (i.e., have a non-zero count) in _at least_ 5 spots (about 0.2% of )
+> We will apply a fairly stringent filtering; create an additional vector named
+> `keep.genes` with the **names** of the genes that satisfy both the following criteria:
+>
+> 1.  Total expression across all spots is larger or equal to $300$
+> 2.  The gene should be observed (i.e., have a non-zero count) in *at least* 5 spots
+>     (about 0.2% of the data)
+>
+> *Comment* : do **not** make any modifications to your Seurat object yet.
 
-_Comment_ : do **not** make any modifications to your Seurat object yet.
+```{r q5}
 
-```{r,eval = GRADE_MODE}
 # Enter code to create the keep.genes vector here
 
 ```
 
 Again, you can check whether your answers are correct with the next code chunk!
 
-```{r}
-source("checks.R")
-check.q5(keep.genes)
-```
+```{r check_q5, warning=TRUE}
 
+source("checks.R")
+q5_check(keep.genes)
+
+```
 
 We will actually add one more layer of filtering to our genes; namely that
 *mitochondrial* (MT) and *ribosomal* (RP) genes will also be removed. These
@@ -758,51 +513,65 @@ little interest to our biological questions. Run the code chunk below to ensure
 MT and RP genes are excluded.
 
 _Comment_ : `grepl` is a function that uses regular expressions to match a
-certain pattern. The pattern we are using her `^(mt\\.|rp)` translates to:
-"match any gene name that starts with either 'mt.' or 'rp'". Using the `!` sign
+certain pattern. The pattern we are using here `^(MT-|RPL|RPS)` translates to:
+"match any gene name that starts with either 'MT-', 'RPL' or 'RPS'". Using the `!` sign
 negates the match from `grepl`, meaning we only keep genes that do not start
-their names with "mt." or  "rp".
+their names with "MT-", "RPL" or "RPS".
 
-```{r}
+```{r filt_genes}
+
 # remove rp and mt genes
-keep.genes <- keep.genes[!(grepl("^(mt-|rp)",tolower(keep.genes)))]
+keep.genes <- keep.genes[!grepl("^(MT-|RPL|RPS)", keep.genes)]
 
 ```
 
+### Q6
 
-_Q6_: Subset your Seurat object `se` using the vectors `keep.spots` and
-`keep.genes`. The subsetted Seurat object should still be named `se` (i.e., you
-should overwrite the old one)
+> Subset your Seurat object `se.HER2` using the vectors `keep.spots` and `keep.genes`
+> with the `SubsetSTData()` function. The subsetted Seurat object should still be named
+> `se.HER2` (i.e., you should overwrite the old one). `SubsetSTData()` is a function
+> provided in `STUtility` which can take a vector of spots that should be passed to the
+> `spots=` argument and a vector of genes that should be passed to the `features=`
+> argument.
+>
+> NOTE: You should *not* use the `subset()` function that was used in the previous lab.
+> You can find more information in the `SubsetSTData()` documentation by typing
+> `?SubsetSTData` in the console.
 
-```{r,eval = GRADE_MODE}
+```{r q6}
+
 # enter code to subset your Seurat object here
 
 # inspect Seurat object
-se
+se.HER2
+
 ```
 
+### Q7
 
-_Q7_: Now please answer these to questions below:
+> Now please answer these to questions below:
+>
+> 1.  How many genes were *removed* in the filtering?
+> 2.  How many spots were *removed* in the filtering?
 
-1. How many genes were *removed* in the filtering?
-2. How many spots were *removed* in the filtering?
+```{r q7}
 
-```{r,eval = GRADE_MODE}
-
+# Replace the NA values with your answers
 ans.q7.1 <- NA
 ans.q7.2 <- NA
 
-cat(sprintf("Removed genes : %s\nRemoved spots %s",ans.q7.1,ans.q7.2))
+cat(sprintf("Removed genes: %s\nRemoved spots: %s", ans.q7.1, ans.q7.2))
 
 ```
 
 Run the code chunk below to check your answers.
 
-```{r}
-source("checks.R")
-check.q7(c(ans.q7.1,ans.q7.2))
-```
+```{r check_q7, warning=TRUE}
 
+source("checks.R")
+q7_check(list(ans.q7.1, ans.q7.2))
+
+```
 
 The final step before the actual analysis starts is to *Normalize* our data, the
 motivation behind this has already been outlined in the Single Cell lab, so we
@@ -812,11 +581,11 @@ the `SCTransform` function will be used for this purpose.
 _Comment_: This might take some time, so don't worry if you have to wait for a
 couple of minutes!
 
-```{r,echo=FALSE,eval=TRUE}
-se <- SCTransform(se,
-                  assay = "spRNA",
-                  verbose = FALSE)
-se
+```{r sctrans, echo=FALSE, eval=TRUE}
+
+se.HER2 <- SCTransform(se.HER2, verbose = FALSE)
+se.HER2
+
 ```
 
 Sweet! We are now done with the pre-processing and can _finally_ start analyzing
@@ -830,78 +599,69 @@ are any natural groupings contained within this data.
 
 Just as for the single cell data we will apply _dimensionality reduction_ to our
 data in an attempt to avoid [the curse
-ofdimensionality](https://en.wikipedia.org/wiki/Curse_of_dimensionality). Here
+of dimensionality](https://en.wikipedia.org/wiki/Curse_of_dimensionality). Here
 the choice of method in _PCA_ (Principal Component Analysis), executed by using
-`RunPCA`. For purposes of visualization we also use _UMAP_ (Uniform Manifold
-Approximation and Projection), this is done with the help of `RunUMAP`.
+`RunPCA()`. For purposes of visualization we also use _UMAP_ (Uniform Manifold
+Approximation and Projection), this is done with the help of `RunUMAP()`.
 
-For the actual clustering we use the two functions `FindNeighbors` and
-`FindClusters`. The former constructs a _SNN_ (Shared Nearest Neighbor) graph
+For the actual clustering we use the two functions `FindNeighbors()` and
+`FindClusters()`. The former constructs a _SNN_ (Shared Nearest Neighbor) graph
 which is used by the latter to actually identify the clusters.
 
 _Comment_ : You will see that we specify a `seed` in some of the functions
 below, this puts our machine in a specific state that makes random numbers being
 generated the same in all instances. Using these random seeds makes the analysis reproducible. 
-**TLDR :Don't change the seed value plz**.
+**TLDR: Don't change the seed value plz**.
 
-```{r,echo=FALSE}
-# run pca on data
-se <- RunPCA(se,verbose = FALSE)
-# run umap on the 30 first principal vectors
-se <- RunUMAP(se,
-              dims = 1:30,
-              verbose = FALSE,
-              seed.use = 1337
-              )
-# construct a neighborhood
-se <- FindNeighbors(se,
-                    dims = 1:30,
-                    verbose = FALSE)
+_Comment_ : Here we make use of the pipe function `%>%` to pass the data from function to 
+function. One way to interpret it is: whatever is on the left hand side of `%>%` is passed as
+the first argument in the function on the right hand side. 
+For example: `se.HER2 <- se.HER2 %>% RunPCA()` is equivalent to `se.HER2 <- RunPCA(se.HER2)` 
 
-# cluster data
-se <- FindClusters(se,
-                   verbose = FALSE,
-                   resolution = 0.2,
-                   random.seed = 1337
-                   )
+```{r clust, echo=FALSE}
 
-se
+se.HER2 <- se.HER2 %>% 
+  RunPCA(verbose = FALSE) %>% # run pca on data
+  RunUMAP(dims = 1:30, verbose = FALSE, seed.use = 1337) %>% # run umap on the 30 first principal vectors
+  FindNeighbors(dims = 1:30, verbose = FALSE) %>% # construct a neighborhood
+  FindClusters( verbose = FALSE, resolution = 0.2, random.seed = 1337) # cluster data
+
+se.HER2
+
 ```
 
-To visualize the results in UMAP-space, we may use the `DimPlot` function.
+To visualize the results in UMAP-space, we may use the `DimPlot()` function.
 
-```{r}
+```{r plot_umap}
 
 # get the number of clusters
-n_clusters = length(unique(se[[]]$SCT_snn_res.0.2))
-# generate a color palette
-color.palette <-  rainbow(n_clusters)
+n_clusters <- length(unique(se.HER2$seurat_clusters))
+
 # plot data in UMAP-space
-DimPlot(se,label = TRUE,
-        cols = color.palette)
+DimPlot(se.HER2, label = TRUE)
+
 ```
 
 So far this is very similar to what we did with the single cell data, but what
 is really cool here is that we can see how these clusters are arranged in _the
-real physical space_. In order to do so, we use our `spatial.plot` function to
+real physical space_. In order to do so, we use the `FeatureOverlay()` function to
 color the spots by their cluster identity.
 
 _Comment_ : The cluster identities are stored in the metadata slot as
 `SCT_snn_res.resolution`, where `resolution` is equal to the parameter value
-used in `ClusterData`.
+used in `FindClusters()`. It is also stored in a separate column called "seurat_clusters"; 
+however, this column will only keep the latest clustering result. On other words, if you 
+rerun `FindCLusters()` with a different resolution, "seurat_clusters" will store those 
+results instead.
 
-_Comment_ : Since we are plotting labels (cluster identity) and not expression
-values, we set the `color.type` parameter of `spatial.plot` to `categorical`.
+```{r plot_clust, fig.width=6, fig.height=6}
 
-```{r}
 # plot clusters spatially
-gg <- spatial.plot(se,
-                   img = img,
-                   color.vector = se[[]]$SCT_snn_res.0.2,
-                   color.type = "categorical"
-                   )
-print(gg)
+FeatureOverlay(se.HER2, features = "seurat_clusters", pt.size = 1.5) &
+  guides(fill = guide_legend(override.aes = list(size = 5)))
+
 ```
+
 Take a moment to appreciate this.
 
 
@@ -924,26 +684,41 @@ computational method could replace them in tedious and time-consuming annotation
 tasks, allowing them to focus their expertise and skills at more relevant tasks,
 it's a win-win!
 
-**Q8** : To make sure you aren't just scrolling through this exciting stuff, let
-us throw in a question! In the chunk below, answer the following two questions:
+### Q8
 
-1. How many clusters do we have in the data?
-2. Which cluster (number) overlaps well with the DCIS region?
+> To make sure you aren't just scrolling through this exciting stuff, let us throw in a
+> question! In the chunk below, answer the following two questions:
+>
+> 1.  How many clusters do we have in the data?
+> 2.  Which cluster (number) overlaps well with the DCIS region?
 
-```{r,eval = GRADE_MODE}
+```{r q8}
+
 # Enter the answers to question 9 here
 q8.ans1 <- NA
 q8.ans2 <- NA
+
 # print answers
-print(sprintf("There are %d clusters\n Cluster %d overlaps with the DCIS regions",q8.ans1,q8.ans2))
+cat(sprintf("There are %d clusters\nCluster %d overlaps with the DCIS regions", q8.ans1, q8.ans2))
+
 ```
+
+You can now check the answers before you proceed.
+
+```{r check_q8, warning=TRUE}
+
+source("checks.R")
+q8_check(list(q8.ans1, q8.ans2))
+
+```
+
 
 But we are not done yet, now when we have these clusters to work with, the next
 step is to characterize them, i.e., figure out what they constitute?
 
-One way to further explore the cluster is to do a DGE (Differential Gene Expression)
-analysis. Again, we'll reuse some functions from the single cell lab to do
-this, here `FindAllMarkers`, which will present us with marker genes for each
+One way to further explore the cluster is to do a DEA (Differential Expression Analysis). 
+Again, we'll reuse some functions from the single cell lab to do
+this, here `FindAllMarkers()`, which will present us with marker genes for each
 cluster. We set the parameter `logfc.threshold` to `1` to ensure we only get
 genes that have a fairly high log-fold-change, the parameter `only.pos` is set
 to `TRUE` which means only up-regulated (and not down-regulated) genes are
@@ -952,53 +727,32 @@ significance threshold of `0.01` by setting the parameter `return.thresh` to
 `0.01`.
 
 
-```{r,warnings=FALSE,echo=FALSE}
-
-Idents(object = se) <- se@meta.data$'SCT_snn_res.0.2'
+```{r find_markers}
 
 # conduct a DGE analysis
-de.markers <- FindAllMarkers(se,
-                             assay = "SCT",
-                             logfc.threshold = 1,
-                             verbose = FALSE,
-                             only.pos = TRUE,
-                             return.thresh = 0.01
-                             )
+de.markers <- FindAllMarkers(se.HER2, logfc.threshold = 1, only.pos = TRUE, return.thresh = 0.01)
 
 # inspect result
 head(de.markers)
 
 ```
+
 As a sort of sanity check, let us assess whether the marker genes' expression
 overlap with the actual clusters they are supposed to represent. For a quick
 assessment, let us plot _one_ marker gene associated with each cluster using the
 `spatial.plot` function.
 
-```{r,fig.width = 12, fig.height=9}
+```{r plot_markers,fig.width = 10, fig.height=9}
 
 # grab the name of the first marker gene for each cluster
-de.markers.one <- de.markers[!duplicated(de.markers$cluster),]
+de.markers.one <- de.markers %>%
+  group_by(cluster) %>%
+  slice_head(n = 1)
+
 # list to hold our plots
 plot.list <- list()
 
-# iterate over the selected marker genes
-for (gene in de.markers.one$gene) {
-  # get the expression vector of the marker gene
-  expression.vector <- as.numeric(GetAssayData(se)[gene,])
-  # get cluster that the marker is associated with
-  cluster.id <- as.character(de.markers.one[gene,"cluster"])
-  # construct plot title 
-  plot.title <- sprintf("Cluster %s | Gene : %s",cluster.id,gene)
-  # generate plot of marker gene
-  plot.list[[gene]] <- spatial.plot(se,
-                                    plot.title = plot.title,
-                                    color.vector = expression.vector
-                                    )
-  
-}
-# arrange plots in grid and plot
-grid.arrange(grobs = plot.list,
-             ncol = 4)
+FeatureOverlay(se.HER2, features = de.markers.one$gene, ncols = 3, pt.size = 1, show.sb = F)
 
 ```
 
@@ -1030,256 +784,209 @@ do not know the character of our factors prior to the analysis.
 There is a plethora of different methods to conduct factor analysis or modeling
 of similar problems, some of them designed specifically with gene expression
 data in mind. Since more complex models tends to take longer time to fit and
-converge, we will use a relatively simple form of factorization called Latent
-Dirichlet Allocation (LDA) - borrowed from the field of topic modelling.
+converge, we will use a form of factorization called Non Negative Matrix 
+Factorization (NNMF).
 
-LDA was first presented in 2003 (Blei et al.), the original problem it
-was designed to solve can be described as: 
+When applied to RNA-seq data (scRNA-seq or Visium for example), NNMF learns two 
+matrices: one describes the structure between genes and one describes the structure 
+between samples (cells or spots). Let's call these two matrices _H_ and _W_.
 
-> "Given a corpus of 𝑀 documents, with a vocabulary consisting of 𝑉 words,
-assume each document can be assigned to one or more of 𝑇 topics. Each topic 𝑡
-is characterized by its frequency distribution over the 𝑉 words. How are the
-words distributed across the topics and how are the topics distributed across
-the documents?"
+We can run the NNMF algorithm using the `RunNMF()` function. The algorithm can 
+take some time to compute, but we do not need to run it on all genes available 
+in our gene expression matrix. Instead, we can define a smaller set of genes 
+that capture most of the variability in our data.
 
-If we consider this in the context of spatial transcriptomics, we can see how an
-alternative formulation could be stated as :
+### Q9
 
-> "Given a section with 𝑆 spots, with a total of 𝐺 genes being expressed
-across all spots, assume each spot can be assigned to one or more of 𝑃
-expression programs. Each program 𝑝 is characterized by its frequency
-distribution over the 𝐺 genes. How are the genes distributed across the
-expression programs and how are the programs distributed across the spots?"
+> Create a vector called `factorization.genes` that includes the top 1000 most variable
+> genes.
+>
+> *Comment* : The top variable genes were already identified during the normalization
+> step with `SCTransform()` and we can get those by running `Variablefeatures(se.HER2)`.
 
-Despite being described as "simple", the LDA model takes a fairly long time to
-fit and scales poorly with the number of genes, therefore we will only use the
-top 5000 highest expressed genes (based on the raw, not normalized data).
+```{r q9}
 
-*Q9*:  Create a vector named `top.5000` that contains the names of the top 5000
-genes w.r.t. total gene expression.
+# Enter the code here
 
-_Comment_: Make sure you use the `SCT` assay when your extracting the order of
-the genes, even though we'll be using `spRNA` later on.
-
-```{r,eval = GRADE_MODE}
-# create the vector top.5000 here
-top.5000 <- NA
-# print head of top.5000
-print(head(top.5000))
 ```
 
-To check your answers, run the code chunk below!
+Answer check.
 
-```{r}
+```{r check_q9, warning=TRUE}
+
 source("checks.R")
-check.q9(top.5000)
+q9_check(factorization.genes)
+
 ```
 
+Now we can run the NNMF using the `RunNMF()` function. At this step, we also need
+to decide how many factors to use for the factorization. Here we will use 10.
 
-The next code chunk provides code that convert the data into a suitable format
-for the LDA implementation to use, and then fits the model. It uses $10$ topics,
-this number is chosen quite arbitrarily.
+```{r run_nnmf}
 
-Now, you can have a look at the code below but *DO NOT RUN IT*. Estimating the
-model parameters (fitting the model to the data) can take some time depending on
-how powerful your computer is, so to avoid you wasting valuable time on a slow
-algo - skip ahead to the next code chunk where you can load an already fitted
-model (using the code in this chunk).
+se.HER2 <- RunNMF(se.HER2, features = factorization.genes, nfactors = 10)
 
-```{r, eval = FALSE}
+```
 
-# do not change unless you want to wait forever
-run.lda <- FALSE
+The NNMF output is stored as a `DimReduc` (dimensionality reduction) object in 
+our `Seurat` object. We can actually think of NNMF as a dimensionality reduction 
+method, i.e. we go from our high dimensional gene expression data to a low 
+dimensional representation. Perhaps this is easiest to grasp by looking at the results:
 
-if (run.lda){
-  # Code to prepare data for the LDA algorithm
-  # and the actual fitting of the model
+```{r view_nnmf}
   
-  # construct a Term times Document Matrix from our count data
-  tdm <- as.TermDocumentMatrix(GetAssayData(subset(se,
-                                                   features = top.5000),
-                                            assay = "spRNA"),
-                               weighting = "weightTf"
-                               )
-  # get frequency weights
-  tdm <- weightTf(tdm)
+nnmf <- se.HER2[["NMF"]]
   
-  # convert Term times Document to Document times Term Matrix
-  # desired input to LDA function
-  dtm <- as.DocumentTermMatrix(tdm)
+H <- nnmf@cell.embeddings
+W <- nnmf@feature.loadings
                                
-  # run LDA with 10 topics 
-  lda.res <- LDA(dtm,
-                 k = 10)
+cat("Spot contribution:\n")
+head(H)
+cat("\nGene contribution:\n")
+head(W)
   
-  saveRDS(lda.res,"data/lda-res.Rds")
-}
 ```
 
-Run the code chunk below to load a fitted model
+In both matrices, we have 10 columns, 1 for each factor. In the first matrix _H_,
+we have spot labels as row names and we can extract information about how much 
+each spot contribute to each factor. In the second matrix _W_, we have genes as
+row names and can extract information about how much each gene contribute to each 
+factor. This may sound very confusing, but the neat thing here is that if we 
+think of the factors as expression programs, we now actually have a way of doing
+the following :
 
-```{r}
+1. Visualize where an expression program is elevated in the tissue
+2. Tell what genes are contributing to each expression program
 
-# load an already fitted model
+In contrast to the clustering - where each spot has one label (cluster id) - they
+now have a value for every factor representing the *relative contribution* of a 
+spot that originates from the respective factor. 
 
-lda.res <- readRDS("data/lda-res.Rds")
-lda.res
-```
+Let's visualize our factors on the tissue to understand what this means.
 
-So the model has now been fitted with $10$ factors (gene expression programs). In
-contrast to the clustering - where each spot has one label (cluster id) - they
-now have a value for every topic representing the *proportion of transcripts* in
-a spot that originates from respective topic. These proportion values are found
-in the ot of the `lda.res` object.
-
-To see how the factors are spread across our spots, we use `spatial.plot` function
-to visualize our results.
-
-```{r,  spatially.fig.width=12, fig.height=10}
-
-# list to store plots
-plot.list <- list()
-# iterate over each of the ten factors
-# we use "fctr" instead of "factor" since the latter is an R function
-for (fctr in 1:10) {
-  # generate plot
-  plot.list[[fctr]] <- spatial.plot(se,
-                                    color.vector = lda.res@gamma[,fctr],
-                                    plot.title = paste("Factor",fctr),
-                                    legend.title = "proportion"
-  )
-}
+```{r plot_nnmf, fig.width=12, fig.height=8}
   
-# arrange plots in grid and plot
-grid.arrange(grobs = plot.list,
-             ncol = 4)
+ST.DimPlot(se.HER2, reduction = "NMF", dims = 1:10, grid.ncol = 4, center.zero = FALSE, palette = "Spectral", show.sb = FALSE) &
+  theme(strip.text = element_blank())
 
 ```
 Hey isn't that neat?! We got some interesting factors popping up here, but
 before we look further into them, let's make sure you are on board with what we
 are doing!
 
-**Q10**: 
-Imagine that we had a different spatial transcriptomics data set which - cast in
-the original language of LDA - could be described as having $13$ topics, $8305$
-words in the vocabulary, and $1995$ documents. Using our interpretation of LDA,
-complete the following sentences:
+### Q10
 
-1. We have ... gene expression programs (or factors) in the data set
-2. There are ...  spots in the data set
-3. There are ... genes in the data set
+> What are the 10 spots with the highest contribution to factor 10? What are the 10
+> genes with the highest contribution to factor 3?
+>
+> Give your answers as comments in the code chunk below, they should be short and
+> concise, not more than a sentence or two.
 
-Now, compute the row sums of the `gamma` slot in `lda.res`, inspect your result and answer the following questions:
+```{r q10}
 
-4. The row sums are all identical, what is the value that all of them share?
+# Write code here
 
-5. *Why* do all rows sum to this value?
+# Enter the answers to question 10 here
+q10.ans1 <- NA
+q10.ans2 <- NA
 
-
-Give your answers as comments in the code chunk below, they should be short and concise, 
-not more than a sentence or two.
-
-```{r}
-# Answers to Question 10
-
-# Question 10.1
-#
-# Question 10.2
-#
-# Question 10.3
-#
-# Question 10.4
-#
-# Question 10.5
-#
+# print answers
+cat(sprintf("The spots with the highest contribution to factor 7 are: \n%s", paste(q10.ans1, collapse = "\n")), "\n\n")
+cat(sprintf("The genes with the highest contribution to factor 3 are: \n%s", paste(q10.ans2, collapse = "\n")))
 
 ```
 
-Now what's even cooler with LDA is that in addition to factor distribution among
-spots, it also fits the gene distribution among factors.
+Now you can check you answers.
 
-This means that we can see _which genes that are strongly associated with each
-factor. More precisely the `beta` slot of our `lda.res` object holds the logged
-(normal logarithm) probabilities of a gene being sampled from a specific factor.
+```{r check_q10, warning=TRUE}
 
-Factor 1 looks kinda interesting, almost as if it's surrounding the DCIS
+source("checks.R")
+q10_check(list(q10.ans1, q10.ans2))
+
+```
+
+Factor 7 looks kinda interesting, almost as if it's surrounding the DCIS
 regions, let us have a closer look at which genes that are most strongly
 associated with this factor.
 
 
-```{r}
+```{r plot_fctr7}
 
-# get the indices of the top 20 most frequent genes of topic 9
-top.factor.1 <- order(lda.res@beta[1,],decreasing = T)[1:20]
-# create a data frame with gene names and probabilities
-top.factor.1 <- data.frame(gene = lda.res@terms[top.factor.1],
-                           prob = exp(lda.res@beta[1,top.factor.1])
-                           )
+FactorGeneLoadingPlot(se.HER2, factor = 7)
 
-top.factor.1
 ```
 
-So what we see here is _a lot_ of genes named _IGXXX_ (X's are used do indicate
-arbitrary letters or numbers). 
+So what we see here is *a lot* of genes whose names start with *IG*.
 
-*Q11*: It's often common to google a few of the genes to get a "sense" of what
-kind of biological process(es) each factor could represent. And, evaluation of
-results are just as important as obtaining them. Thus your task is to -- with
-the help of the internet if you like -- pick the biological process from the
-ones listed below that you consider most likely that factor 1 is associated
-with.
+### Q11
 
-Processes
---------
-1. positive regulation of growth hormone activity
-2. synapse-associated extracellular matrix
-3. immunoglobulin mediated immune response
-4. ERBB2 signaling pathway
-5. embryonic process involved in female pregnancy
+> It's often common to google a few of the genes to get a "sense" of what kind of
+> biological process(es) each factor could represent. And, evaluation of results are
+> just as important as obtaining them. Thus your task is to -- with the help of the
+> internet if you like -- pick the biological process from the ones listed below that
+> you consider most likely that factor 7 is associated with.
+>
+> **Processes**
+>
+> 1.  positive regulation of growth hormone activity
+> 2.  synapse-associated extracellular matrix
+> 3.  immunoglobulin mediated immune response
+> 4.  ERBB2 signaling pathway
+> 5.  embryonic process involved in female pregnancy
 
-```{r}
-# Answer Q11 with the number of the process you think is the right one, for example
+```{r q11}
+
+# Answer Q11 with the number of the process you think is the right one
 ans.q11 <- NA
 
-print(sprintf("Factor 1 is associated with process %d",ans.q11))
+print(sprintf("Factor 7 is associated with process %d", ans.q11))
 
 ```
 
-*Q12* : Create a data frame called `top.2.genes` with the *2 genes* that are most strongly associated with each
-factor. This data frame should have the columns: "gene","prob" and "factor",
-containing the following information:
+### Q12
 
-* gene - name of the genes
-* prob - probability of being sampled from the associated factor
-* factor - the factor to which the gene is associated
+> Create a data frame called `top.2.genes` with the *2 genes* that are most strongly
+> associated with each factor. This data frame should have the columns: "gene", "weight"
+> and "factor", containing the following information:
+>
+> -   gene - name of the genes
+> -   weight - gene contribution from the associated factor
+> -   factor - the factor to which the gene is associated (these should be called
+>     "factor_1", "factor_2", ...)
+>
+> *Hint 1*: The names of the genes can be accessed via `rownames(W)` and the names of
+> the factors can be accessed via `colnames(W)`. The factor contribution scores are the
+> numerical values found in *W*.
+>
+> *Hint 2*: It might be a good idea to use a for-loop here. However, it's not a must,
+> there are multiple ways of solving this exercise!
+>
+> *Hint 3*: If you want append an element to a vector, you simply do
+> `my.vector <- c(my.vector, new.element)`
+>
+> *Hint 4*: The `data.frame` should look something like this: 
+> ![](./img/data_frame.png)
 
-_Hint 1_: the names of the genes can be accessed via `lda.res@terms`, as you saw
-in the code chunk above.
+```{r q12}
 
-_Hint 2_: It might be a good idea to use a for-loop here. However, it's not a
-must, there are multiple ways of solving this exercise!
+# code to produce the top.2.genes data frame
 
-_Hint 3_: If you want append an element to a vector, you simply do 
-`my.vector <- c(my.vector,new.element)`
-
-```{r,eval = GRADE_MODE}
-# code to produce the top.2 data frame
 ```
 
 And you guessed it, you can check your answers with the chunk below!
 
-```{r}
-source("checks.R")
-check.q12(top.2.genes)
-```
+```{r check_q12, warning=TRUE}
 
+source("checks.R")
+q12_check(top.2.genes)
+
+```
 
 ## Single Cell Integration
 
-The idea of factor decompisition is attractive, but there are still some
-challenges to this approach. The factors (a more general term than topic), do
-not necessarily represent specific cell types and we have no immediate
-biological interpretation of them.
+The idea of factor decomposition is attractive, but there are still some
+challenges to this approach. The factors do not necessarily represent specific 
+cell types and we have no immediate biological interpretation of them. 
 
 What if we wanted to know where a specific type of T-cells or B-cells are
 located in our spatial data; then we would have to hope that some of our factors
@@ -1294,7 +1001,7 @@ But from where would be obtain such information? The answer comes in the form of
 a different type of data, namely _single cell RNA-seq_. 
 
 In single cell experiments, each data point corresponds to one individual cell
-(once duoublets have been removed). This means that if we assign an identity
+(once doublets have been removed). This means that if we assign an identity
 (e.g., cell type or cluster), we can learn the expression profiles and then
 deconvolve our spatial data with them.
 
@@ -1302,7 +1009,7 @@ Multiple strategies exists to "map" single cell information onto the spatial
 data, but we will use output from a tool called `stereoscope` (from the paper
 _"single-cell and spatial transcriptomics enables probabilistic inference of cell type topography"_
 in Nature Communications Biology), the software is found at
-[github](https://github.com/almaan/stereoscope). In short this method models
+[github](https://github.com/almaan/stereoscope). In short, this method models
 both single cell and spatial data as _Negative Binomial_ (NB) distributed, then
 for every gene infers the parameters of each cell type's distribution, to finally
 find the optimal combination of cell types in each spot based on Maximum a
@@ -1322,24 +1029,27 @@ fit, and you usually need GPU resources for it to run in reasonable time.
 Therefore you will load the output of `stereoscope` when applying it to the
 aforementioned single cell data set and our spatial data.
 
-```{r}
-# Load stereoscope analysis results
+```{r load_stereoscope}
 
+# Load stereoscope analysis results
 # get data from file
 stsc <- read.table("data/stereoscope-proportions.tsv.gz",
                    sep = '\t',
                    row.names = 1,
                    header = 1)
+
 # transpose to have features as rows and spots as columns
 stsc <- t(stsc)
+
 # ad a new assay called stereoscope to our se object
-stsc <- stsc[,colnames(se)]
-se[["stereoscope"]] <- CreateAssayObject(counts = stsc)
+stsc <- stsc[, colnames(se.HER2)]
+se.HER2[["stereoscope"]] <- CreateAssayObject(counts = stsc)
 
 # set the default assay to stereoscope
-DefaultAssay(se) <- "stereoscope"
+DefaultAssay(se.HER2) <- "stereoscope"
+
 # inspect data
-GetAssayData(se)[1:5,1:5]
+GetAssayData(se.HER2)[1:5, 1:5]
 
 ```
 
@@ -1347,9 +1057,9 @@ The values in the output from `stereoscope` represent proportion values, that
 is: the proportion of cells at each spot that is estimated to belong to a
 certain cell type. The cell types present in our data are:
 
-```{r}
+```{r cell_proportions}
 
-cat(paste(rownames(se), collapse = ", "))
+cat(paste(rownames(se.HER2), collapse = ", "))
 
 ```
 
@@ -1359,33 +1069,18 @@ Now how about having a look at the spatial distribution of the celltypes:
 * T-cells
 * Epithelial 
 
-our beloved `spatial.plot` comes in handy again
+our beloved `FeatureOverlay()` comes in handy again
 
-```{r}
+```{r plot_cells, fig.width=12, fig.height=4}
 
 # specify cell types to plot
-plot.types <- c("B.cells",
+selected.cell.types <- c(
+  "B.cells",
                 "T.cells",
-                "Epithelial")
-# list to hold our plots
-plot.list <- list()
-
-# iterate over each specified cell type
-for (cell.type in plot.types){
-  # get vector of cell type proportion values
-  color.vector <- GetAssayData(se)[cell.type,]
-  # generate plot
-  plot.list[[cell.type]] <- spatial.plot(se,
-                            color.vector = color.vector,
-                            plot.title = cell.type,
-                            legend.title = "proportion"
+  "Epithelial"
                             )
-  
-}
-# arrange plots in grid
-grid.arrange(grobs = plot.list,
-             ncol = 3)
 
+FeatureOverlay(se.HER2, features = selected.cell.types, ncols = 3, pt.size = 1)
 
 ```
 
@@ -1408,51 +1103,53 @@ to populate different regions.
 We will compute these correlation values - cast as a correlation matrix - and
 then visualize them in a heatmap.
 
+```{r plot_correlation, fig.width=6, fig.height=6}
 
-```{r, fig.width=10,fig.height=10}
 # generate a color palette
-color.pal <- rev(colorRampPalette(brewer.pal(11,"RdBu"))(nrow(se)))
+color.pal <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(50))
+
 # compute pearson correlation of cell types across spots
-cors <- cors <- GetAssayData(se) %>%
+cors <- GetAssayData(se.HER2) %>%
   as.matrix() %>%
   t() %>% 
   cor()
+
 # set diagonal to NA
 diag(cors) <- NA
-# generate heatmap and plot it
-heatmap(cors,
-        col = color.pal,
-        scale = "none",
-        verbose = F,
-        breaks=seq(-1, 1, length.out=length(color.pal) +1)
-        )
+
+# Plot heatmap
+pheatmap::pheatmap(cors, color = color.pal)
+
 ```
 
 Here, the more dark blue a square is the more negative the associated value is,
 while the same is true for red and positive values.
 
+### Q13
 
-*Q13*: Using the correlation matrix, please complete the following sentences 
+> Using the correlation matrix, please complete the following sentences
+>
+> 1.  Myeloid cells strongly anticorrelate with...
+> 2.  T-cells strongly spatially co-localize with...
+>
+> *Comment* use the following cell type names when answering below: "T-cells",
+> "B-cells", "Epithelial", "SMCs","Myeloid", "Endothelial","CAFs", and "Plasmablasts"
+> *Hint*: Look at the colorscale, which end represents correlation versus anticorrelation?
+> *Hint2*: For 2, we are not interested in "T-cells" although they perfectly co-localize for some "strange" reason ;)
 
-1. Myeloid cells strongly anticorrelate with...
-2. T-cells strongly spatially co-localize with...
+```{r q13}
 
-_Comment_ use the following cell type names when answering below: "T-cells",
-"B-cells", "Epithelial", "SMCs","Myeloid", "Endothelial","CAFs", and
-"Plasmablasts"
-
-```{r,eval =GRADE_MODE}
-
+# Replace the NA values with your answers below
 ans.q13.1 <- NA
 ans.q13.2 <- NA
-cat(sprintf("Myeloid cells strongly anticorrelate with: %s\nT-cells strongly spatially co-localize with %s cells",ans.q13.1,ans.q13.2))
+cat(sprintf("Myeloid cells strongly anticorrelate with %s cells\nT-cells strongly spatially co-localize with %s", ans.q13.1, ans.q13.2))
+
 ```
 
 ## Hand In Guidelines
 
 
-**How :**  First, go to the top of this document and set `GRADE_MODE = TRUE`.
-Next, knit this document, and hand in the resulting html-file on Canvas. Make
+**How**:  Knit this document, and hand in the resulting html-file on Canvas. Make
 sure you have solved all the questions. If the document doesn't compile, there
 is something wrong with the code.
 
