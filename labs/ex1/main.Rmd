@@ -1,7 +1,7 @@
 ---
 title: "Lab 1 - Introduction to R"
-author: "Alma Andersson"
-date: "17-09-2021"
+author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
   html_document:
     toc: true
@@ -10,7 +10,7 @@ output:
       collapse: false
     theme: "readable"
 ---
-
+<!-- Lab creator: Alma Andersson -->
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
