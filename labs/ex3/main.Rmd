@@ -1,21 +1,23 @@
 ---
 title: "Lab3 - Spatial Transcriptomics"
-author: "Alma Andersson"
-date: 2021-10-14
+author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
   html_document:
     toc: true
     toc_depth: 3
-    toc_float: true
+    toc_float:
+      collapse: false
     theme: "readable"
 ---
+<!-- Lab creator: Alma Andersson, Ludvig Larsson -->
 
 # Lab3 - Spatial Transcriptomics
 
 
 ## Introduction
 
-Welcome to Lab 4, where we will explore spatial transcriptomics data. While it
+Welcome to this lab, where we will explore spatial transcriptomics data. While it
 is a different type of data from what we've worked with before, many of the
 ideas and concepts presented in our analysis of single cell RNA-seq data will be
 revisited in this lab.
