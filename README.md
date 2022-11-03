@@ -10,12 +10,6 @@ repo, such as guidelines regarding the execution of the labs, contact
 information, deadlines and brief descriptions of the labs with links to material
 that might be of help to you.
 
-Make sure that you have Docker installed and the latest imaged pulled from the
-Docker repo, as described on the "master" page of this repository.
-
-The slides from the first lecture (introduction) can be found
-[here](https://almaan.github.io/genetech).
-
 ## R - a primer
 
 * **What is R?:** R is an interpreted programming language, just like python, in
@@ -49,7 +43,7 @@ there, there's plenty to choose from ("R programming tutorial" has `2 060 000
 preferred ways of learning.
 
 ## :dna: Installation session :dna:
-**Main Responsible TA:** Sami Saarenpää<br>
+**Main Responsible TA:** Marco Vicari<br>
 **Time:** Mon 29 Nov, 10:00-12:00<br>
 
 This lecture is an introduction to the hands on part of the course and installation of the Docker. 
@@ -70,20 +64,8 @@ bioinformatic packages. Thus it is imperative that you put effort into learning
 how to orient yourself in R.
 
 ### Preparatory work
-Before Lab 1 starts make sure that you:
-
-1. Install Docker
-2. Download the Docker image
-
-information regarding this is found at the ["master"](https://github.com/almaan/genetech/tree/master) branch of this repo.
-
-### Rstudio in docker
-Once you've built and started your Docker image according to the instructions at
-the landing page, simply go to your favorite web-browser and enter:
-_localhost:1337_ as the address. This will take you to the interactive Rstudio,
-as also mentioned on the landing page, the credentials to login are:
-* Username : _genetech_
-* Password : _genetech_
+Before Lab 1 starts make sure that you have RStudio Cloud setup, as described on the [`master`](https://github.com/almaan/genetech/tree/master) 
+page of this repository.
 
 ### Hand-in
 
@@ -100,7 +82,7 @@ exercises correctly.
 
 
 ## :dna: Lab 2 | Single Cell RNA-seq analysis :dna:
-**Main Responsible TA:** Ludvig Larsson<br>
+**Main Responsible TA:** Pontus Höjer<br>
 **Lab Status:** Ready :+1: <br>
 **Working file:** [main.Rmd](labs/ex2/main.Rmd) <br>
 
@@ -119,7 +101,7 @@ reduction, unsupervised clustering and differential expression analysis.
 
 ## :dna: Lab 3 | Spatial Transcriptomics analysis :dna:
 
-**Main Responsible TA:** Ludvig Larsson<br>
+**Main Responsible TA:** Nayanika Bhalla<br>
 **Lab Status:** Ready :+1: <br>
 **Working file:** [main.Rmd](labs/ex3/main.Rmd) <br>
 
@@ -155,11 +137,16 @@ All labs will start with something similar to this:
 ```{yaml}
 ---
 title: "Lab 1 - Introduction to R"
-author: "Alma Andersson"
-date: "11-09-2020"
+author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
-  tufte::tufte_html: default 
-/---
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapse: false
+    theme: "readable"
+---
 ```
 When you hand in the modified lab, change the author field to your name(s).
 
@@ -203,9 +190,8 @@ When you hand in the modified lab, change the author field to your name(s).
 ## Contact Information
 
 * Sami Saarenpää : sami.saarenpaa@scilifelab.se
-* Ludvig Larsson : ludvig.larsson@scilifelab.se
 * Pontus Höjer : pontus.hojer@scilifelab.se
-* Markus Ekvall : markus.ekvall@scilifelab.se
+* Nayanika Bhalla : nayanika.bhalla@scilifelab.se
 * Adelina Rabenius : adelina.rabenius@scilifelab.se
 * Marco Vicari : marco.vicari@scilifelab.se
 
