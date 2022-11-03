@@ -429,7 +429,8 @@ however chosen somewhat arbitrary.
 ```{r q4}
 
 # Enter code to create the keep.spots vector here
-
+# Replace NA for the code that generates the requested output.
+keep.spots <- NA
 ```
 
 Now you can check your answer below before you proceed!
@@ -496,7 +497,8 @@ h3 + h4
 ```{r q5}
 
 # Enter code to create the keep.genes vector here
-
+# Replace NA for the code that generates the requested output.
+keep.genes <- NA
 ```
 
 Again, you can check whether your answers are correct with the next code chunk!
@@ -809,7 +811,9 @@ that capture most of the variability in our data.
 ```{r q9}
 
 # Enter the code here
+# Replace NA for your answer
 
+factorization.genes <- NA
 ```
 
 Answer check.
@@ -971,8 +975,9 @@ print(sprintf("Factor 7 is associated with process %d", ans.q11))
 
 ```{r q12}
 
-# code to produce the top.2.genes data frame
-
+# code to produce the top.2.genes data.frame
+# replace NA with your the final data.frame
+top.2.genes <- NA
 ```
 
 And you guessed it, you can check your answers with the chunk below!
@@ -1078,9 +1083,9 @@ our beloved `FeatureOverlay()` comes in handy again
 # specify cell types to plot
 selected.cell.types <- c(
   "B.cells",
-                "T.cells",
+  "T.cells",
   "Epithelial"
-                            )
+)
 
 FeatureOverlay(se.HER2, features = selected.cell.types, ncols = 3, pt.size = 1)
 
@@ -1146,6 +1151,12 @@ ans.q13.1 <- NA
 ans.q13.2 <- NA
 cat(sprintf("Myeloid cells strongly anticorrelate with %s cells\nT-cells strongly spatially co-localize with %s", ans.q13.1, ans.q13.2))
 
+```
+Let's check that the final answer is correct.
+
+```{r check_q13}
+source("checks.R")
+q13_check(ans = list(ans.q13.1, ans.q13.2))
 ```
 
 ## Hand In Guidelines
