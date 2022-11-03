@@ -1,3 +1,1 @@
-labs/ex2/data/bc filter=lfs diff=lfs merge=lfs -text
-labs/ex2/data/se filter=lfs diff=lfs merge=lfs -text
 se !text !filter !merge !diff
