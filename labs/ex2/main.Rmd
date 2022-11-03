@@ -156,7 +156,7 @@ cat(sprintf("Number of genes: %s\nNumber of cells: %s", number.of.genes, number.
 ```
 Lets check if the answer is correct.
 
-```{r check_q1, warning = TRUE}
+```{r check_q1, warning=TRUE}
 source("checks.R")
 check_q1(number.of.genes, number.of.cells)
 ```
@@ -293,8 +293,8 @@ keep.cells <- colnames(se)[set1 & set2]
 head(keep.cells)
 
 # Now use these cell names to subset the "Seurat" object
-# Write your code / answer here
-
+# Replace NA with you code
+se.subset <- NA
 ```
 
 You will often find that some genes are lowly expressed across your data set. It can be a good idea to filter out such genes as these are not always informative. Just like we don't want to keep low quality cells we don't want to keep low quality genes!
@@ -338,17 +338,17 @@ Now that we have filtered our object (`se.subset`), we should have fewer cells a
 ```{r print_dims_after_filter}
 # Write your code / answer here
 # Replace NA with the correct values
-nCells <- NA
-nGenes <- NA
-sprintf("Number of cells after filtering: %s", nCells)
-sprintf("Number of genes after filtering: %s", nGenes)
+n.cells.filt <- NA
+n.genes.filt <- NA
+sprintf("Number of cells after filtering: %s", n.cells.filt)
+sprintf("Number of genes after filtering: %s", n.genes.filt)
 ```
 
 Let's check that everything is correct before we proceed.
 
-```{r check_q6, warning = TRUE}
+```{r check_q6, warning=TRUE}
 source("checks.R")
-check_q6(nGenes, nCells)
+check_q6(n.genes.filt, n.cells.filt)
 ```
 
 
@@ -414,7 +414,7 @@ se <- RunPCA(se, verbose = FALSE)
 
 We can then plot the transformed data by using the function `DimPlot()` and specify the reduction that we want to use:
 
-```{r pcaplot1, fig.width=7, fig.height=6}
+```{r pcaplot1, fig.width=4, fig.height=3}
 DimPlot(se, reduction = "pca", dims = c(1, 2))
 ```
 
@@ -422,7 +422,7 @@ Here we have plotted the first two PCA vectors (1 and 2) by setting `dims = c(1,
 
 We can also color the cells using information from our meta data table. Let's color the cells based on replicate:
 
-```{r pcaplot2, fig.width=7, fig.height=6}
+```{r pcaplot2, fig.width=4, fig.height=3}
 DimPlot(se, reduction = "pca", dims = c(1, 2), group.by = "replicate")
 ```
 
@@ -481,7 +481,7 @@ In a UMAP plot, cells with similar gene expression are put close to together in 
 
 Let's see how the cells are organized in UMAP space before and after batch correction:
 
-```{r UMAP2, fig.width=10, fig.height=5}
+```{r UMAP2, fig.width=8, fig.height=4}
 se <- RunUMAP(se, dims = 1:30, reduction = "pca")
 se.corrected <- RunUMAP(se.corrected, dims = 1:30, reduction = "pca")
 p1 <- DimPlot(se, reduction = "umap", group.by = "replicate")
@@ -501,24 +501,16 @@ For the rest of this lab, we'll use a different data set with single-cell RNA-se
 
 When you run `bc <- readRDS("data/bc")` you will get a `Seurat` object with some additional meta data included. The object has already been subjected to normalization with `SCTransform()` and dimensionality reduction by PCA.
 
-```{r clean, message=FALSE, warning=FALSE}
+```{r clean}
 # Before we proceed with the second part of this lab, let's clean up our environment
 rm(list = ls())
 gc()
 ```
 
-```{r bc, warning=FALSE, message=FALSE}
+```{r bc}
 # Load the breast cancer scRNA-seq data set
 bc <- readRDS("data/bc")
 ```
-
-```{r curl, eval=FALSE, include=FALSE}
-# If you get an error loading the bc object, you might have to download it manually
-# To do this, you need to remove the comment for the following two lines and run the code chunk
-#curl::curl_download(url = "https://github.com/almaan/genetech/raw/bb2255/labs/ex2/data/bc", destfile = "data/bc", quiet = FALSE)
-#bc <- readRDS("data/bc")
-```
-
 
 Let's embed our cells in a 2D map using the UMAP method as before.
 
@@ -547,7 +539,7 @@ Let's try clustering our data using the default method provided by Seurat's `Fin
 >
 > *Hint*: note that the first cluster is always called "0", not "1"
 
-```{r clustering, fig.width=7, fig.height=6}
+```{r clustering, fig.width=4, fig.height=3}
 
 bc <- FindNeighbors(bc, dims = 1:30, reduction = "pca")
 bc <- FindClusters(bc, resolution = 0.6)
@@ -560,11 +552,18 @@ sprintf("Number of clusters detected at a resolution of 0.6: %s", nClusters)
 
 ```
 
+Let's check that you got this right before continuing.
+
+```{r check_q7, warning=TRUE}
+source("checks.R")
+check_q7(nClusters)
+```
+
 ### Q8
 
 > Re-run the `FindClusters()` function using a resolution of 0.3 and 1.2. Use `DimPlot` to visualize these clusters on the "umap" graph and write down how many clusters you get.
 
-```{r clusters_q, fig.width=12, fig.height=5}
+```{r clusters_q, fig.width=8, fig.height=4}
 
 # Write your code / answer here
 
@@ -578,7 +577,7 @@ sprintf("Number of clusters detected at a resolution of 1.2: %s", nClusters.1.2)
 
 Now let's confirm that you got the correct number of clusters.
 
-```{r clusters_q, warning=TRUE}
+```{r check_q8, warning=TRUE}
 source("checks.R")
 check_q8(nClusters.0.3, nClusters.1.2)
 ```
