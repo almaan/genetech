@@ -510,6 +510,7 @@ gc()
 ```{r bc}
 # Load the breast cancer scRNA-seq data set
 bc <- readRDS("data/bc")
+bc
 ```
 
 Let's embed our cells in a 2D map using the UMAP method as before.
@@ -678,7 +679,7 @@ In the result `data.frame` we can find quite a lot of information, but the most 
 >
 > *Hint*: T-cells are the same as cluster 2.
 
-```{r fea_T_cells, eval=FALSE}
+```{r fea_T_cells}
 # Write your code here
 ```
 
@@ -690,6 +691,7 @@ Report the `term_name` and `p_value` below.
 term_name <- NA
 p_value <- NA
 
+stopifnot("'term_name' is NA" = !is.na(term_name), "'p_value' is NA" = !is.na(p_value))
 cat(sprintf("term name: %s\np-value: %s", term_name, p_value))
 
 ```

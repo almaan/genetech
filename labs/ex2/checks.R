@@ -27,6 +27,9 @@ check_answer <- function(
 }
 
 check_q1 <- function(n.genes, n.cells) {
+    if (is.na(n.genes) || is.na(n.cells)) {
+        stop("NA set as answer, make sure you filled it out properly.")
+    }
     n.genes <- as.integer(n.genes)
     n.cells <- as.integer(n.cells)
 
@@ -45,6 +48,9 @@ check_q1 <- function(n.genes, n.cells) {
 }
 
 check_q6 <- function(n.genes, n.cells) {
+    if (is.na(n.genes) || is.na(n.cells)) {
+        stop("NA set as answer, make sure you filled it out properly.")
+    }
     n.genes <- as.integer(n.genes)
     n.cells <- as.integer(n.cells)
 
@@ -63,6 +69,9 @@ check_q6 <- function(n.genes, n.cells) {
 }
 
 check_q7 <- function(n.clst) {
+    if (is.na(n.clst)) {
+        stop("NA set as answer, make sure you filled it out properly.")
+    }
     n.clst <- as.integer(n.clst)
     n.clst <- check_answer(n.clst, "20e70f4a08bdc6a54e53ad0a7d1498b6")
 
@@ -75,6 +84,9 @@ check_q7 <- function(n.clst) {
 
 
 check_q8 <- function(n.clst.0.3, n.clst.1.2) {
+    if (is.na(n.clst.0.3) || is.na(n.clst.1.2)) {
+        stop("NA set as answer, make sure you filled it out properly.")
+    }
     n.clst.0.3 <- as.integer(n.clst.0.3)
     n.clst.1.2 <- as.integer(n.clst.1.2)
 
@@ -100,6 +112,9 @@ check_q13 <- function(ans) {
         "7ec0170b6497c85b83a6d25973d54430",
         "9c4d15daf98e3ba52b52dd161b571ad4"
     )
+    if (NA %in% ans) {
+        stop("NA found in vector, make sure you filled it out properly.")
+    }
 
     checks <- c()
     for (i in seq_along(ans)) {
