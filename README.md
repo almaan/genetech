@@ -46,10 +46,7 @@ preferred ways of learning.
 **Main Responsible TA:** Marco Vicari<br>
 **Time:** Mon 29 Nov, 10:00-12:00<br>
 
-This lecture is an introduction to the hands on part of the course and installation of the Docker. 
-Instructions for the installation of the Docker are in the master branch.
-Zoom link will follow. 
-
+This lecture is an introduction to the hands on part of the course and getting everyone up to speed with working in RStudio Cloud.
 
 ## :dna: Lab 1 | Basic R programming and markdown :dna:
 
