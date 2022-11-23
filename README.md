@@ -1,5 +1,12 @@
 # Gene Technology Lab Course
 
+- [Introduction](#introduction)
+- [Getting started with RStudio cloud](#getting-started-with-rstudio-cloud)
+- [Handing in reports](#handing-in-reports)
+- [FAQ](#faq)
+
+## Introduction
+
 Hello and welcome to the Gene Technology lab course landing page! This GitHub
 repository contains all the instructions and material for the computer labs for
 the two courses [CB2040](https://github.com/almaan/genetech/tree/cb2040) and 
@@ -69,7 +76,7 @@ executing code in the console.
 ## Handing in reports
 
 Before you proceed, please make sure that you are not printing the content of any large objects. 
-For example, do not print the content of expression matrices as tis will fill up the notebook:
+For example, do not print the content of expression matrices as this will fill up the notebook:
 
 ````
 # DO NOT DO THIS
@@ -78,12 +85,16 @@ print(counts)
 
 When you have written your answers in the rmarkdown document, you need to "knit" the document into an HTML 
 file. First, you click on the Knit button and choose "Knit to HTML" which will trigger the knitting process. 
-When the process has finished, you should see a file called "main.html" in the file explorer. 
+When the process has finished, you should see a file called `main.html` in the file explorer (bottom right). 
 
-To download this file, you can check the box next to it, press the cog wheel icon above and select Export... 
-Now you can chose a file name and download the file to your computer. This is the file that you will upload 
-on Canvas! Just make sure that you can open the file and that you can see the content of it before uploading.
 ![knit](imgs/knit.png)
+
+
+To download the `main.html` file, you can check the box next to it :ballot_box_with_check:, press the cog wheel :gear: icon above and select "Export..." from the dropdown menu.
+Now you get a popup where you can chose a file name and download the file to your computer. This is the file that you will upload 
+on Canvas! 
+
+**Make sure that you can open the file and that you can see the content of it before uploading.**
 
 ![image](https://user-images.githubusercontent.com/27061883/192314278-7dc71f81-6889-4979-a684-77a3a1da53f3.png)
 
