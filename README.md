@@ -27,7 +27,7 @@ want you to spend hours and hours stuck trying to intepret and solve error messa
 instead we are going to use a cloud based solution that only requires you to have a 
 decent internet connection!
 
-[RStudio cloud](https://rstudio.cloud/) is a cloud-based solution where everything
+[RStudio cloud](https://rstudio.cloud/) (aka ["Posit Cloud"](https://posit.cloud/) since Nov 2022) is a cloud-based solution where everything
 is preinstalled and ready to go. You will be provided with login details so that you 
 can start coding directly from a web browser. 
 
