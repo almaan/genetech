@@ -10,8 +10,9 @@
 Hello and welcome to the Gene Technology lab course landing page! This GitHub
 repository contains all the instructions and material for the computer labs for
 the two courses [CB2040](https://github.com/almaan/genetech/tree/cb2040) and 
-[BB2255](https://github.com/almaan/genetech/tree/bb2255). Since the two 
-aforementioned courses have a large overlap in content we store it at the same place.
+[BB2255](https://github.com/almaan/genetech/tree/bb2255) (CB204V students should 
+follow the material for BB2255). Since the two aforementioned courses have a large 
+overlap in content we store it at the same place.
 
 For the computer labs, we'll be using the programming language R which is particularly 
 useful for statistical computing and data visualization. R is together with Python one 
@@ -27,9 +28,10 @@ want you to spend hours and hours stuck trying to intepret and solve error messa
 instead we are going to use a cloud based solution that only requires you to have a 
 decent internet connection!
 
-[RStudio cloud](https://rstudio.cloud/) (aka ["Posit Cloud"](https://posit.cloud/) since Nov 2022) is a cloud-based solution where everything
-is preinstalled and ready to go. You will be provided with login details so that you 
-can start coding directly from a web browser. 
+[RStudio cloud](https://rstudio.cloud/) (aka ["Posit Cloud"](https://posit.cloud/) 
+since Nov 2022) is a cloud-based solution where everything is preinstalled and ready 
+to go. You will be provided with login details so that you can start coding directly 
+from a web browser. 
 
 For information about the computer exercises, you need to switch from the
 _master branch_ of this repository to your course specific branch. To do this,
