@@ -698,7 +698,7 @@ cat(sprintf("term name: %s\np-value: %s", term_name, p_value))
 
 Let's check your answers.
 
-```{r}
+```{r check_q11, warning=TRUE} 
 source("checks.R")
 check_q11(term_name, p_value)
 ```
