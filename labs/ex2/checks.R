@@ -142,8 +142,8 @@ check_q13 <- function(ans) {
     hashes <- c(
         "d271a2c3d1f8fc9f413d3421e516cb77",
         "9e3f307536c9b07c11f31bec3030a77f",
-        "7ec0170b6497c85b83a6d25973d54430",
-        "9c4d15daf98e3ba52b52dd161b571ad4"
+        "ef9c858d84af2093f1e1196e638e2482",
+        "944ac12785129b75eb7bf66ae6556361"
     )
     if (NA %in% ans) {
         stop("NA found in vector, make sure you filled it out properly.")
