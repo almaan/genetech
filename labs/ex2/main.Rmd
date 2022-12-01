@@ -696,6 +696,13 @@ cat(sprintf("term name: %s\np-value: %s", term_name, p_value))
 
 ```
 
+Let's check your anwsers.
+
+```{r}
+source("checks.R")
+check_q11(term_name, p_value)
+```
+
 FEA can be useful to assign biological attributes to cells and can be particularly helpful in the process of cell type annotation. If we didn't know what cell types we were looking at in the examples above we could tell from the FEA that cluster 2 most likely is a type of T cell but it less clear from the FEA what cell type cluster 12 is. FEA can be good a complement to other types of analyses but they are not very robust as the results are largely dependent on marker gene selection process. 
 
 ## 10) Other sources of variability
