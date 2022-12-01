@@ -3,7 +3,8 @@
 ## For Whom?
 
 This repo contains all the material for the computer labs associated with the
-course BB2255.
+course BB2255. Students attending the CB204V course should also follow this 
+material.
 
 You will find the all the essential information regarding these labs within this
 repo, such as guidelines regarding the execution of the labs, contact
@@ -191,5 +192,3 @@ When you hand in the modified lab, change the author field to your name(s).
 * Nayanika Bhalla : nayanika.bhalla@scilifelab.se
 * Adelina Rabenius : adelina.rabenius@scilifelab.se
 * Marco Vicari : marco.vicari@scilifelab.se
-
-
