@@ -105,12 +105,45 @@ check_q8 <- function(n.clst.0.3, n.clst.1.2) {
 }
 
 
+check_q11 <- function(term_name, p_value) {
+  if (is.na(term_name) || is.na(p_value)) {
+    stop("NA set as answer, make sure you filled it out properly.")
+  }
+  
+  if (!is.character(term_name)) {
+    stop(paste("'term_name' should be of type 'character', is", type(term_name)))
+  }
+  
+  if (!is.double(p_value)) {
+    stop(paste("'p_value' should be of type 'double', is", type(p_value)))
+  }
+  
+  term_name <- trimws(term_name)
+  
+  term_name <- check_answer(term_name, "6e822130aad241deeb4cfd5e6572c593")
+  
+  # TODO fix more accurate check here but I am worried that there might be 
+  # float-point difference here that would make a normal hash check unstable
+  p_value_corr <- p_value < 0.01
+  
+  if (term_name[[2]] && p_value_corr) {
+    cat(paste("Correct!", term_name[[1]]))
+  } else if (p_value_corr) {
+    warning(paste("Wrong term name", term_name[[1]]))
+  } else if (term_name[[2]]) {
+    warning("Wrong p-value, try again.")
+  } else {
+    warning(paste("Wrong term name and p-value.", term_name[[1]]))
+  }
+}
+
+
 check_q13 <- function(ans) {
     hashes <- c(
         "d271a2c3d1f8fc9f413d3421e516cb77",
         "9e3f307536c9b07c11f31bec3030a77f",
-        "7ec0170b6497c85b83a6d25973d54430",
-        "9c4d15daf98e3ba52b52dd161b571ad4"
+        "ef9c858d84af2093f1e1196e638e2482",
+        "944ac12785129b75eb7bf66ae6556361"
     )
     if (NA %in% ans) {
         stop("NA found in vector, make sure you filled it out properly.")
