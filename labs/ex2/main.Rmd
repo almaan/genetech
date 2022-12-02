@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 
-# Lab3 - Single cell RNA seq (scRNA-seq)
+# Lab2 - Single cell RNA seq (scRNA-seq)
 
 Nowadays there is a plethora of single cell methods available to obtain genomic information at cellular resolution.
 
