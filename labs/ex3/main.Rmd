@@ -814,6 +814,9 @@ that capture most of the variability in our data.
 # Replace NA for your answer
 
 factorization.genes <- NA
+
+# Print out first 10 entires
+head(factorization.genes)
 ```
 
 Answer check.
@@ -978,6 +981,10 @@ print(sprintf("Factor 7 is associated with process %d", ans.q11))
 # code to produce the top.2.genes data.frame
 # replace NA with your the final data.frame
 top.2.genes <- NA
+
+
+# Print out answer for reference
+top.2.genes
 ```
 
 And you guessed it, you can check your answers with the chunk below!

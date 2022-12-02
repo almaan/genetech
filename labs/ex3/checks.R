@@ -51,7 +51,7 @@ q3_check <- function(ans) {
 }
 
 q4_check <- function(ans) {
-  if (is.na(ans)) {
+  if (any(is.na(ans))) {
     stop("NA set as answer, make sure you filled it out properly.")
   }
   hash <- "22c55dc705445bb530072d2f01d9d769"
@@ -66,7 +66,7 @@ q4_check <- function(ans) {
 
 
 q5_check <- function(ans) {
-  if (is.na(ans)) {
+  if (any(is.na(ans))) {
     stop("NA set as answer, make sure you filled it out properly.")
   }
   hash <- "ed448f3814b5815511d7d5babb8639e1"
@@ -120,7 +120,7 @@ q8_check <- function(ans) {
 
 
 q9_check <- function(ans) {
-  if (is.na(ans)) {
+  if (any(is.na(ans))) {
     stop("NA set as answer, make sure you filled it out properly.")
   }
 
@@ -174,7 +174,7 @@ q11_check <- function(ans) {
 
 
 q12_check <- function(ans) {
-  if (is.na(ans)) {
+  if (any(is.na(ans))) {
     stop("NA set as answer, make sure you filled it out properly.")
   }
 
@@ -192,7 +192,7 @@ q12_check <- function(ans) {
 
   hashes <- c(
     gene = "da1fbe2034e56944a7f74a6281894291",
-    weight = "39819a727a1bb0da2f0e17b0776b3b55",
+    weight = "0c745a37d5f780dd6d0a2e97e58afaba",
     factor = "c79c0f4fef754277307807afc6deb1f1"
   )
   checks <- c()
@@ -203,7 +203,10 @@ q12_check <- function(ans) {
     arr <- as.array(ans[,name])
     arr <- arr[order(arr)]
     hash <- hashes[name]
-
+    if (name == "weight") {
+      # Normalize "weight" column to be numeric with only three digits
+      arr <- round(as.numeric(arr), digits = 3) 
+    }
     txt <- check_answer(arr, hash)
     checks <- c(checks, txt[[2]])
   }
@@ -211,10 +214,11 @@ q12_check <- function(ans) {
   if (all(checks)) {
     cat("\nYou have succeeded!\n")
   } else {
-    warning(sprintf("Column(s) '%s'", paste0(c("gene", "weight", "factor")[!checks], collapse = ", ")), ifelse(sum(!checks) > 1, "are wrong.", "is wrong."))
-    warning("\nPlease revise the answer.\n")
+    warning(sprintf("Column(s) '%s'", paste0(c("gene", "weight", "factor")[!checks], collapse = ", ")), ifelse(sum(!checks) > 1, "are wrong.", "is wrong.\n"))
+    warning("Please revise the answer.\n")
   }
 }
+
 
 q13_check <- function(ans) {
   if (NA %in% ans) {
