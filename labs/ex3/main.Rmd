@@ -544,7 +544,8 @@ keep.genes <- keep.genes[!grepl("^(MT-|RPL|RPS)", keep.genes)]
 
 ```{r q6}
 
-# enter code to subset your Seurat object here
+# enter code to subset your Seurat object in place of "..."
+se.HER2 <- SubsetSTData(...)
 
 # inspect Seurat object
 se.HER2
@@ -900,7 +901,7 @@ q10.ans1 <- NA
 q10.ans2 <- NA
 
 # print answers
-cat(sprintf("The spots with the highest contribution to factor 7 are: \n%s", paste(q10.ans1, collapse = "\n")), "\n\n")
+cat(sprintf("The spots with the highest contribution to factor 10 are: \n%s", paste(q10.ans1, collapse = "\n")), "\n\n")
 cat(sprintf("The genes with the highest contribution to factor 3 are: \n%s", paste(q10.ans2, collapse = "\n")))
 
 ```
