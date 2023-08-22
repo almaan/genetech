@@ -1,5 +1,5 @@
 ---
-title: "Lab2 - Single Cell RNAseq"
+title: "Single Cell RNAseq"
 author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 
-# Lab2 - Single cell RNA seq (scRNA-seq)
+# Lab - Single cell RNA seq (scRNA-seq)
 
 Nowadays there is a plethora of single cell methods available to obtain genomic information at cellular resolution.
 

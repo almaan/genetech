@@ -1,15 +1,16 @@
 ---
-title: "Lab2 - Data visualization and Bulk RNA-seq analysis"
-author: "Ludvig Larsson & Sami Saarenpää"
-date: "2022-09-26"
+title: "Data visualization and Bulk RNA-seq analysis"
+author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
   html_document:
     toc: true
     toc_depth: 4
-    toc_float: 
-      collapsed: false
+    toc_float:
+      collapse: false
     theme: "readable"
 ---
+<!-- Lab creator: Ludvig Larsson & Sami Saarenpää -->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
@@ -18,17 +19,17 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE)
 ```
 
-# Lab2 - Data visualization and Bulk RNA-seq analysis
+# Lab - Data visualization and Bulk RNA-seq analysis
 
 ## Introduction
 
 ------------------------------------------------------------------------
 
-For this second lab we will be working with bulk-RNA sequencing data, a method that became a gold-standard for transcriptomic research that was published in the mid 00s. Although the method has been around for a while it is still widely used to by research labs due to its robustness and simplicity.
+For this lab we will be working with bulk-RNA sequencing data, a method that became a gold-standard for transcriptomic research that was published in the mid 00s. Although the method has been around for a while it is still widely used to by research labs due to its robustness and simplicity.
 
 When you receive a dataset to analyze it is always a good idea to spend some time to try understand the its characteristics, and one way do this is using data visualization techniques. Data visualization is an important part of RNA-seq analysis and can also be extremely useful to present results. For this reason, we will cover some of the basics of data visualization in the first part of this lab.
 
-For the second lab we will work with bulk RNA-seq data obtained from breast cancer samples downloaded from The Cancer Genome Atlas (TCGA). Each sample represents a patient from the BRCA-TCGA cohort and have been classified into **5 different "mRNA cancer subtypes"**; Her2, Basal-like, LumA, LumB and Normal-like. We have also included a sixth "subtype" which consists of normal tissue to be used as a control. The full cohort consists of 1217 patients but for the purpose of this exercise, we have reduced this dataset to **10 patients** per subtype, adding up to a total of **60 samples**.
+For the lab we will work with bulk RNA-seq data obtained from breast cancer samples downloaded from The Cancer Genome Atlas (TCGA). Each sample represents a patient from the BRCA-TCGA cohort and have been classified into **5 different "mRNA cancer subtypes"**; Her2, Basal-like, LumA, LumB and Normal-like. We have also included a sixth "subtype" which consists of normal tissue to be used as a control. The full cohort consists of 1217 patients but for the purpose of this exercise, we have reduced this dataset to **10 patients** per subtype, adding up to a total of **60 samples**.
 
 In literature, you will most likely come across different classifications depending on histopathology, clinical grade, receptor status and genomic alterations. Here we will use the "mRNA subtypes" as defined by the TCGA.
 

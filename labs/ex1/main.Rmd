@@ -1,5 +1,5 @@
 ---
-title: "Lab 1 - Introduction to R"
+title: "Introduction to R"
 author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:

@@ -1,5 +1,5 @@
 ---
-title: "Lab3 - Spatial Transcriptomics"
+title: "Spatial Transcriptomics"
 author: "FirstName1 LastName1, FirstName2 LastName2, ... " # REPLACE WITH YOUR OWN NAME(S) 
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
@@ -12,7 +12,7 @@ output:
 ---
 <!-- Lab creator: Alma Andersson, Ludvig Larsson -->
 
-# Lab3 - Spatial Transcriptomics
+# Lab - Spatial Transcriptomics
 
 
 ## Introduction
