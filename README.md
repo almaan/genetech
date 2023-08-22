@@ -1,7 +1,7 @@
 # Gene Technology Lab Course
 
 - [Introduction](#introduction)
-- [Getting started with RStudio cloud](#getting-started-with-rstudio-cloud)
+- [Getting started with Posit cloud](#getting-started-with-posit-cloud)
 - [Guidelines](#guidelines)
     - [Hand-ins](#hand-ins)
     - [Deadlines](#deadlines)
@@ -186,10 +186,10 @@ preferred ways of learning.
 
 ## FAQ
 
-> My Rmarkdown code snippet won't run on RStudio Cloud. I just get a :clock1: symbol where its waiting to run the code. 
+> My Rmarkdown code snippet won't run on Posit (RStudio) Cloud. I just get a :clock1: symbol where its waiting to run the code. 
 
 - Try to restart the current environment. Go to the `Session` dropdown menu and click `Restart R`. 
-- If you have an Adblocker running, disable it for the RStudio Cloud webpage. 
+- If you have an Adblocker running, disable it for the Posit Cloud webpage. 
 
 ## Contact Information
 
