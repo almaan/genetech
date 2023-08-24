@@ -355,7 +355,7 @@ Note that when your run a DE test using DESeq2, a more strict filtering is autom
 
 #### Q5
 
-> Exclude all genes in `counts` that have a total count across all samples less then of equal to 100. Use the skills you learned in Lab 1.
+> Exclude all genes in `counts` that have a total count across all samples less then or equal to 100. Use the skills you learned in Lab 1.
 >
 > *Hint*: You should apply the filter to the `counts` matrix and overwrite it.
 
