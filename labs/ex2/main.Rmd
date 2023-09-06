@@ -167,7 +167,7 @@ Just like geom_bar, geom_histogram takes one variable as input but this time it 
 
 #### Q2
 
-> Add a new column to the `gg` data.frame with log10-transformed gene expression values for COL1A1 and use it to draw a new histogram with these values.
+> Add a new column to the `gg` data.frame with log10-transformed gene expression values for the gene **COL1A1** and use it to draw a new histogram with these values.
 
 ```{r COL1A1_histogram, fig.width=7, fig.height=5}
 
@@ -283,7 +283,7 @@ In this long formatted `data.frame` we have a gene name, sample id, log10 mRNA c
 
 #### Q3
 
-> Create a boxplot with log10 transformed counts for each sample and color the samples by their cancer subtype.
+> Create a boxplot showing the log10 transformed counts for each sample. Color the samples by their cancer subtype.
 >
 > *Hint*: `geom_boxplot()` requires a group variable and a numeric vector, then you can pass an additional variable to the "fill" aesthetic to add color to the boxplots.
 
@@ -298,9 +298,9 @@ ggplot(counts_long, aes(...)) +
 
 #### Q4
 
-> Make the same plot as in Q3 but using `facets` instead of colors.
+> Make the same plot as in Q3 but using `facets` instead of colors to show the subtype.
 >
-> *Hint*: The boxplots should be put into 6 separate facets, one for each cancer subtype.
+> *Hint*: The boxplots should be put into 6 separate subplots, one for each cancer subtype.
 
 ```{r histogram_all_counts_facets, fig.width=12, fig.height=5}
 
@@ -414,7 +414,7 @@ To obtain the normalized data you can run `counts(dds, normalized = T)`.
 
 #### Q6
 
-> Make a boxplot for each sample showing the distribution of normalized counts for each sample grouped by subtypes.
+> Make a boxplot for each sample showing the distribution of normalized counts for each sample. Group the samples by their subtype.
 >
 > *Hint*: You already have the code to do this from the first part of the lab. Look at Q2 and Q3 as well as the code used to prepare the `counts_long` dataframe. Here you will need to replace the `counts` matrix with the normalized counts.
 
@@ -521,6 +521,7 @@ head(res_summarized)
 
 > Select the top 10 most differentially up- and down-regulated genes with respect to adjusted p-values from the `res_summarized` data.frame. You should be able to solve this problem programatically.
 
+> *Hint*: Think about how you can filter (_\*wink wink nugde nugde|*_) the data for up- or down-regulated genes and then perform your selection.
 ```{r select_des}
 
 # Replace NA with the names of the top 10 up-regulated genes
@@ -611,7 +612,7 @@ pheatmap(tsf, annotation_col = ann, cluster_rows = FALSE, cluster_cols = FALSE, 
 
 > What conclusions you can make from this plot based on the differences between subtypes? Write max 2 sentences.
 >
-> *Hint*!: Look how clear the subtype specific genes are and variability between groups.
+> *Hint*!: Look at how distinct the subtype specific genes are and at the variability between different subtypes.
 
 ```{r, echo=TRUE}
 #Write the answer here!
