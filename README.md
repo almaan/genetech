@@ -200,4 +200,3 @@ preferred ways of learning.
 * Solène Frapard : solene.frapard@scilifelab.se
 * Mengxaio He : mengxiao.he@scilifelab.se
 * Artemy Zhigulev : artemy.zhigulev@scilifelab.se
-* Xiya Song : xiya.song@scilifelab.se
