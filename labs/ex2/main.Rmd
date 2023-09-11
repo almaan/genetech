@@ -635,3 +635,7 @@ Still, the capture efficiency of bulk RNA-seq very high and the data contains mu
 **How**: Complete the code chunks after the questions marked with a ''Q'' in this .Rmd file. There are 9 of those. When you have completed these code chunks, you should knit this report into an html file and submit this in canvas under Computer Lab 2. Do not edit the top part of the code chunks except for adjusting the plot layout using fig.width and fig.height.
 
 **Deadline**: Your report is due 23:59 one week after the lab; if working in pairs - each of you should hand in (identical) reports where the names of both authors are clearly stated. For further information see the guidelines on the course web-page.
+
+```{r session_info}
+sessionInfo()
+```

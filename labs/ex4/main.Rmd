@@ -1179,3 +1179,6 @@ if working in pairs - each of you should hand in two (identical) reports where
 the names of both authors are clearly stated. For further information see the
 guidelines on the course web-page.
 
+```{r session_info}
+sessionInfo()
+```
