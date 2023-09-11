@@ -74,7 +74,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       eval = TRUE,
                       message = FALSE,
                       warning = FALSE)
-
+options(max.print=100)
 ```
 
 Next, let us load some the libraries that we will use in this lab. 

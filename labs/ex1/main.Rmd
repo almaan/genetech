@@ -12,7 +12,9 @@ output:
 ---
 <!-- Lab creator: Alma Andersson -->
 ```{r setup, include=FALSE}
+# Document configurations, DO NOT EDIT
 knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+options(max.print=100)
 ```
 
 ```{r,echo = FALSE, eval =TRUE}

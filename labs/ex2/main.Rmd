@@ -13,10 +13,12 @@ output:
 <!-- Lab creator: Ludvig Larsson & Sami Saarenpää -->
 
 ```{r setup, include=FALSE}
+# Document configurations, DO NOT EDIT
 knitr::opts_chunk$set(echo = TRUE,
                       eval = TRUE,
                       message = FALSE,
                       warning = FALSE)
+options(max.print=100)
 ```
 
 # Lab - Data visualization and Bulk RNA-seq analysis
