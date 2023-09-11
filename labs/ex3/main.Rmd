@@ -94,8 +94,6 @@ If you have installed the Seurat package, the only thing you need to get going i
 ```{r load_seurat}
 suppressPackageStartupMessages({
   library(Seurat)
-  #library(SeuratWrappers)
-  #library(batchelor)
   library(gprofiler2)
   library(ggplot2)
   library(dplyr)
