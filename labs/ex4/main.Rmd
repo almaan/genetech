@@ -33,7 +33,7 @@ confusingly - named Spatial Transcriptomics (commonly referred to as ST).
 ST was developed at SciLifeLab and presented to the world in 2016 when the
 publication _Visualization and analysis of gene expression in tissue sections by
 spatial transcriptomics_  was published in the journal Science. In December
-2018, 10x Genomics aquired the IP rights to the ST-technique, they then launched
+2018, 10x Genomics acquired the IP rights to the ST-technique, they then launched
 the Visium platform in late 2019. In 2020, spatially resolved transcriptomics was 
 awarded with "method of the year" in the journal Nature Methods.
 
@@ -47,7 +47,7 @@ In this lab, we will explore a dataset generated with the 10x Genomics Visium te
 Visium utilize a solid array onto which oligonucleotide with spatial barcodes have been 
 printed at locations (spots) arranged in a hexagonal grid. These oligonucleotides all have 
 a poly-T sequence, allowing them to capture mRNA's by their poly-A tails. 
-A thin tissue slice, collected either from a fresh frozen of FFPE tissue block, is placed 
+A thin tissue slice, collected either from a fresh frozen of FFPE tissue block, is placed
 on top of this array followed by enzymatic permeabilization to open up the cells in the tissue.
 mRNA moleculas can diffuse freely from the cells and a fraction of these molecules 
 reach the barcoded surface where they can hybridize to the poly-T sequences.
